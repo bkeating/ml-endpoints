@@ -39,7 +39,7 @@
 					{chart.subtitle}
 				</p>
 				<p class="text-sm text-slate-500 dark:text-slate-500 leading-relaxed">
-					We can display charts inline to add better context and convey a better story to the user.
+					In LLM benchmarking, token throughput per GPU measures raw efficiency—tokens processed per second on one GPU, optimized via dynamic batching and mixed precision (e.g., FP16) for scalable batch inference and training. It boosts high-volume workloads, cutting costs for models like GPT or Llama.
 				</p>
 			</div>
 		</div>

@@ -94,7 +94,13 @@
 						{#each columns as column (column.key)}
 							{#if column.type === 'text'}
 								<td class="py-4 px-6">
-									<span class="text-slate-800 dark:text-slate-200 font-medium">{row.name}</span>
+									<div class="flex items-center gap-3">
+										<span
+											class="h-3 w-3 flex-shrink-0 rounded-full"
+											style="background-color: {row.color};"
+										></span>
+										<span class="text-slate-800 dark:text-slate-200 font-medium">{row.name}</span>
+									</div>
 								</td>
 							{:else if column.type === 'metric'}
 								<td class="py-4 px-4">

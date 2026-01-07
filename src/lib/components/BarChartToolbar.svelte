@@ -109,7 +109,7 @@
 
 	.toolbar-inner {
 		@apply flex flex-wrap items-center justify-center gap-4 rounded-xl
-			   bg-gradient-to-r from-slate-50 via-slate-100 to-slate-50
+			   bg-linear-to-r from-slate-50 via-slate-100/50 to-slate-100
 			   dark:from-slate-800/50 dark:via-slate-800 dark:to-slate-800/50
 			   border border-slate-200 dark:border-slate-700
 			   px-4 py-3 shadow-sm;
@@ -124,7 +124,7 @@
 	}
 
 	.button-group {
-		@apply flex rounded-lg bg-slate-200/50 dark:bg-slate-700/50 p-0.5;
+		@apply flex rounded-lg bg-slate-300/50 dark:bg-slate-700/50 p-0.5;
 	}
 
 	.sort-button {
