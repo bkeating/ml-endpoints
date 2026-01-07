@@ -1,4 +1,4 @@
-<div class="hero-container bg-linear-to-b from-[#353C52] to-[#252b3d] dark:from-[#05141b] dark:to-[#0d2440] min-h-[400px] flex items-center justify-center font-instrument-sans relative overflow-hidden">
+<div class="hero-container bg-linear-to-b from-[#353C52] to-[#252b3d] dark:from-[#05141b] dark:to-[#0d2440] min-h-[550px] flex items-center justify-center font-instrument-sans relative overflow-hidden">
 	<div class="hero-bg"></div>
 	<div class="relative z-10 flex md:flex-row flex-col max-w-7xl mx-auto items-center px-4 gap-9 md:gap-9 text-slate-900 transition-colors duration-200 dark:text-slate-100">
 		<div class="w-full md:w-1/3">
@@ -34,7 +34,7 @@
 		background-image: url('/teamwork.jpg.webp');
 		background-size: cover;
 		background-position: center;
-		filter: blur(4px);
+		filter: blur(4px) grayscale(100%);
 		opacity: 0.15;
 	}
 </style>
