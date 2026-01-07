@@ -1,4 +1,4 @@
-<div class="bg-[#353C52] dark:bg-[#202431] min-h-[400px] flex items-center justify-center font-instrument-sans">
+<div class="bg-linear-to-b from-[#353C52] to-[#252b3d] dark:from-[#202431] dark:to-[#151822] min-h-[400px] flex items-center justify-center font-instrument-sans">
 	<div class="flex md:flex-row flex-col max-w-7xl mx-auto items-center px-4 gap-9 md:gap-9 text-slate-900 transition-colors duration-200 dark:text-slate-100">
 		<div class="w-full md:w-1/3">
 			<h1 class="text-4xl md:text-6xl mt-6 md:mt-0 font-bold text-white dark:text-white text-balance dm-mono">

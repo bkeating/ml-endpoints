@@ -32,7 +32,7 @@
 	<section class="flex gap-8 items-center mb-12">
 		<div class="w-1/3 shrink-0 flex items-center justify-center">
 			<div class="flex flex-col">
-				<h2 class="mb-3 text-4xl font-semibold text-slate-800 dark:text-slate-200">
+				<h2 class="mb-3 text-4xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-700">
 					{chart.title}
 				</h2>
 				<p class="mb-4 text-slate-600 dark:text-slate-400 leading-relaxed">
@@ -69,7 +69,7 @@
 {:else}
 	<!-- Default layout: title/subtitle above, full-width chart below -->
 	<section class="mb-12">
-		<h2 class="mb-1 text-xl font-semibold text-slate-800 dark:text-slate-200">
+		<h2 class="mb-1 text-3xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans">
 			{chart.title}
 		</h2>
 		<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">

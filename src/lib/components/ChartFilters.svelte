@@ -59,7 +59,7 @@
 </script>
 
 <div
-	class="mt-6 mb-12 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 shadow-xl"
+	class="mt-6 mb-12 rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50 shadow-xl backdrop-blur-sm"
 	role="group"
 	aria-label="Chart filters and settings"
 >

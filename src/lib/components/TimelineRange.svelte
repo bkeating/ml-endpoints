@@ -7,18 +7,35 @@
 		getMax,
 		setStart,
 		setEnd,
-		setRange
+		setRange,
+		initRange
 	} from '$lib/stores/timelineRange.svelte.js';
 
 	/**
 	 * @typedef {Object} Props
-	 * @property {number} [width] - Component width
 	 * @property {number} [height] - Component height
 	 * @property {string} [label] - Optional label for the timeline
+	 * @property {number} [minBound] - Minimum value for the range (initializes store if provided)
+	 * @property {number} [maxBound] - Maximum value for the range (initializes store if provided)
 	 */
 
 	/** @type {Props} */
-	let { width = 700, height = 60, label = 'Latency Range (s)' } = $props();
+	let { 
+		height = 60, 
+		label = 'Latency Range (s)',
+		minBound,
+		maxBound
+	} = $props();
+
+	// Fluid width - measured from container
+	let containerWidth = $state(0);
+
+	// Initialize range bounds if provided via props
+	$effect(() => {
+		if (minBound !== undefined && maxBound !== undefined) {
+			initRange(minBound, maxBound);
+		}
+	});
 
 	const padding = { left: 70, right: 30, top: 20, bottom: 20 };
 	const trackHeight = 8;
@@ -30,8 +47,8 @@
 	let min = $derived(getMin());
 	let max = $derived(getMax());
 
-	// Derived dimensions
-	let innerWidth = $derived(width - padding.left - padding.right);
+	// Derived dimensions - use containerWidth for fluid sizing
+	let innerWidth = $derived(Math.max(0, containerWidth - padding.left - padding.right));
 	let trackY = $derived((height - trackHeight) / 2);
 
 	// D3 scale for mapping values to pixels
@@ -128,7 +145,7 @@
 		const relativeX = event.clientX - rect.left - padding.left;
 		
 		// Calculate the scale fresh to avoid stale closure issues
-		const currentInnerWidth = width - padding.left - padding.right;
+		const currentInnerWidth = containerWidth - padding.left - padding.right;
 		const pixelToValue = (px) => (px / currentInnerWidth) * (max - min) + min;
 		const currentValue = pixelToValue(relativeX);
 
@@ -159,7 +176,7 @@
 	 */
 	function onTrackClick(event) {
 		const relativeX = getRelativeX(event);
-		const currentInnerWidth = width - padding.left - padding.right;
+		const currentInnerWidth = containerWidth - padding.left - padding.right;
 		const clickValue = (relativeX / currentInnerWidth) * (max - min) + min;
 		
 		// Determine if click is closer to start or end
@@ -216,14 +233,15 @@
 	}
 </script>
 
-<div class="timeline-range">
+<div class="timeline-range w-full" bind:clientWidth={containerWidth}>
 	{#if label}
 		<span class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400" style="padding-left: {padding.left}px;">
 			{label}
 		</span>
 	{/if}
 	
-	<svg bind:this={svgElement} {width} {height} class="select-none">
+	{#if containerWidth > 0}
+	<svg bind:this={svgElement} width={containerWidth} {height} class="select-none w-full">
 		<g transform="translate({padding.left}, 0)">
 			<!-- Track background (clickable) -->
 			<rect
@@ -333,6 +351,7 @@
 			{/each}
 		</g>
 	</svg>
+	{/if}
 
 	<!-- Range indicator -->
 	<div class="mt-1 flex justify-between text-xs text-slate-500 dark:text-slate-400" style="padding-left: {padding.left}px; padding-right: {padding.right}px;">
