@@ -445,3 +445,114 @@ export function generateChartData(filters) {
 	};
 }
 
+// ============================================================================
+// SPARKLINE TABLE DATA
+// ============================================================================
+
+/**
+ * Sparkline color palette for benchmark rows
+ * @type {string[]}
+ */
+const sparklineColors = [
+	'#f97316', // orange-500
+	'#22c55e', // green-500
+	'#3b82f6', // blue-500
+	'#a855f7', // purple-500
+	'#ec4899', // pink-500
+	'#14b8a6', // teal-500
+	'#f59e0b', // amber-500
+	'#8b5cf6'  // violet-500
+];
+
+/**
+ * GPU inference benchmark data for sparkline table
+ * Each row represents a GPU configuration with performance metrics over time
+ * @type {Array<{id: string, name: string, metrics: Record<string, string>, sparklineData: number[], color: string}>}
+ */
+export const gpuInferenceBenchmarks = [
+	{
+		id: 'b200-trt',
+		name: 'B200 (TensorRT)',
+		metrics: {
+			throughput: '11,500 tok/s',
+			latency: '45ms',
+			efficiency: '98.2%'
+		},
+		// Steady growth with acceleration at end
+		sparklineData: [45, 48, 52, 58, 67, 78, 88, 95, 98],
+		color: '#f97316'
+	},
+	{
+		id: 'h200-trt',
+		name: 'H200 (TensorRT)',
+		metrics: {
+			throughput: '9,900 tok/s',
+			latency: '52ms',
+			efficiency: '96.8%'
+		},
+		// Dip and recovery pattern
+		sparklineData: [72, 78, 65, 58, 62, 74, 85, 92, 96],
+		color: '#22c55e'
+	},
+	{
+		id: 'h200-vllm',
+		name: 'H200 (vLLM)',
+		metrics: {
+			throughput: '9,000 tok/s',
+			latency: '58ms',
+			efficiency: '94.5%'
+		},
+		// Plateau then growth
+		sparklineData: [68, 70, 71, 70, 72, 78, 86, 91, 94],
+		color: '#3b82f6'
+	},
+	{
+		id: 'b200-vllm',
+		name: 'B200 (vLLM)',
+		metrics: {
+			throughput: '10,200 tok/s',
+			latency: '48ms',
+			efficiency: '97.1%'
+		},
+		// Volatile with upward trend
+		sparklineData: [55, 72, 64, 80, 75, 88, 82, 94, 97],
+		color: '#a855f7'
+	},
+	{
+		id: 'ml355-vllm',
+		name: 'ML355 (vLLM)',
+		metrics: {
+			throughput: '8,400 tok/s',
+			latency: '62ms',
+			efficiency: '92.3%'
+		},
+		// Step function growth
+		sparklineData: [45, 46, 62, 63, 64, 80, 81, 91, 92],
+		color: '#ec4899'
+	},
+	{
+		id: 'h100-vllm',
+		name: 'H100 (vLLM)',
+		metrics: {
+			throughput: '6,800 tok/s',
+			latency: '78ms',
+			efficiency: '89.7%'
+		},
+		// Gradual decline then sharp recovery
+		sparklineData: [75, 72, 68, 62, 58, 55, 68, 82, 89],
+		color: '#14b8a6'
+	}
+];
+
+/**
+ * Column definitions for GPU inference benchmark table
+ * @type {Array<{key: string, label: string, type: 'text' | 'metric' | 'sparkline' | 'action'}>}
+ */
+export const gpuBenchmarkColumns = [
+	{ key: 'name', label: 'GPU Configuration', type: 'text' },
+	{ key: 'throughput', label: 'Throughput', type: 'metric' },
+	{ key: 'latency', label: 'Latency', type: 'metric' },
+	{ key: 'sparkline', label: 'Performance Trend', type: 'sparkline' },
+	{ key: 'action', label: 'Run Demo', type: 'action' }
+];
+

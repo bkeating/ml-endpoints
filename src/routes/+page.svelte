@@ -18,6 +18,8 @@
 	import TimelineRange from '$lib/components/TimelineRange.svelte';
 	import BarChartEnhanced from '$lib/components/BarChartEnhanced.svelte';
 	import BarChartToolbar from '$lib/components/BarChartToolbar.svelte';
+	import SparklineTable from '$lib/components/SparklineTable.svelte';
+	import { gpuInferenceBenchmarks, gpuBenchmarkColumns } from '$lib/data/placeholders.js';
 
 	// $derived() creates a reactive value that automatically updates when getFilters() changes
 	let filters = $derived(getFilters());
@@ -112,7 +114,7 @@
         <div class="mx-auto max-w-7xl px-4">
           <div class="flex items-start gap-6 mb-12 border-b-2 border-[#CCEBD4] dark:border-slate-700 pb-12">
             <div class="w-1/2 pr-6">
-              <h2 class="text-2xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans mb-3">How to submit MLPerf results</h2>
+              <h2 class="md:text-5xl text-3xl text-slate-800 dark:text-slate-200 instrument-serif-regular-italic mb-3">How to submit MLPerf results</h2>
 <p class="text-slate-500 dark:text-slate-400 leading-relaxed my-3">If you are interested in submitting MLPerf benchmark results, please join the appropriate working group. Registration deadlines are several weeks in advance of submission dates to ensure that all submitters are aware of benchmark requirements, and to ensure proper provision of all necessary resources. </p>
 
 <ul class="list-disc list-inside text-slate-500 dark:text-slate-400 leading-relaxed ml-4 indent-4 my-3">
@@ -188,6 +190,14 @@
 				label="Interactivity Range (s)"
 				minBound={0}
 				maxBound={350}
+			/>
+
+			<!-- GPU Inference Benchmark Table with Sparklines -->
+			<SparklineTable
+				title="GPU Inference Performance"
+				rows={gpuInferenceBenchmarks}
+				columns={gpuBenchmarkColumns}
+				class="mt-12 pb-12"
 			/>
     </div>
 	{:catch error}
