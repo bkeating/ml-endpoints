@@ -131,6 +131,7 @@
 		@apply flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium
 			   text-slate-600 dark:text-slate-400
 			   rounded-md transition-all duration-200
+			   cursor-pointer
 			   hover:text-slate-900 dark:hover:text-slate-200
 			   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
 	}
@@ -167,6 +168,7 @@
 			   bg-white/50 dark:bg-slate-700/50
 			   border border-slate-200 dark:border-slate-600
 			   rounded-lg transition-all duration-200
+			   cursor-pointer
 			   hover:border-emerald-300 dark:hover:border-emerald-600
 			   hover:text-emerald-700 dark:hover:text-emerald-300
 			   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;

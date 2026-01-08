@@ -15,7 +15,6 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { getChartData } from '$lib/remotes/chartData.js';
 	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
-	import TimelineRange from '$lib/components/TimelineRange.svelte';
 	import BarChartEnhanced from '$lib/components/BarChartEnhanced.svelte';
 	import BarChartToolbar from '$lib/components/BarChartToolbar.svelte';
 	import SparklineTable from '$lib/components/SparklineTable.svelte';
@@ -187,15 +186,6 @@
 			<div class="hidden lg:block w-56 shrink-0 sticky top-4">
 				<ChartSettingsSidebar />
 			</div>
-		</div>
-
-		<div class="px-3">
-			<TimelineRange
-				height={60}
-				label="Interactivity Range (s)"
-				minBound={0}
-				maxBound={350}
-			/>
 		</div>
 
 		<!-- GPU Inference Benchmark Table with Sparklines -->

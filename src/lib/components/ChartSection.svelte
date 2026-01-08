@@ -38,7 +38,7 @@
 				<p class="mb-4 text-slate-600 dark:text-slate-500 leading-relaxed">
 					{chart.subtitle}
 				</p>
-				<p class="md:text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+				<p class=" text-slate-500 dark:text-slate-400 leading-relaxed">
 					In LLM benchmarking, token throughput per GPU measures raw efficiency—tokens processed per second on one GPU, optimized via dynamic batching and mixed precision (e.g., FP16) for scalable batch inference and training. It boosts high-volume workloads, cutting costs for models like GPT or Llama.
 				</p>
 			</div>

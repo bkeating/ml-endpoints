@@ -13,6 +13,7 @@
 	import ApiExplorer from '$lib/components/ApiExplorer.svelte';
 	import FilterSelect from '$lib/components/FilterSelect.svelte';
 	import FilterRadioGroup from '$lib/components/FilterRadioGroup.svelte';
+	import TimelineRange from '$lib/components/TimelineRange.svelte';
 	import {
 		modelOptions,
 		islOslOptions,
@@ -148,6 +149,16 @@
 				</label>
 			</div>
 		</div>
+	</div>
+
+	<!-- Timeline Range Section -->
+	<div class="px-4 py-4 border-t border-slate-200 dark:border-slate-700">
+		<TimelineRange
+			height={60}
+			label="Interactivity Range (s)"
+			minBound={0}
+			maxBound={350}
+		/>
 	</div>
 
 	<!-- API Explorer Collapsible Section -->

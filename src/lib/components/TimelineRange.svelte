@@ -20,8 +20,8 @@
 	 */
 
 	/** @type {Props} */
-	let { 
-		height = 60, 
+	let {
+		height = 50,
 		label = 'Latency Range (s)',
 		minBound,
 		maxBound
@@ -37,7 +37,7 @@
 		}
 	});
 
-	const padding = { left: 70, right: 30, top: 20, bottom: 20 };
+	const padding = { left: 10, right: 10, top: 20, bottom: 20 };
 	const trackHeight = 8;
 	const handleWidth = 12;
 
@@ -83,7 +83,7 @@
 	function getRelativeX(event) {
 		if (!svgElement) return 0;
 		const rect = svgElement.getBoundingClientRect();
-		const clientX = 'touches' in event 
+		const clientX = 'touches' in event
 			? event.touches[0]?.clientX ?? event.changedTouches[0]?.clientX ?? 0
 			: event.clientX;
 		return clientX - rect.left - padding.left;
@@ -161,7 +161,7 @@
 	 */
 	function onPointerMove(event) {
 		if (!dragging || !svgElement) return;
-		
+
 		// Prevent scrolling on touch devices
 		if ('touches' in event) {
 			event.preventDefault();
@@ -169,11 +169,11 @@
 
 		// Get current position relative to timeline SVG
 		const rect = svgElement.getBoundingClientRect();
-		const clientX = 'touches' in event 
+		const clientX = 'touches' in event
 			? event.touches[0]?.clientX ?? 0
 			: event.clientX;
 		const relativeX = clientX - rect.left - padding.left;
-		
+
 		// Calculate the scale fresh to avoid stale closure issues
 		const currentInnerWidth = containerWidth - padding.left - padding.right;
 		const pixelToValue = (px) => (px / currentInnerWidth) * (max - min) + min;
@@ -207,11 +207,11 @@
 		const relativeX = getRelativeX(event);
 		const currentInnerWidth = containerWidth - padding.left - padding.right;
 		const clickValue = (relativeX / currentInnerWidth) * (max - min) + min;
-		
+
 		// Determine if click is closer to start or end
 		const distToStart = Math.abs(clickValue - start);
 		const distToEnd = Math.abs(clickValue - end);
-		
+
 		if (distToStart < distToEnd) {
 			setStart(clickValue);
 		} else {
@@ -226,7 +226,7 @@
 	 */
 	function onHandleKeydown(event, handle) {
 		const step = event.shiftKey ? 10 : 1;
-		
+
 		if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
 			event.preventDefault();
 			if (handle === 'start') {
@@ -251,7 +251,7 @@
 	function onBodyKeydown(event) {
 		const step = event.shiftKey ? 10 : 1;
 		const rangeWidth = end - start;
-		
+
 		if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
 			event.preventDefault();
 			setRange(start - step, end - step);
@@ -264,11 +264,11 @@
 
 <div class="timeline-range w-full" bind:clientWidth={containerWidth}>
 	{#if label}
-		<span class="mb-1 block text-xs font-medium text-slate-600 dark:text-slate-400" style="padding-left: {padding.left}px;">
+		<span class=" block text-xs uppercase font-medium text-slate-600 dark:text-slate-400">
 			{label}
 		</span>
 	{/if}
-	
+
 	{#if containerWidth > 0}
 	<svg bind:this={svgElement} width={containerWidth} {height} class="select-none w-full touch-none">
 		<g transform="translate({padding.left}, 0)">
@@ -387,7 +387,7 @@
 	{/if}
 
 	<!-- Range indicator -->
-	<div class="mt-1 flex justify-between text-xs text-slate-500 dark:text-slate-400" style="padding-left: {padding.left}px; padding-right: {padding.right}px;">
+	<div class="flex justify-between text-xs text-slate-500 dark:text-slate-400">
 		<span>Selected: {start.toFixed(0)}s - {end.toFixed(0)}s</span>
 		<span>Range: {(end - start).toFixed(0)}s</span>
 	</div>
