@@ -2,13 +2,13 @@
 	<div class="hero-bg"></div>
 	<div class="relative z-10 flex md:flex-row flex-col max-w-7xl mx-auto items-center px-4 gap-9 md:gap-9 text-slate-900 transition-colors duration-200 dark:text-slate-100">
 		<div class="w-full md:w-1/3">
-			<h1 class="text-4xl md:text-6xl mt-6 md:mt-0 font-bold text-white dark:text-white text-balance dm-mono">
+			<h1 class="text-5xl md:text-6xl mt-8 md:mt-0 font-bold text-white dark:text-white text-balance dm-mono">
 				LLM Inference Benchmark
 			</h1>
 		</div>
 
 		<div class="w-full md:w-2/3">
-			<p class="mb-8 text-slate-100 text-xl leading-relaxed dark:text-slate-400 max-w-[70%] font-instrument-sans-200">
+			<p class="mb-8 text-slate-100 text-lg md:text-xl leading-relaxed dark:text-slate-400 md:max-w-[70%] font-instrument-sans-200">
 				This is a proof-of-concept for the ML Commons Endpoints project. It is meant to be a showcase
 				and proof-of-concept for reactive state and d3.js charting visualizations as a possible
 				solution. This project is basic, but it will grow rapidly with new features to keep proving out

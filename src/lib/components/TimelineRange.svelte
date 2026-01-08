@@ -76,14 +76,17 @@
 	let svgElement = $state(null);
 
 	/**
-	 * Get mouse X position relative to track (in pixels)
-	 * @param {MouseEvent} event
+	 * Get X position relative to track (in pixels) from mouse or touch event
+	 * @param {MouseEvent | TouchEvent} event
 	 * @returns {number}
 	 */
 	function getRelativeX(event) {
 		if (!svgElement) return 0;
 		const rect = svgElement.getBoundingClientRect();
-		return event.clientX - rect.left - padding.left;
+		const clientX = 'touches' in event 
+			? event.touches[0]?.clientX ?? event.changedTouches[0]?.clientX ?? 0
+			: event.clientX;
+		return clientX - rect.left - padding.left;
 	}
 
 	/** @type {SVGGElement | null} */
@@ -92,8 +95,8 @@
 	let rightHandleEl = $state(null);
 
 	/**
-	 * Handle mouse down on left handle
-	 * @param {MouseEvent} event
+	 * Handle pointer down on left handle (mouse or touch)
+	 * @param {MouseEvent | TouchEvent} event
 	 */
 	function onLeftHandleDown(event) {
 		event.preventDefault();
@@ -101,13 +104,12 @@
 		dragging = 'left';
 		dragStartX = getRelativeX(event);
 		dragStartValue = start;
-		window.addEventListener('mousemove', onMouseMove);
-		window.addEventListener('mouseup', onMouseUp);
+		addMoveListeners();
 	}
 
 	/**
-	 * Handle mouse down on right handle
-	 * @param {MouseEvent} event
+	 * Handle pointer down on right handle (mouse or touch)
+	 * @param {MouseEvent | TouchEvent} event
 	 */
 	function onRightHandleDown(event) {
 		event.preventDefault();
@@ -115,13 +117,12 @@
 		dragging = 'right';
 		dragStartX = getRelativeX(event);
 		dragStartValue = end;
-		window.addEventListener('mousemove', onMouseMove);
-		window.addEventListener('mouseup', onMouseUp);
+		addMoveListeners();
 	}
 
 	/**
-	 * Handle mouse down on selection body (for scrubbing)
-	 * @param {MouseEvent} event
+	 * Handle pointer down on selection body (for scrubbing)
+	 * @param {MouseEvent | TouchEvent} event
 	 */
 	function onBodyDown(event) {
 		event.preventDefault();
@@ -129,20 +130,49 @@
 		dragStartX = getRelativeX(event);
 		dragStartValue = start;
 		dragStartEnd = end;
-		window.addEventListener('mousemove', onMouseMove);
-		window.addEventListener('mouseup', onMouseUp);
+		addMoveListeners();
 	}
 
 	/**
-	 * Handle mouse move during drag
-	 * @param {MouseEvent} event
+	 * Add event listeners for move and end events
 	 */
-	function onMouseMove(event) {
-		if (!dragging || !svgElement) return;
+	function addMoveListeners() {
+		window.addEventListener('mousemove', onPointerMove);
+		window.addEventListener('mouseup', onPointerUp);
+		window.addEventListener('touchmove', onPointerMove, { passive: false });
+		window.addEventListener('touchend', onPointerUp);
+		window.addEventListener('touchcancel', onPointerUp);
+	}
 
-		// Get current mouse position relative to timeline SVG
+	/**
+	 * Remove event listeners for move and end events
+	 */
+	function removeMoveListeners() {
+		window.removeEventListener('mousemove', onPointerMove);
+		window.removeEventListener('mouseup', onPointerUp);
+		window.removeEventListener('touchmove', onPointerMove);
+		window.removeEventListener('touchend', onPointerUp);
+		window.removeEventListener('touchcancel', onPointerUp);
+	}
+
+	/**
+	 * Handle pointer move during drag (mouse or touch)
+	 * @param {MouseEvent | TouchEvent} event
+	 */
+	function onPointerMove(event) {
+		if (!dragging || !svgElement) return;
+		
+		// Prevent scrolling on touch devices
+		if ('touches' in event) {
+			event.preventDefault();
+		}
+
+		// Get current position relative to timeline SVG
 		const rect = svgElement.getBoundingClientRect();
-		const relativeX = event.clientX - rect.left - padding.left;
+		const clientX = 'touches' in event 
+			? event.touches[0]?.clientX ?? 0
+			: event.clientX;
+		const relativeX = clientX - rect.left - padding.left;
 		
 		// Calculate the scale fresh to avoid stale closure issues
 		const currentInnerWidth = containerWidth - padding.left - padding.right;
@@ -162,17 +192,16 @@
 	}
 
 	/**
-	 * Handle mouse up - end drag
+	 * Handle pointer up - end drag
 	 */
-	function onMouseUp() {
+	function onPointerUp() {
 		dragging = null;
-		window.removeEventListener('mousemove', onMouseMove);
-		window.removeEventListener('mouseup', onMouseUp);
+		removeMoveListeners();
 	}
 
 	/**
-	 * Handle click on track to jump to position
-	 * @param {MouseEvent} event
+	 * Handle click/tap on track to jump to position
+	 * @param {MouseEvent | TouchEvent} event
 	 */
 	function onTrackClick(event) {
 		const relativeX = getRelativeX(event);
@@ -241,7 +270,7 @@
 	{/if}
 	
 	{#if containerWidth > 0}
-	<svg bind:this={svgElement} width={containerWidth} {height} class="select-none w-full">
+	<svg bind:this={svgElement} width={containerWidth} {height} class="select-none w-full touch-none">
 		<g transform="translate({padding.left}, 0)">
 			<!-- Track background (clickable) -->
 			<rect
@@ -252,6 +281,7 @@
 				rx="4"
 				class="cursor-pointer fill-slate-200 dark:fill-slate-700"
 				onclick={onTrackClick}
+				ontouchend={onTrackClick}
 				onkeydown={onBodyKeydown}
 				role="slider"
 				aria-label="Timeline track"
@@ -270,6 +300,7 @@
 				rx="4"
 				class="cursor-grab fill-emerald-500 dark:fill-emerald-600 {dragging === 'body' ? 'cursor-grabbing' : ''}"
 				onmousedown={onBodyDown}
+				ontouchstart={onBodyDown}
 				onkeydown={onBodyKeydown}
 				role="slider"
 				aria-label="Selection range"
@@ -285,6 +316,7 @@
 				transform="translate({selectionLeft - handleWidth / 2}, {trackY - 4})"
 				class="cursor-ew-resize"
 				onmousedown={onLeftHandleDown}
+				ontouchstart={onLeftHandleDown}
 				onkeydown={(e) => onHandleKeydown(e, 'start')}
 				role="slider"
 				aria-label="Start handle"
@@ -313,6 +345,7 @@
 				transform="translate({selectionRight - handleWidth / 2}, {trackY - 4})"
 				class="cursor-ew-resize"
 				onmousedown={onRightHandleDown}
+				ontouchstart={onRightHandleDown}
 				onkeydown={(e) => onHandleKeydown(e, 'end')}
 				role="slider"
 				aria-label="End handle"
@@ -359,4 +392,3 @@
 		<span>Range: {(end - start).toFixed(0)}s</span>
 	</div>
 </div>
-

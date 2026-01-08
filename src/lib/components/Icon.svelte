@@ -3,19 +3,28 @@
 
 	let IconComponent = $state(null);
 
-	const dynamicImport = async (iconName) => {
-		try {
-			const module = await import(`$lib/components/icons/${iconName}.svelte`);
-			return module.default;
-		} catch (error) {
-			console.error(`Error loading icon: ${iconName}`, error);
+	// Use import.meta.glob for Vite-compatible dynamic imports
+	const iconModules = import.meta.glob('./icons/*.svelte');
+
+	const loadIcon = async (iconName) => {
+		const path = `./icons/${iconName}.svelte`;
+		if (iconModules[path]) {
+			try {
+				const module = await iconModules[path]();
+				return module.default;
+			} catch (error) {
+				console.error(`Error loading icon: ${iconName}`, error);
+				return null;
+			}
+		} else {
+			console.error(`Icon not found: ${iconName}`);
 			return null;
 		}
 	};
 
 	// $effect() runs side effects when dependencies change (similar to useEffect)
 	$effect(() => {
-		dynamicImport(name).then((component) => {
+		loadIcon(name).then((component) => {
 			IconComponent = component;
 		});
 	});

@@ -114,14 +114,14 @@
 			<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
 			<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
 		</linearGradient>
-		
+
 		<!-- Gradient for line overlay -->
 		<linearGradient id="trendLineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
 			<stop offset="0%" stop-color="#06b6d4" />
 			<stop offset="50%" stop-color="#8b5cf6" />
 			<stop offset="100%" stop-color="#ec4899" />
 		</linearGradient>
-		
+
 		<!-- Glow filter for line -->
 		<filter id="lineGlow" x="-50%" y="-50%" width="200%" height="200%">
 			<feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
@@ -130,7 +130,7 @@
 				<feMergeNode in="SourceGraphic" />
 			</feMerge>
 		</filter>
-		
+
 		<!-- Clip path to constrain data to chart area -->
 		<clipPath id={clipId}>
 			<rect x="0" y="0" width={innerWidth} height={innerHeight} />
@@ -194,7 +194,7 @@
 					{thresholds.warning.label}
 				</text>
 			</g>
-			
+
 			<!-- Critical threshold -->
 			<g class="threshold-critical">
 				<line
@@ -261,7 +261,7 @@
 			<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
 			{#each sortedData as item (item.id)}
 				{@const xPos = (xScale(item.id) ?? 0) + xScale.bandwidth() / 2}
-				<g 
+				<g
 					transform="translate({xPos}, 0)"
 					class="transition-transform duration-700 ease-out"
 				>
@@ -293,7 +293,7 @@
 				{@const barX = xScale(item.id) ?? 0}
 				{@const barHeight = innerHeight - yScale(item.value)}
 				{@const barY = yScale(item.value)}
-				<g 
+				<g
 					class="bar-group"
 					style="--delay: {i * 30}ms"
 				>
@@ -310,7 +310,7 @@
 					>
 						<title>{item.name}: {item.value.toFixed(1)}%</title>
 					</rect>
-					
+
 					<!-- Subtle gradient overlay for depth -->
 					<rect
 						x={barX}
@@ -323,7 +323,7 @@
 						style="transition-delay: var(--delay);"
 						opacity="0.15"
 					/>
-					
+
 					<!-- Value label on top of bar -->
 					{#if !hideLabels}
 						<text
@@ -353,7 +353,7 @@
 					opacity="0.5"
 					class="transition-all duration-500"
 				/>
-				
+
 				<!-- Main line path -->
 				<path
 					d={lineGenerator(trendLineData)}
@@ -364,12 +364,12 @@
 					stroke-linejoin="round"
 					class="transition-all duration-700"
 				/>
-				
+
 				<!-- Data points on line -->
 				{#each trendLineData as point, i (point.id)}
 					{@const cx = (xScale(point.id) ?? 0) + xScale.bandwidth() / 2}
 					{@const cy = yScale(point.trendValue)}
-					<g 
+					<g
 						class="transition-all duration-700 ease-out"
 						style="transition-delay: {i * 30}ms;"
 					>
@@ -406,7 +406,7 @@
 					</g>
 				{/each}
 			</g>
-			
+
 			<!-- Line legend -->
 			<g transform="translate({innerWidth - 140}, -15)">
 				<rect
@@ -437,7 +437,7 @@
 			</g>
 		{/if}
 	</g>
-	
+
 	<!-- Additional gradient definitions -->
 	<defs>
 		<linearGradient id="barSheen" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -450,15 +450,15 @@
 
 <style lang="postcss">
 	@reference "@app-css";
-	
+
 	.bar-rect {
 		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 	}
-	
+
 	.bar-rect:hover {
 		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)) brightness(1.05);
 	}
-	
+
 	.bar-group:hover .bar-rect {
 		transform: translateY(-2px);
 	}

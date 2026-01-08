@@ -61,11 +61,11 @@
 <div class="rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
 	<!-- Header with endpoint and play button -->
 	<div class="flex items-center gap-3 border-b border-slate-200 p-4 dark:border-slate-700">
-		<div class="flex flex-1 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700">
+		<div class="flex flex-1 min-w-0 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700">
 			<span class="shrink-0 rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400">
 				GET
 			</span>
-			<code class="flex-1 overflow-x-auto text-sm text-slate-700 dm-mono dark:text-slate-300 whitespace-nowrap">
+			<code class="flex-1 min-w-0 overflow-hidden text-ellipsis text-sm text-slate-700 dm-mono dark:text-slate-300 whitespace-nowrap">
 				{endpointUrl}
 			</code>
 			<span class="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
@@ -116,21 +116,21 @@
 		{#if activeTab === 'params'}
 			<!-- Params Panel -->
 			<div class="space-y-2">
-				<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono">model</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono">{filters.model}</span>
+				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
+					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">model</span>
+					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.model}</span>
 				</div>
-				<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono">islOsl</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono">{filters.islOsl}</span>
+				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
+					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">islOsl</span>
+					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.islOsl}</span>
 				</div>
-				<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono">precision</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono">{filters.precision}</span>
+				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
+					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">precision</span>
+					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.precision}</span>
 				</div>
-				<div class="grid grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono">yAxisMetric</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono">{filters.yAxisMetric}</span>
+				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
+					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">yAxisMetric</span>
+					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.yAxisMetric}</span>
 				</div>
 			</div>
 		{:else}

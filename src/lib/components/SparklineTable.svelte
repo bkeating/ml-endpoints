@@ -64,21 +64,31 @@
 		};
 		return colorMap[hexColor] ?? 'hover:bg-slate-500 hover:border-slate-500';
 	};
+
+	/**
+	 * Check if a column should be hidden on mobile
+	 * Hide 'throughput' and 'latency' metric columns on mobile (shown under model name instead)
+	 * @param {SparklineTableColumn} column
+	 * @returns {boolean}
+	 */
+	const isHiddenOnMobile = (column) => column.key === 'throughput' || column.key === 'latency';
 </script>
 
-<div {...restProps}>
+<div {...restProps} class="px-3 {restProps.class ?? ''}">
 	<h2 class="text-2xl font-semibold text-slate-800 dark:text-slate-200 mb-6 font-instrument-sans">
 		{title}
 	</h2>
 	
-	<div class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700">
-		<table class="w-full">
+	<div class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 overflow-x-auto">
+		<table class="w-full min-w-0">
 			<thead>
 				<tr class="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
 					{#each columns as column (column.key)}
 						<th 
-							class="text-left py-4 px-6 text-slate-600 dark:text-slate-400 font-medium text-sm"
+							class="text-left py-4 px-4 md:px-6 text-slate-600 dark:text-slate-400 font-medium text-sm"
 							class:text-center={column.type === 'action'}
+							class:hidden={isHiddenOnMobile(column)}
+							class:md:table-cell={isHiddenOnMobile(column)}
 						>
 							{column.label}
 						</th>
@@ -93,18 +103,30 @@
 					>
 						{#each columns as column (column.key)}
 							{#if column.type === 'text'}
-								<td class="py-4 px-6">
+								<td class="py-4 px-4 md:px-6">
 									<div class="flex items-center gap-3">
 										<span
-											class="h-3 w-3 flex-shrink-0 rounded-full"
+											class="h-3 w-3 shrink-0 rounded-full"
 											style="background-color: {row.color};"
 										></span>
-										<span class="text-slate-800 dark:text-slate-200 font-medium">{row.name}</span>
+										<div class="flex flex-col">
+											<span class="text-slate-800 dark:text-slate-200 font-medium">{row.name}</span>
+											<!-- Mobile only: Show throughput and latency under model name -->
+											{#if row.metrics['throughput'] || row.metrics['latency']}
+												<span class="text-xs text-slate-500 dark:text-slate-400 font-mono md:hidden">
+													{row.metrics['throughput'] ?? ''}{#if row.metrics['throughput'] && row.metrics['latency']} / {/if}{row.metrics['latency'] ?? ''}
+												</span>
+											{/if}
+										</div>
 									</div>
 								</td>
 							{:else if column.type === 'metric'}
-								<td class="py-4 px-4">
-									<span class="text-slate-700 dark:text-slate-300 font-mono">
+								<td 
+									class="py-4 px-4"
+									class:hidden={isHiddenOnMobile(column)}
+									class:md:table-cell={isHiddenOnMobile(column)}
+								>
+									<span class="text-slate-700 dark:text-slate-300 font-mono text-sm">
 										{row.metrics[column.key] ?? '—'}
 									</span>
 								</td>
@@ -142,4 +164,3 @@
 		</table>
 	</div>
 </div>
-
