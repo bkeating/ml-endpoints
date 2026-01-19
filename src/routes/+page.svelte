@@ -13,13 +13,23 @@
 	import ChartSection from '$lib/components/ChartSection.svelte';
 	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import ParetoChart from '$lib/components/ParetoChart.svelte';
 	import { getChartData } from '$lib/remotes/chartData.js';
-	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
+	import { getFilters, getParetoViewMode, setParetoViewMode, paretoViewModeOptions } from '$lib/stores/chartFilters.svelte.js';
+	import { isParetoSeriesVisible, toggleParetoSeries } from '$lib/stores/chartSettings.svelte.js';
 	import BarChartEnhanced from '$lib/components/BarChartEnhanced.svelte';
 	import BarChartToolbar from '$lib/components/BarChartToolbar.svelte';
 	import SparklineTable from '$lib/components/SparklineTable.svelte';
 	import ChartSettingsSidebar from '$lib/components/ChartSettingsSidebar.svelte';
 	import { gpuInferenceBenchmarks, gpuBenchmarkColumns } from '$lib/data/placeholders.js';
+	import {
+		paretoSeries,
+		viewModes,
+		transformForView,
+		normalizeToGlobalMax,
+		getGlobalMaxThroughput,
+		getAnnotationsForView
+	} from '$lib/data/paretoData.js';
 
 	// $derived() creates a reactive value that automatically updates when getFilters() changes
 	let filters = $derived(getFilters());
@@ -42,6 +52,58 @@
 
 	// Reactive container width for fluid chart sizing
 	let barChartContainerWidth = $state(0);
+
+	// ============================================================================
+	// PARETO CHART STATE
+	// ============================================================================
+
+	// Container width for responsive Pareto chart
+	let paretoContainerWidth = $state(0);
+
+	// Get current pareto view mode from store
+	let paretoViewMode = $derived(getParetoViewMode());
+
+	// Filter series based on visibility settings
+	let filteredParetoSeries = $derived(
+		paretoSeries.filter((s) => isParetoSeriesVisible(s.id))
+	);
+
+	// Normalize utilization to global max when comparing multiple series
+	let normalizedParetoSeries = $derived(normalizeToGlobalMax(filteredParetoSeries));
+
+	// Transform data for active view
+	let paretoChartData = $derived(
+		paretoViewMode === 'utilization'
+			? transformForView(normalizedParetoSeries, 'utilization')
+			: transformForView(filteredParetoSeries, paretoViewMode)
+	);
+
+	// Get current view config
+	let currentParetoViewConfig = $derived(viewModes[paretoViewMode]);
+
+	// Y-axis domain based on view
+	let paretoYDomain = $derived(
+		paretoViewMode === 'utilization' ? /** @type {[number, number]} */ ([0, 110]) : undefined
+	);
+
+	// Calculate chart dimensions based on container
+	let paretoChartWidth = $derived(paretoContainerWidth || 900);
+	let paretoChartHeight = $derived(Math.max(400, paretoChartWidth * 0.5));
+
+	// Global max throughput for reference
+	let globalMaxThroughput = $derived(getGlobalMaxThroughput(filteredParetoSeries));
+
+	// Get annotations for the current view
+	let paretoAnnotations = $derived(getAnnotationsForView(paretoViewMode));
+
+	// Chart links
+	/** @type {import('$lib/components/ParetoChart.svelte').ChartLink[]} */
+	const paretoChartLinks = [
+		{ label: 'Analysis', href: '#', icon: 'ReportAnalytics' },
+		{ label: 'Files', href: '#', icon: 'FileAnalytics' },
+		{ label: 'Downloads', href: '#', icon: 'Download' },
+		{ label: 'Links', href: '#', icon: 'Link' }
+	];
 </script>
 
 <Hero />
@@ -65,6 +127,95 @@
 				layout="side-by-side"
 				useTimelineRange={true}
 			/>
+		</div>
+	</div>
+
+	<!-- Pareto Chart Section -->
+	<div class="w-full py-12 bg-slate-50 dark:bg-slate-900/50">
+		<div class="mx-auto max-w-7xl px-3">
+			<section class="mb-6">
+				<h2 class="mb-1 text-2xl md:text-3xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans">
+					{#if paretoViewMode === 'throughput'}
+						Total System Throughput vs Concurrent Clients
+					{:else if paretoViewMode === 'utilization'}
+						% Utilization of Maximum Throughput
+					{:else if paretoViewMode === 'interactivity'}
+						Per-User Interactivity vs Concurrent Clients
+					{/if}
+				</h2>
+				<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
+					Step-function visualization with logarithmic X-axis
+					{#if paretoViewMode === 'utilization'}
+						• Normalized to global max: {(globalMaxThroughput / 1000).toFixed(0)}k tok/s
+					{/if}
+				</p>
+
+				<!-- Pareto Chart Toolbar -->
+				<div class="flex flex-wrap items-center justify-between gap-4  px-4 py-3 rounded-t-xl border border-b-0 border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800/80">
+					<!-- View Mode Segmented Control -->
+					<div class="flex items-center gap-3">
+						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">View</span>
+						<div class="inline-flex rounded-lg bg-slate-200 p-1 dark:bg-slate-700">
+							{#each paretoViewModeOptions as option (option.id)}
+								<button
+									type="button"
+									onclick={() => setParetoViewMode(option.id)}
+									class="px-3 py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer {paretoViewMode === option.id
+										? 'bg-white text-slate-900 shadow-sm dark:bg-slate-600 dark:text-white'
+										: 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'}"
+								>
+									{option.label}
+								</button>
+							{/each}
+						</div>
+					</div>
+
+					<!-- Hardware Selection Pills -->
+					<div class="flex items-center gap-3">
+						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Hardware</span>
+						<div class="flex flex-wrap gap-1.5">
+							{#each paretoSeries as series (series.id)}
+								<button
+									type="button"
+									onclick={() => toggleParetoSeries(series.id)}
+									class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full transition-all cursor-pointer border {isParetoSeriesVisible(series.id)
+										? 'border-transparent text-white shadow-sm'
+										: 'border-slate-300 bg-white text-slate-500 hover:border-slate-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400'}"
+									style={isParetoSeriesVisible(series.id) ? `background-color: ${series.color}` : ''}
+								>
+									<span
+										class="w-2 h-2 rounded-full {isParetoSeriesVisible(series.id) ? 'bg-white/80' : ''}"
+										style={!isParetoSeriesVisible(series.id) ? `background-color: ${series.color}` : ''}
+									></span>
+									{series.vendor}
+								</button>
+							{/each}
+						</div>
+					</div>
+				</div>
+
+				<!-- Chart Container -->
+				<div class="overflow-x-auto rounded-b-xl rounded-t-none border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800" bind:clientWidth={paretoContainerWidth}>
+					{#if paretoContainerWidth > 0 && filteredParetoSeries.length > 0}
+						<ParetoChart
+							data={paretoChartData}
+							width={paretoChartWidth}
+							height={paretoChartHeight}
+							xAxisLabel="Concurrent Clients"
+							yAxisLabel={currentParetoViewConfig.yLabel}
+							useLogScale={true}
+							stepDirection={currentParetoViewConfig.stepDirection}
+							annotations={paretoAnnotations}
+							yDomain={paretoYDomain}
+							links={paretoChartLinks}
+						/>
+					{:else if filteredParetoSeries.length === 0}
+						<div class="flex items-center justify-center py-12 text-slate-500 dark:text-slate-400">
+							<span>Select at least one hardware configuration to display the chart.</span>
+						</div>
+					{/if}
+				</div>
+			</section>
 		</div>
 	</div>
 

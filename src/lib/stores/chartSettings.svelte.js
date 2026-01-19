@@ -4,10 +4,12 @@
  */
 
 import { getModelIds } from '$lib/data/benchmarkData.js';
+import { paretoSeries } from '$lib/data/paretoData.js';
 
 /**
  * @typedef {Object} ChartSettings
  * @property {Record<string, boolean>} modelVisibility - Map of model ID to visibility
+ * @property {Record<string, boolean>} paretoVisibility - Map of pareto series ID to visibility
  * @property {boolean} hideNonOptimal - Whether to hide non-optimal data points
  * @property {boolean} hideLabels - Whether to hide data point labels
  */
@@ -15,8 +17,14 @@ import { getModelIds } from '$lib/data/benchmarkData.js';
 // Initialize visibility map with all models visible
 const initialVisibility = Object.fromEntries(getModelIds().map((id) => [id, true]));
 
+// Initialize pareto series visibility with all series visible
+const initialParetoVisibility = Object.fromEntries(paretoSeries.map((s) => [s.id, true]));
+
 /** @type {Record<string, boolean>} */
 let modelVisibility = $state({ ...initialVisibility });
+
+/** @type {Record<string, boolean>} */
+let paretoVisibility = $state({ ...initialParetoVisibility });
 
 /** @type {boolean} */
 let hideNonOptimal = $state(false);
@@ -31,6 +39,7 @@ let hideLabels = $state(false);
 export function getSettings() {
 	return {
 		modelVisibility,
+		paretoVisibility,
 		hideNonOptimal,
 		hideLabels
 	};
@@ -51,6 +60,33 @@ export function isModelVisible(modelId) {
  */
 export function toggleModel(modelId) {
 	modelVisibility[modelId] = !modelVisibility[modelId];
+}
+
+/**
+ * Check if a specific pareto series is visible
+ * @param {string} seriesId
+ * @returns {boolean}
+ */
+export function isParetoSeriesVisible(seriesId) {
+	return paretoVisibility[seriesId] ?? true;
+}
+
+/**
+ * Toggle visibility for a specific pareto series
+ * @param {string} seriesId
+ */
+export function toggleParetoSeries(seriesId) {
+	paretoVisibility[seriesId] = !paretoVisibility[seriesId];
+}
+
+/**
+ * Get all visible pareto series IDs
+ * @returns {string[]}
+ */
+export function getVisibleParetoSeriesIds() {
+	return Object.entries(paretoVisibility)
+		.filter(([_, visible]) => visible)
+		.map(([id]) => id);
 }
 
 /**
@@ -88,6 +124,7 @@ export function getHideLabels() {
  */
 export function resetSettings() {
 	modelVisibility = { ...initialVisibility };
+	paretoVisibility = { ...initialParetoVisibility };
 	hideNonOptimal = false;
 	hideLabels = false;
 }

@@ -1,0 +1,182 @@
+{
+  "gpus": [
+    {
+      "id": "h100-vllm",
+      "name": "H100 (vLLM)",
+      "throughput": 6800,
+      "latency": 78,
+      "efficiency": 89.7,
+      "failureRate": 8.5,
+      "cost": 2.50
+    },
+    {
+      "id": "h200-vllm",
+      "name": "H200 (vLLM)",
+      "throughput": 9000,
+      "latency": 58,
+      "efficiency": 94.5,
+      "failureRate": 6.2,
+      "cost": 3.20
+    },
+    {
+      "id": "h200-trt",
+      "name": "H200 (TensorRT)",
+      "throughput": 9900,
+      "latency": 52,
+      "efficiency": 96.8,
+      "failureRate": 5.8,
+      "cost": 3.40
+    },
+    {
+      "id": "b200-trt",
+      "name": "B200 (TensorRT)",
+      "throughput": 11500,
+      "latency": 45,
+      "efficiency": 98.2,
+      "failureRate": 3.5,
+      "cost": 4.10
+    },
+    {
+      "id": "b200-vllm",
+      "name": "B200 (vLLM)",
+      "throughput": 10200,
+      "latency": 48,
+      "efficiency": 97.1,
+      "failureRate": 4.2,
+      "cost": 3.80
+    },
+    {
+      "id": "ml300x-vllm",
+      "name": "ML300X (vLLM)",
+      "throughput": 7500,
+      "latency": 68,
+      "efficiency": 91.3,
+      "failureRate": 7.1,
+      "cost": 2.80
+    },
+    {
+      "id": "ml325x-vllm",
+      "name": "ML325X (vLLM)",
+      "throughput": 8200,
+      "latency": 62,
+      "efficiency": 93.5,
+      "failureRate": 5.5,
+      "cost": 3.00
+    },
+    {
+      "id": "ml355-vllm",
+      "name": "ML355 (vLLM)",
+      "throughput": 8400,
+      "latency": 60,
+      "efficiency": 92.3,
+      "failureRate": 4.8,
+      "cost": 3.15
+    }
+  ],
+  "models": [
+    {
+      "id": "gpt-oss-120b",
+      "name": "GPT-OSS 120B",
+      "parameters": 120,
+      "tokensPerSecond": 450,
+      "contextLength": 8192,
+      "memoryUsage": 240
+    },
+    {
+      "id": "deepseek-r1",
+      "name": "DeepSeek R1",
+      "parameters": 67,
+      "tokensPerSecond": 680,
+      "contextLength": 16384,
+      "memoryUsage": 134
+    },
+    {
+      "id": "llama-3.3-70b",
+      "name": "Llama 3.3 70B",
+      "parameters": 70,
+      "tokensPerSecond": 720,
+      "contextLength": 131072,
+      "memoryUsage": 140
+    },
+    {
+      "id": "mistral-large",
+      "name": "Mistral Large",
+      "parameters": 123,
+      "tokensPerSecond": 380,
+      "contextLength": 32768,
+      "memoryUsage": 246
+    },
+    {
+      "id": "claude-3-opus",
+      "name": "Claude 3 Opus",
+      "parameters": 175,
+      "tokensPerSecond": 280,
+      "contextLength": 200000,
+      "memoryUsage": 350
+    },
+    {
+      "id": "gemini-pro",
+      "name": "Gemini Pro",
+      "parameters": 85,
+      "tokensPerSecond": 550,
+      "contextLength": 32768,
+      "memoryUsage": 170
+    }
+  ],
+  "trends": [
+    { "month": "Jan", "requests": 12500, "avgLatency": 85, "errors": 125 },
+    { "month": "Feb", "requests": 14200, "avgLatency": 78, "errors": 98 },
+    { "month": "Mar", "requests": 18900, "avgLatency": 72, "errors": 156 },
+    { "month": "Apr", "requests": 22100, "avgLatency": 68, "errors": 112 },
+    { "month": "May", "requests": 25800, "avgLatency": 62, "errors": 89 },
+    { "month": "Jun", "requests": 31200, "avgLatency": 55, "errors": 145 },
+    { "month": "Jul", "requests": 38500, "avgLatency": 52, "errors": 178 },
+    { "month": "Aug", "requests": 42100, "avgLatency": 48, "errors": 134 },
+    { "month": "Sep", "requests": 45800, "avgLatency": 45, "errors": 102 },
+    { "month": "Oct", "requests": 52300, "avgLatency": 42, "errors": 98 },
+    { "month": "Nov", "requests": 58900, "avgLatency": 40, "errors": 112 },
+    { "month": "Dec", "requests": 65200, "avgLatency": 38, "errors": 145 }
+  ],
+  "benchmarks": [
+    {
+      "id": "inference-v4",
+      "name": "MLPerf Inference v4.0",
+      "category": "Inference",
+      "submissions": 156,
+      "topScore": 98500,
+      "avgScore": 45200
+    },
+    {
+      "id": "training-v3",
+      "name": "MLPerf Training v3.1",
+      "category": "Training",
+      "submissions": 89,
+      "topScore": 245000,
+      "avgScore": 128500
+    },
+    {
+      "id": "storage-v1",
+      "name": "MLPerf Storage v1.0",
+      "category": "Storage",
+      "submissions": 42,
+      "topScore": 15800,
+      "avgScore": 8900
+    },
+    {
+      "id": "hpc-v2",
+      "name": "MLPerf HPC v2.0",
+      "category": "HPC",
+      "submissions": 28,
+      "topScore": 1250000,
+      "avgScore": 680000
+    }
+  ],
+  "regions": [
+    { "region": "US-West", "instances": 1250, "utilization": 78.5, "cost": 45200 },
+    { "region": "US-East", "instances": 980, "utilization": 82.3, "cost": 38500 },
+    { "region": "EU-West", "instances": 720, "utilization": 71.2, "cost": 28900 },
+    { "region": "EU-North", "instances": 340, "utilization": 68.9, "cost": 14200 },
+    { "region": "Asia-Pacific", "instances": 890, "utilization": 85.1, "cost": 35800 },
+    { "region": "Japan", "instances": 420, "utilization": 79.8, "cost": 18500 }
+  ]
+}

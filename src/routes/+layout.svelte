@@ -13,8 +13,12 @@
 	import { navItems } from '$lib/data/navigation.js';
 	import { untrack } from 'svelte';
 	import { getTheme, initTheme } from '$lib/stores/theme.svelte.js';
+	import { page } from '$app/state';
 
 	let { children, data } = $props();
+
+	// Check if we're in the admin panel (full-viewport app shell)
+	let isAdminPanel = $derived(page.url?.pathname?.startsWith('/phaneros') ?? false);
 
 	// Initialize theme from server cookie (runs once on mount)
 	// untrack() prevents this effect from re-running when theme state changes
@@ -31,10 +35,15 @@
 	});
 </script>
 
-<div class="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-200">
-	<Header {navItems} />
-	<main class="flex-1">
-		{@render children()}
-	</main>
-	<Footer />
-</div>
+{#if isAdminPanel}
+	<!-- Admin panel uses its own layout without Header/Footer -->
+	{@render children()}
+{:else}
+	<div class="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-200">
+		<Header {navItems} />
+		<main class="flex-1">
+			{@render children()}
+		</main>
+		<Footer />
+	</div>
+{/if}

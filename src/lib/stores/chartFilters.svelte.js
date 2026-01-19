@@ -15,6 +15,10 @@
  */
 
 /**
+ * @typedef {'throughput' | 'utilization' | 'interactivity'} ParetoViewMode
+ */
+
+/**
  * @typedef {Object} ChartFilters
  * @property {ModelId} model - Selected model
  * @property {IslOsl} islOsl - Input/Output sequence length configuration
@@ -54,6 +58,13 @@ export const yAxisMetricOptions = /** @type {const} */ ([
 	{ id: 'cost-per-million-customer-values', label: 'Cost per Million Tokens (Customer User Values)' }
 ]);
 
+/** Pareto view mode options for the filter form */
+export const paretoViewModeOptions = /** @type {const} */ ([
+	{ id: 'throughput', label: 'Throughput', description: 'Total system throughput at each concurrency level' },
+	{ id: 'utilization', label: 'Utilization', description: 'Percentage of maximum achievable throughput' },
+	{ id: 'interactivity', label: 'Interactivity', description: 'Per-user token throughput (user experience metric)' }
+]);
+
 /** @type {ChartFilters} */
 const defaultFilters = {
 	model: 'gpt-oss-120b',
@@ -66,12 +77,31 @@ const defaultFilters = {
 /** @type {ChartFilters} */
 let filters = $state({ ...defaultFilters });
 
+/** @type {ParetoViewMode} */
+let paretoViewMode = $state('throughput');
+
 /**
  * Get the current filter values
  * @returns {ChartFilters}
  */
 export function getFilters() {
 	return filters;
+}
+
+/**
+ * Get the current Pareto view mode
+ * @returns {ParetoViewMode}
+ */
+export function getParetoViewMode() {
+	return paretoViewMode;
+}
+
+/**
+ * Set the Pareto view mode
+ * @param {ParetoViewMode} mode
+ */
+export function setParetoViewMode(mode) {
+	paretoViewMode = mode;
 }
 
 /**
@@ -143,6 +173,7 @@ export function setYAxisMetric(yAxisMetric) {
  */
 export function resetFilters() {
 	filters = { ...defaultFilters };
+	paretoViewMode = 'throughput';
 }
 
 /**
