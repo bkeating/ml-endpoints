@@ -1,0 +1,15 @@
+---
+description: Coding Rules for SvelteKit (Svelte 5 + Runes Era)
+globs: "**/*.{js,svelte,md}"
+alwaysApply: true
+---
+
+This is a SvelteKit project for ML Commons (mlcommons.org) called Endpoints. This project is basic, but it will grow rapidly with new features and data. We must keep code as clean and concise as possible as other developers will be onboarding and need to see how great SvelteKit + Tailwind is.
+
+- Color Palette of ML Commons:
+  - #343C52 Header Nav Background Color
+  - #F7F8FA Background Shading
+  - #333333 Font Color
+  - #009966 Primary
+  - #37548A Link Color
+  - #BED3FB Table Headers and Secondary CTA

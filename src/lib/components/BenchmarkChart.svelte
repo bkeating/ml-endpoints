@@ -110,9 +110,35 @@
 
 	// Unique clip path ID to prevent conflicts with multiple charts
 	const clipId = `chart-clip-${Math.random().toString(36).slice(2, 9)}`;
+
+	// Tooltip state
+	let tooltipData = $state(null);
+	let tooltipPosition = $state({ x: 0, y: 0 });
+
+	/**
+	 * Handle point hover
+	 * @param {MouseEvent} event
+	 * @param {DataPoint} point
+	 * @param {Model} model
+	 */
+	function handlePointHover(event, point, model) {
+		const svgRect = event.currentTarget.closest('svg')?.getBoundingClientRect();
+		if (!svgRect) return;
+
+		tooltipData = { point, model };
+		tooltipPosition = {
+			x: event.clientX - svgRect.left + 15,
+			y: event.clientY - svgRect.top - 10
+		};
+	}
+
+	function handlePointLeave() {
+		tooltipData = null;
+	}
 </script>
 
-<svg {width} {height} class="overflow-visible font-instrument-sans">
+<div class="benchmark-chart-container relative">
+	<svg {width} {height} class="overflow-visible font-instrument-sans">
 	<defs>
 		<!-- Gradient for chart background -->
 		<linearGradient id="chartBg" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -236,7 +262,11 @@
 								cy={yScale(point.y)}
 								r="4"
 								fill={model.color}
-								class="transition-all duration-200"
+								class="cursor-pointer transition-all duration-200 hover:r-[6px]"
+								role="img"
+								aria-label="{model.name}: {point.x}s latency, {formatY(point.y)} throughput"
+								onmouseenter={(e) => handlePointHover(e, point, model)}
+								onmouseleave={handlePointLeave}
 							/>
 							{#if !hideLabels}
 								<text
@@ -255,3 +285,26 @@
 		</g>
 	</g>
 </svg>
+
+	<!-- Tooltip -->
+	{#if tooltipData}
+		<div
+			class="pointer-events-none absolute z-50 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+			style="left: {tooltipPosition.x}px; top: {tooltipPosition.y}px;"
+		>
+			<div class="mb-1 flex items-center gap-2">
+				<span
+					class="h-2.5 w-2.5 rounded-full"
+					style="background-color: {tooltipData.model.color}"
+				></span>
+				<span class="text-sm font-medium text-slate-800 dark:text-slate-200">
+					{tooltipData.model.name}
+				</span>
+			</div>
+			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+				<div><strong>Latency:</strong> {tooltipData.point.x}s</div>
+				<div><strong>Throughput:</strong> {formatY(tooltipData.point.y)} tok/s/gpu</div>
+			</div>
+		</div>
+	{/if}
+</div>

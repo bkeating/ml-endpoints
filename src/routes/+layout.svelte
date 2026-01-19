@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Root layout component that wraps all pages.
-	 * 
+	 *
 	 * Key patterns demonstrated:
 	 * - $effect() runs side effects when reactive values change (like useEffect in React)
 	 * - untrack() prevents the effect from re-running when initTheme's internal state changes

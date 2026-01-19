@@ -1,0 +1,66 @@
+---
+description: Coding Rules for SvelteKit (Svelte 5 + Runes Era)
+globs: "**/*.{js,svelte,md}"
+alwaysApply: true
+---
+
+Design our application as a Reactive System (Reactive Programming paradigm):
+- Responsive (timely, consistent responses).
+- Resilient (failure-tolerant via isolation, replication, delegation).
+- Elastic (scalable under varying loads without bottlenecks).
+- Message-Driven (asynchronous messaging for loose coupling, location transparency, load control).
+- Treat data as a stream of events over time.
+- Use Svelte’s reactive writables and subscribers to acheive reactivity.
+
+Design our application using Pure Functional Programming (Functional Programming paradigm):
+- Pure functions (no side effects, deterministic outputs from inputs).
+- Immutability (data structures unchanged after creation).
+- Referential transparency (expressions replaceable with values without changing behavior).
+- Higher-order functions (functions as first-class citizens, composable).
+- Avoid mutable state (manage effects via monads or similar).
+
+We must follow the following rules when coding in our SvelteKit project:
+
+### Project Setup and Tools
+- Use **Bun** as the package manager and runtime. Avoid npm/yarn/pnpm.
+
+### General Coding Practices
+- Avoid lodash but embrace its functional mindset.
+- Implement tasks concisely, modifying minimal code.
+- Always use ES6+ syntax (rest, spread, .map, .filter).
+- Prefer async/await over .then() for asynchronous code.
+- When creating new and large functionality, break the code down into logical components and functions.
+
+### Svelte Syntax and Features
+- Memoize expensive computations with `$derived()`.
+- Use `$bindable()` for props needing two-way binding.
+- Use `$derived()` for form validation instead of reactive statements.
+- Use rest props pattern: `let { prop1, prop2, ...restProps } = $props()`.
+- In `{#each}` loops, use keys e.g.;`thing.id` as in: `{#each things as thing (thing.id)}`.
+- Using `on:click` to listen to the click event is deprecated. Use the event attribute `onclick` instead.
+
+### State Management
+- Avoid cookies & local storage; use writable stores instead.
+- Include comprehensive JSDoc comments for exported store functions.
+- Store files export both the store and helper functions for that domain.
+- Extremely local state in components with `$state()`; domain state in `$lib/stores/*` as writable stores.
+- Use global stores instead of component props. Use component props when working with truly generic/ephemeral data.
+
+### Component Structure and Organization
+- Truly reusable components belong in `$lib/components`.
+- Order Svelte components: 1. `<script>`, 2. HTML, 3. `<style>`.
+- Keep `+page.svelte` lightweight; place logical blocks in nearest `_components` folder.
+- Component file names use PascalCase and are descriptive (e.g., `StateDesignationSelector.svelte`).
+
+### Styling and Tailwind
+- Style blocks use `lang="postcss"` and `@reference "@app-css"` when using Tailwind’s `@apply`.
+- Favor Tailwind class compilations in most situations. Use style blocks for reusable classes ONLY.
+
+### Accessibility and Responsiveness
+- Forms must include ARIA labels and abide by ARIA standards (role, tabIndex).
+- All designs must be responsive and functional on mobile and desktop using tailwind sm, md, lg, xl...
+- Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute.
+
+### Security and Data Handling
+- Avoid using GET params for anything sensitive or private.
+- Import environment variables via `$env/static/public` (e.g., `import { PUBLIC_API_BASE_URL } from '$env/static/public'`).

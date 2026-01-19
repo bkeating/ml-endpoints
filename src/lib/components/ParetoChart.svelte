@@ -53,8 +53,16 @@
 	 */
 
 	/**
+	 * @typedef {Object} LegendSeries
+	 * @property {string} id - Unique series identifier
+	 * @property {string} label - Display label
+	 * @property {string} color - Hex color
+	 * @property {string} [vendor] - Hardware vendor
+	 */
+
+	/**
 	 * @typedef {Object} Props
-	 * @property {Series[]} data - Array of series data
+	 * @property {Series[]} data - Array of series data (visible series only)
 	 * @property {number} [width] - Chart width
 	 * @property {number} [height] - Chart height
 	 * @property {string} [xAxisLabel] - X-axis label
@@ -66,6 +74,9 @@
 	 * @property {boolean} [showIdealLine] - Show ideal linear scaling line (utilization view)
 	 * @property {[number, number]} [yDomain] - Custom Y-axis domain
 	 * @property {ChartLink[]} [links] - Links to display below the legend
+	 * @property {LegendSeries[]} [legendSeries] - All series to show in legend (for clickable legend)
+	 * @property {(id: string) => boolean} [isSeriesVisible] - Function to check if series is visible
+	 * @property {(id: string) => void} [onToggleSeries] - Callback when series visibility is toggled
 	 */
 
 	/** @type {Props} */
@@ -81,13 +92,19 @@
 		annotations = [],
 		showIdealLine = false,
 		yDomain: customYDomain = undefined,
-		links = []
+		links = [],
+		legendSeries = [],
+		isSeriesVisible = () => true,
+		onToggleSeries = () => {}
 	} = $props();
+
+	// Use legendSeries if provided, otherwise fall back to data for legend display
+	let displayLegendSeries = $derived(legendSeries.length > 0 ? legendSeries : data);
 
 	// Responsive margins - more room for legend at larger widths
 	let margin = $derived({
 		top: 40,
-		right: width > 800 ? 200 : 160,
+		right: width > 800 ? 240 : 280,
 		bottom: 60,
 		left: 90
 	});
@@ -448,51 +465,56 @@
 				</g>
 			{/each}
 
-			<!-- Legend -->
-			<g class="legend" transform="translate({innerWidth + 20}, 0)">
-				<!-- Header -->
-				<text
-					x="0"
-					y="0"
-					class="fill-slate-500 text-xs uppercase tracking-wide dark:fill-slate-400 font-semibold"
-				>
-					Hardware
-				</text>
-				{#each data as series, i (series.id)}
-					{@const maxLabelLength = width > 800 ? 28 : 18}
-					<g transform="translate(0, {i * 28 + 16})">
-						<circle
-							cx="10"
-							cy="8"
-							r="5"
-							fill={series.color}
-						/>
-						<text
-							x="28"
-							y="12"
-							class="fill-slate-700 text-xs dark:fill-slate-300"
+			<!-- Legend (clickable) -->
+			<foreignObject
+				x={innerWidth + 12}
+				y="-8"
+				width={margin.right - 20}
+				height={displayLegendSeries.length * 44 + 24}
+			>
+				<div xmlns="http://www.w3.org/1999/xhtml" class="legend-container">
+					<span class="block mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 px-2">
+						Hardware
+					</span>
+					{#each displayLegendSeries as series (series.id)}
+						{@const visible = isSeriesVisible(series.id)}
+						{@const maxLabelLength = width > 800 ? 24 : 16}
+						<button
+							type="button"
+							onclick={() => onToggleSeries(series.id)}
+							class="group flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+							aria-pressed={visible}
+							aria-label="Toggle {series.label} visibility"
 						>
-							{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
-						</text>
-						{#if series.vendor}
-							<text
-								x="28"
-								y="24"
-								class="fill-slate-500 text-[10px] dark:fill-slate-400"
-							>
-								{series.vendor}
-							</text>
-						{/if}
-					</g>
-				{/each}
-			</g>
+							<span
+								class="h-2.5 w-2.5 rounded-full shrink-0 transition-opacity duration-200"
+								style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
+							></span>
+							<span class="flex flex-col min-w-0">
+								<span
+									class="text-[11px] font-medium leading-tight transition-opacity duration-200 truncate {visible
+										? 'text-slate-700 dark:text-slate-300'
+										: 'text-slate-400 line-through dark:text-slate-500'}"
+								>
+									{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
+								</span>
+								{#if series.vendor}
+									<span class="text-[9px] text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+										{series.vendor}
+									</span>
+								{/if}
+							</span>
+						</button>
+					{/each}
+				</div>
+			</foreignObject>
 
 			<!-- Links below legend -->
 			{#if links.length > 0}
 				<foreignObject
-					x={innerWidth + 20}
-					y={data.length * 28 + 32}
-					width={margin.right - 30}
+					x={innerWidth + 12}
+					y={displayLegendSeries.length * 44 + 24}
+					width={margin.right - 20}
 					height="150"
 				>
 					<div xmlns="http://www.w3.org/1999/xhtml" class="border-t border-slate-200 pt-3 dark:border-slate-700">

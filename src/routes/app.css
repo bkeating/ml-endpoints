@@ -123,3 +123,41 @@ h1,h2,h3,h4,h5,h6 {
   font-family: "Instrument Sans", sans-serif;
   font-optical-sizing: auto;
 }
+
+/* Animated background pattern container */
+.bg-pattern-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image: url('/bg-pattern-squares.svg');
+  background-size: auto;
+  background-repeat: repeat;
+  background-position: 0 0;
+  opacity: 0.7;
+  animation: slide-bg 20s linear infinite;
+}
+
+.dark .bg-pattern-container::before {
+  opacity: 0.03;
+}
+
+@keyframes slide-bg {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 80px 0;
+  }
+}
+
+/* Clipped corner effect for cards */
+.clip-corner {
+  clip-path: none;
+}
+
+@media (min-width: 640px) {
+  .clip-corner {
+    clip-path: polygon(0 0, calc(100% - 48px) 0, 100% 48px, 100% 100%, 0 100%);
+  }
+}

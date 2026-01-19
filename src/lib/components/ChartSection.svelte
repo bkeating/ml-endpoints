@@ -29,17 +29,17 @@
 
 {#if layout === 'side-by-side'}
 	<!-- Side-by-side layout: description on left, chart on right (stacks on mobile) -->
-	<section class="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center mb-12 px-3 w-full">
+	<section class="flex md:flex-row flex-row-reverse gap-6 md:gap-8 items-start md:items-center mb-6 px-3 w-full">
 		<div class="w-full md:w-1/3 shrink-0 flex items-center justify-center">
 			<div class="flex flex-col">
-				<h2 class="mb-3 text-3xl md:text-4xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-700">
+				<h2 class="mb-3 text-3xl md:text-5xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-100 text-pretty">
 					{chart.title}
 				</h2>
 				<p class="mb-4 text-slate-600 dark:text-slate-500 leading-relaxed">
 					{chart.subtitle}
 				</p>
 				<p class=" text-slate-500 dark:text-slate-400 leading-relaxed">
-					In LLM benchmarking, token throughput per GPU measures raw efficiency—tokens processed per second on one GPU, optimized via dynamic batching and mixed precision (e.g., FP16) for scalable batch inference and training. It boosts high-volume workloads, cutting costs for models like GPT or Llama.
+					In LLM benchmarking, token throughput per GPU measures raw efficiency—tokens processed per second on one GPU, optimized via dynamic batching and mixed precision for scalable batch inference and training.
 				</p>
 			</div>
 		</div>

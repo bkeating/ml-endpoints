@@ -20,7 +20,7 @@
 </script>
 
 <header
-	class="bg-white dark:bg-slate-900 border-b border-[#ECEEF5] dark:border-slate-700 h-[80px] font-instrument-sans transition-colors duration-200"
+	class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-[#ECEEF5] dark:border-slate-700 h-[80px] font-instrument-sans transition-colors duration-200"
 >
 	<div class="w-full h-full max-w-7xl mx-auto px-3 flex md:grid md:grid-cols-[1fr_auto_1fr] items-center justify-between">
 		<!-- Left: Logo -->
