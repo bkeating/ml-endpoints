@@ -318,57 +318,6 @@
 			</p>
 		</div>
 
-		<!-- KPI Cards -->
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-emerald-500"
-			>
-				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-					Total Submissions
-				</div>
-				<div class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-					{stats.totalSubmissions}
-				</div>
-				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">matching filters</div>
-			</div>
-
-			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-sky-500"
-			>
-				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-					Organizations
-				</div>
-				<div class="mt-1 text-2xl font-bold text-sky-600 dark:text-sky-400">
-					{stats.uniqueOrgs}
-				</div>
-				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">unique submitters</div>
-			</div>
-
-			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-violet-500"
-			>
-				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-					Accelerators
-				</div>
-				<div class="mt-1 text-2xl font-bold text-violet-600 dark:text-violet-400">
-					{stats.uniqueAccelerators}
-				</div>
-				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">hardware types</div>
-			</div>
-
-			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-amber-500"
-			>
-				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
-					Peak Performance
-				</div>
-				<div class="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
-					{formatPerformance(stats.maxPerformance)}
-				</div>
-				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">tokens/s</div>
-			</div>
-		</div>
-
 		<!-- Filter Panel - Compact Style -->
 		<div
 			class="rounded-lg border border-slate-200 bg-slate-800/90 dark:border-slate-700 dark:bg-slate-800/75 shadow-lg backdrop-blur mb-6"
@@ -509,6 +458,57 @@
 						</button>
 					</div>
 				</div>
+			</div>
+		</div>
+
+		<!-- KPI Cards -->
+		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+			<div
+				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-emerald-500"
+			>
+				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+					Total Submissions
+				</div>
+				<div class="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+					{stats.totalSubmissions}
+				</div>
+				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">matching filters</div>
+			</div>
+
+			<div
+				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-sky-500"
+			>
+				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+					Organizations
+				</div>
+				<div class="mt-1 text-2xl font-bold text-sky-600 dark:text-sky-400">
+					{stats.uniqueOrgs}
+				</div>
+				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">unique submitters</div>
+			</div>
+
+			<div
+				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-violet-500"
+			>
+				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+					Accelerators
+				</div>
+				<div class="mt-1 text-2xl font-bold text-violet-600 dark:text-violet-400">
+					{stats.uniqueAccelerators}
+				</div>
+				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">hardware types</div>
+			</div>
+
+			<div
+				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4 border-l-4 border-l-amber-500"
+			>
+				<div class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+					Peak Performance
+				</div>
+				<div class="mt-1 text-2xl font-bold text-amber-600 dark:text-amber-400">
+					{formatPerformance(stats.maxPerformance)}
+				</div>
+				<div class="text-xs text-slate-500 dark:text-slate-400 mt-1">tokens/s</div>
 			</div>
 		</div>
 
