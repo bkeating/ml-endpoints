@@ -1,0 +1,189 @@
+<script>
+	import Icon from '$lib/components/Icon.svelte';
+	import StatusBadge from '$lib/components/StatusBadge.svelte';
+
+	/** Placeholder model submissions */
+	const submissions = [
+		{
+			id: 'SUB-2026-0042',
+			model: 'LLaMA-3.1-70B',
+			benchmark: 'MLPerf Inference v4.1',
+			hardware: 'NVIDIA H100 x8',
+			submitter: 'NVIDIA',
+			submitted: 'Jan 18, 2026',
+			status: 'running',
+			progress: 67
+		},
+		{
+			id: 'SUB-2026-0041',
+			model: 'Mixtral-8x22B',
+			benchmark: 'MLPerf Inference v4.1',
+			hardware: 'AMD MI300X x8',
+			submitter: 'AMD',
+			submitted: 'Jan 17, 2026',
+			status: 'queued',
+			progress: 0
+		},
+		{
+			id: 'SUB-2026-0040',
+			model: 'GPT-4-Turbo',
+			benchmark: 'MLPerf Inference v4.1',
+			hardware: 'Custom TPU v5',
+			submitter: 'Google',
+			submitted: 'Jan 16, 2026',
+			status: 'completed',
+			progress: 100
+		},
+		{
+			id: 'SUB-2026-0039',
+			model: 'Claude-3-Opus',
+			benchmark: 'MLPerf Inference v4.1',
+			hardware: 'AWS Trainium2',
+			submitter: 'Anthropic',
+			submitted: 'Jan 15, 2026',
+			status: 'completed',
+			progress: 100
+		},
+		{
+			id: 'SUB-2026-0038',
+			model: 'Gemini-Ultra',
+			benchmark: 'MLPerf Training v4.0',
+			hardware: 'TPU v5p Pod',
+			submitter: 'Google',
+			submitted: 'Jan 14, 2026',
+			status: 'failed',
+			progress: 45
+		}
+	];
+</script>
+
+<div class="space-y-6">
+	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+		<div>
+			<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Model Submissions</h2>
+			<p class="text-slate-600 dark:text-slate-400 mt-1">
+				Submit and track your MLPerf benchmark submissions
+			</p>
+		</div>
+		<button
+			disabled
+			class="px-6 py-2.5 rounded-lg bg-[#CCEBD4] dark:bg-emerald-600 text-slate-900 dark:text-white font-medium cursor-not-allowed opacity-60 flex items-center gap-2"
+		>
+			<Icon name="Play" class="h-4 w-4" />
+			Submit New Model
+		</button>
+	</div>
+
+	<!-- Submission Stats -->
+	<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+		<div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+			<div class="text-2xl font-bold text-blue-700 dark:text-blue-400">2</div>
+			<div class="text-sm text-blue-600 dark:text-blue-500">Running</div>
+		</div>
+		<div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4 border border-slate-200 dark:border-slate-600">
+			<div class="text-2xl font-bold text-slate-700 dark:text-slate-300">1</div>
+			<div class="text-sm text-slate-500 dark:text-slate-400">Queued</div>
+		</div>
+		<div class="bg-emerald-50 dark:bg-emerald-900/20 rounded-lg p-4 border border-emerald-200 dark:border-emerald-800">
+			<div class="text-2xl font-bold text-emerald-700 dark:text-emerald-400">156</div>
+			<div class="text-sm text-emerald-600 dark:text-emerald-500">Completed</div>
+		</div>
+		<div class="bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
+			<div class="text-2xl font-bold text-red-700 dark:text-red-400">3</div>
+			<div class="text-sm text-red-600 dark:text-red-500">Failed</div>
+		</div>
+	</div>
+
+	<!-- Submissions Table -->
+	<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+		<div class="overflow-x-auto">
+			<table class="w-full">
+				<thead class="bg-slate-50 dark:bg-slate-700/50">
+					<tr>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Submission ID
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Model
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Hardware
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Benchmark
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Progress
+						</th>
+						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Status
+						</th>
+						<th class="px-6 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+							Actions
+						</th>
+					</tr>
+				</thead>
+				<tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+					{#each submissions as submission (submission.id)}
+						<tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+							<td class="px-6 py-4">
+								<div class="font-mono text-sm text-slate-900 dark:text-white">{submission.id}</div>
+								<div class="text-xs text-slate-500 dark:text-slate-400">{submission.submitted}</div>
+							</td>
+							<td class="px-6 py-4">
+								<div class="font-medium text-slate-900 dark:text-white">{submission.model}</div>
+								<div class="text-xs text-slate-500 dark:text-slate-400">{submission.submitter}</div>
+							</td>
+							<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+								{submission.hardware}
+							</td>
+							<td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
+								{submission.benchmark}
+							</td>
+							<td class="px-6 py-4">
+								<div class="flex items-center gap-2">
+									<div class="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden w-24">
+										<div
+											class="h-full rounded-full transition-all duration-300 {submission.status === 'failed' ? 'bg-red-500' : submission.status === 'completed' ? 'bg-emerald-500' : 'bg-blue-500'}"
+											style="width: {submission.progress}%"
+										></div>
+									</div>
+									<span class="text-xs text-slate-500 dark:text-slate-400 w-8">{submission.progress}%</span>
+								</div>
+							</td>
+							<td class="px-6 py-4">
+								<StatusBadge status={submission.status} />
+							</td>
+							<td class="px-6 py-4 text-right">
+								<div class="flex items-center justify-end gap-2">
+									<button
+										disabled
+										class="text-sm text-blue-600 dark:text-blue-400 hover:underline cursor-not-allowed opacity-60"
+									>
+										View
+									</button>
+									{#if submission.status === 'running' || submission.status === 'queued'}
+										<button
+											disabled
+											class="text-sm text-red-600 dark:text-red-400 hover:underline cursor-not-allowed opacity-60"
+										>
+											Cancel
+										</button>
+									{/if}
+									{#if submission.status === 'failed'}
+										<button
+											disabled
+											class="text-sm text-amber-600 dark:text-amber-400 hover:underline cursor-not-allowed opacity-60"
+										>
+											Retry
+										</button>
+									{/if}
+								</div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
