@@ -108,11 +108,11 @@
 
 <!-- Mobile Filters Sidebar -->
 <div
-	class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-slate-900 z-50 transform transition-transform duration-300 ease-out md:hidden shadow-2xl overflow-y-auto {mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}"
+	class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[#1a1d23] z-40 transform transition-transform duration-300 ease-out md:hidden shadow-2xl overflow-y-auto {mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}"
 >
 	<!-- Sidebar Header -->
-	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-slate-900">
-		<span class="text-lg font-semibold text-slate-900 dark:text-white">Chart Filters</span>
+	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-[#1a1d23]">
+		<span class="font-semibold text-slate-900 dark:text-white">Chart Filters</span>
 		<button
 			onclick={closeMobileFilters}
 			class="h-10 w-10 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"

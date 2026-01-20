@@ -36,7 +36,7 @@
 	/**
 	 * @typedef {Object} Props
 	 * @property {Model[]} data - Array of model data
-	 * @property {[number, number]} [yDomain] - Y-axis domain
+	 * @property {[number, number]} [yDomain] - Custom Y-axis domain (if not provided, auto-zooms to data)
 	 * @property {number} [width] - Chart width
 	 * @property {number} [height] - Chart height
 	 * @property {boolean} [useTimelineRange] - Whether to use the shared timeline range store
@@ -48,7 +48,7 @@
 	/** @type {Props} */
 	let {
 		data,
-		yDomain = [0, 12000],
+		yDomain: customYDomain = undefined,
 		width = 700,
 		height = 450,
 		useTimelineRange = true,
@@ -67,6 +67,42 @@
 	// $derived() creates computed values that auto-update when dependencies change
 	let innerWidth = $derived(width - margin.left - margin.right);
 	let innerHeight = $derived(height - margin.top - margin.bottom);
+
+	// Filter visible models based on store state
+	let visibleModels = $derived(data.filter((model) => isModelVisible(model.id)));
+
+	// Filter data points within the visible X range (with buffer for line continuity)
+	let filteredModels = $derived(
+		visibleModels.map((model) => ({
+			...model,
+			points: model.points.filter(
+				(p) => p.x >= xDomain[0] - 10 && p.x <= xDomain[1] + 10
+			)
+		}))
+	);
+
+	// Calculate Y-axis extent from actual filtered data for auto-zoom
+	let yExtent = $derived(
+		d3.extent(filteredModels.flatMap((model) => model.points.map((p) => p.y)))
+	);
+
+	// Auto-calculate Y domain with minimal padding (2% top/bottom padding)
+	// Only use custom domain if explicitly provided
+	let yDomain = $derived.by(() => {
+		if (customYDomain) return customYDomain;
+		
+		const yMin = yExtent[0] ?? 0;
+		const yMax = yExtent[1] ?? 0;
+		
+		// If no data or range is very small, use default range
+		if (yMax === 0 || yMax - yMin < 0.01 * yMax) {
+			return [0, Math.max(1000, yMax * 1.1)];
+		}
+		
+		// Add minimal padding (2% on each side)
+		const padding = (yMax - yMin) * 0.02;
+		return [Math.max(0, yMin - padding), yMax + padding];
+	});
 
 	// D3 scales - recalculated whenever domain or dimensions change
 	let xScale = $derived(d3.scaleLinear().domain(xDomain).range([0, innerWidth]));
@@ -91,19 +127,6 @@
 		}
 		return String(value);
 	};
-
-	// Filter visible models based on store state
-	let visibleModels = $derived(data.filter((model) => isModelVisible(model.id)));
-
-	// Filter data points within the visible X range (with buffer for line continuity)
-	let filteredModels = $derived(
-		visibleModels.map((model) => ({
-			...model,
-			points: model.points.filter(
-				(p) => p.x >= xDomain[0] - 10 && p.x <= xDomain[1] + 10
-			)
-		}))
-	);
 
 	// Get hide labels setting reactively
 	let hideLabels = $derived(getHideLabels());

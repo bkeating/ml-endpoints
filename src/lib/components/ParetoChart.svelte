@@ -107,34 +107,80 @@
 	// Use legendSeries if provided, otherwise fall back to data for legend display
 	let displayLegendSeries = $derived(legendSeries.length > 0 ? legendSeries : data);
 
+	// Mobile breakpoint - legend moves below chart
+	let isMobileLayout = $derived(width < 640);
+
 	// Responsive margins - legend width based on available space
-	// Slightly wider to accommodate larger legend text
+	// On mobile, no right margin for legend (it goes below)
 	let legendWidth = $derived(Math.min(280, Math.max(200, width * 0.28)));
 	let margin = $derived({
 		top: 40,
-		right: legendWidth + 20,
+		right: isMobileLayout ? 12 : legendWidth + 20,
 		bottom: 60,
-		left: 70
+		left: isMobileLayout ? 70 : 70
 	});
 
 	// Derived dimensions
 	let innerWidth = $derived(width - margin.left - margin.right);
 	let innerHeight = $derived(height - margin.top - margin.bottom);
 
-	// Compute domains from data
+	// Compute domains from data with automatic zoom-to-fit
 	let xExtent = $derived(
 		d3.extent(data.flatMap((s) => s.points.map((p) => p.x)))
 	);
-	let yMax = $derived(
-		d3.max(data.flatMap((s) => s.points.map((p) => p.y))) ?? 0
+	
+	// Calculate Y-axis extent from actual data (min and max)
+	let yExtent = $derived(
+		d3.extent(data.flatMap((s) => s.points.map((p) => p.y)))
 	);
-	let yDomain = $derived(customYDomain ?? [0, yMax * 1.1]);
+	
+	// Auto-calculate Y domain with minimal padding (2% top/bottom padding)
+	// Only use custom domain if explicitly provided
+	let yDomain = $derived.by(() => {
+		if (customYDomain) return customYDomain;
+		
+		const yMin = yExtent[0] ?? 0;
+		const yMax = yExtent[1] ?? 0;
+		
+		// If data range is very small or zero, ensure minimum range
+		if (yMax - yMin < 0.01 * yMax) {
+			const center = (yMin + yMax) / 2;
+			const minRange = Math.max(yMax * 0.1, 1); // At least 10% of max or 1 unit
+			return [Math.max(0, center - minRange / 2), center + minRange / 2];
+		}
+		
+		// Add minimal padding (2% on each side)
+		const padding = (yMax - yMin) * 0.02;
+		return [Math.max(0, yMin - padding), yMax + padding];
+	});
+
+	// Calculate X domain with tighter bounds (no .nice() expansion)
+	let xDomain = $derived.by(() => {
+		const xMin = Math.max(1, xExtent[0] ?? 1);
+		const xMax = xExtent[1] ?? 4096;
+		
+		// For log scale, ensure we don't expand beyond data
+		// Add minimal padding (1% on each side for log scale)
+		if (useLogScale) {
+			const logMin = Math.log10(xMin);
+			const logMax = Math.log10(xMax);
+			const logPadding = (logMax - logMin) * 0.01;
+			return [
+				Math.pow(10, logMin - logPadding),
+				Math.pow(10, logMax + logPadding)
+			];
+		} else {
+			// Linear scale: minimal padding
+			const padding = (xMax - xMin) * 0.01;
+			return [Math.max(0, xMin - padding), xMax + padding];
+		}
+	});
 
 	// D3 scales
 	let xScale = $derived(
 		useLogScale
-			? d3.scaleLog().domain([Math.max(1, xExtent[0] ?? 1), xExtent[1] ?? 4096]).range([0, innerWidth]).nice()
-			: d3.scaleLinear().domain([0, xExtent[1] ?? 4096]).range([0, innerWidth]).nice()
+			? d3.scaleLog().domain(xDomain).range([0, innerWidth])
+			: d3.scaleLinear().domain(xDomain).range([0, innerWidth])
 	);
 
 	let yScale = $derived(
@@ -236,8 +282,8 @@
 	const clipId = `pareto-clip-${Math.random().toString(36).slice(2, 9)}`;
 </script>
 
-<div class="pareto-chart-container relative">
-	<svg {width} {height} class="overflow-visible font-instrument-sans">
+<div class="pareto-chart-container relative w-full">
+	<svg {width} {height} class="overflow-visible font-instrument-sans w-full h-auto max-w-full">
 		<defs>
 			<!-- Chart background gradient -->
 			<linearGradient id="paretoBg" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -473,105 +519,193 @@
 				</g>
 			{/each}
 
-			<!-- Legend (clickable) with normalization inputs -->
-			<foreignObject
-				x={innerWidth + 12}
-				y="-8"
-				width={legendWidth}
-				height={displayLegendSeries.length * 48 + 40}
-			>
-				<div xmlns="http://www.w3.org/1999/xhtml" class="legend-container">
-					<div class="flex items-center justify-between mb-1 px-1">
-						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-							Hardware
-						</span>
-						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-							{normalizationLabel}
-						</span>
-					</div>
-					{#each displayLegendSeries as series (series.id)}
-						{@const visible = isSeriesVisible(series.id)}
-						{@const maxLabelLength = legendWidth > 220 ? 20 : 16}
-						{@const normValue = normalizationValues[series.id]}
-						{@const hasActiveWeight = normValue !== undefined && normValue !== 1}
-						<div class="flex items-center gap-1">
-							<button
-								type="button"
-								onclick={() => onToggleSeries(series.id)}
-								class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-								aria-pressed={visible}
-								aria-label="Toggle {series.label} visibility"
-							>
-								<span
-									class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
-									style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
-								></span>
-								<span class="flex flex-col min-w-0">
-									<span
-										class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
-											? 'text-slate-700 dark:text-slate-300'
-											: 'text-slate-400 line-through dark:text-slate-500'}"
-										title={series.label}
-									>
-										{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
-									</span>
-									{#if series.vendor}
-										<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
-											{series.vendor}
-										</span>
-									{/if}
-								</span>
-							</button>
-							<input
-								type="number"
-								step="0.01"
-								min="0"
-								placeholder="1.0"
-								value={normValue ?? ''}
-								oninput={(e) => {
-									const val = parseFloat(e.currentTarget.value);
-									onNormalizationChange(series.id, isNaN(val) ? 1 : val);
-								}}
-								class="w-14 shrink-0 px-1.5 py-1 text-sm text-right rounded border transition-colors {hasActiveWeight
-									? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
-									: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
-								aria-label="{normalizationLabel} for {series.label}"
-							/>
-						</div>
-					{/each}
-				</div>
-			</foreignObject>
-
-			<!-- Links below legend -->
-			{#if links.length > 0}
+			<!-- Legend (clickable) with normalization inputs - Desktop only (inside SVG) -->
+			{#if !isMobileLayout}
 				<foreignObject
 					x={innerWidth + 12}
-					y={displayLegendSeries.length * 48 + 44}
+					y="-8"
 					width={legendWidth}
-					height="150"
+					height={displayLegendSeries.length * 48 + 40}
 				>
-					<div xmlns="http://www.w3.org/1999/xhtml" class="border-t border-slate-200 pt-3 dark:border-slate-700">
-						<ul class="space-y-3">
-							{#each links as link (link.label)}
-								<li>
-									<a
-										href={link.href ?? '#'}
-										onclick={link.onclick}
-										class="flex items-center gap-2 text-sm text-slate-300 hover:underline dark:text-surface-400"
-									>
-										{#if link.icon}
-											<Icon name={link.icon} class="h-5 w-5" />
+					<div xmlns="http://www.w3.org/1999/xhtml" class="legend-container">
+						<div class="flex items-center justify-between mb-1 px-1">
+							<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+								Hardware
+							</span>
+							<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+								{normalizationLabel}
+							</span>
+						</div>
+						{#each displayLegendSeries as series (series.id)}
+							{@const visible = isSeriesVisible(series.id)}
+							{@const maxLabelLength = legendWidth > 220 ? 20 : 16}
+							{@const normValue = normalizationValues[series.id]}
+							{@const hasActiveWeight = normValue !== undefined && normValue !== 1}
+							<div class="flex items-center gap-1">
+								<button
+									type="button"
+									onclick={() => onToggleSeries(series.id)}
+									class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+									aria-pressed={visible}
+									aria-label="Toggle {series.label} visibility"
+								>
+									<span
+										class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
+										style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
+									></span>
+									<span class="flex flex-col min-w-0">
+										<span
+											class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
+												? 'text-slate-700 dark:text-slate-300'
+												: 'text-slate-400 line-through dark:text-slate-500'}"
+											title={series.label}
+										>
+											{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
+										</span>
+										{#if series.vendor}
+											<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+												{series.vendor}
+											</span>
 										{/if}
-										{link.label}
-									</a>
-								</li>
-							{/each}
-						</ul>
+									</span>
+								</button>
+								<input
+									type="number"
+									step="0.01"
+									min="0"
+									placeholder="1.0"
+									value={normValue ?? ''}
+									oninput={(e) => {
+										const val = parseFloat(e.currentTarget.value);
+										onNormalizationChange(series.id, isNaN(val) ? 1 : val);
+									}}
+									class="w-14 shrink-0 px-1.5 py-1 text-sm text-right rounded border transition-colors {hasActiveWeight
+										? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
+										: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
+									aria-label="{normalizationLabel} for {series.label}"
+								/>
+							</div>
+						{/each}
 					</div>
 				</foreignObject>
+
+				<!-- Links below legend - Desktop only -->
+				{#if links.length > 0}
+					<foreignObject
+						x={innerWidth + 12}
+						y={displayLegendSeries.length * 48 + 44}
+						width={legendWidth}
+						height="150"
+					>
+						<div xmlns="http://www.w3.org/1999/xhtml" class="border-t border-slate-200 pt-3 dark:border-slate-700">
+							<ul class="space-y-3">
+								{#each links as link (link.label)}
+									<li>
+										<a
+											href={link.href ?? '#'}
+											onclick={link.onclick}
+											class="flex items-center gap-2 text-sm text-slate-300 hover:underline dark:text-surface-400"
+										>
+											{#if link.icon}
+												<Icon name={link.icon} class="h-5 w-5" />
+											{/if}
+											{link.label}
+										</a>
+									</li>
+								{/each}
+							</ul>
+						</div>
+					</foreignObject>
+				{/if}
 			{/if}
 		</g>
 	</svg>
+
+	<!-- Mobile Legend (below chart) -->
+	{#if isMobileLayout}
+		<div class="mt-4">
+			<div class="flex items-center justify-between mb-2">
+				<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+					Hardware
+				</span>
+				<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+					{normalizationLabel}
+				</span>
+			</div>
+			<div class="grid grid-cols-1 gap-1">
+				{#each displayLegendSeries as series, index (series.id)}
+					{@const visible = isSeriesVisible(series.id)}
+					{@const normValue = normalizationValues[series.id]}
+					{@const hasActiveWeight = normValue !== undefined && normValue !== 1}
+					{@const isEven = index % 2 === 0}
+					<div class="flex items-center gap-2 {isEven ? 'bg-slate-100/70 dark:bg-slate-700/70' : 'bg-slate-50/70 dark:bg-slate-800/70'} rounded px-2 py-0.5">
+						<button
+							type="button"
+							onclick={() => onToggleSeries(series.id)}
+							class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1 py-1.5 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+							aria-pressed={visible}
+							aria-label="Toggle {series.label} visibility"
+						>
+							<span
+								class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
+								style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
+							></span>
+							<span class="flex flex-col min-w-0">
+								<span
+									class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
+										? 'text-slate-700 dark:text-slate-300'
+										: 'text-slate-400 line-through dark:text-slate-500'}"
+									title={series.label}
+								>
+									{series.label}
+								</span>
+								{#if series.vendor}
+									<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+										{series.vendor}
+									</span>
+								{/if}
+							</span>
+						</button>
+						<input
+							type="number"
+							step="0.01"
+							min="0"
+							placeholder="1.0"
+							value={normValue ?? ''}
+							oninput={(e) => {
+								const val = parseFloat(e.currentTarget.value);
+								onNormalizationChange(series.id, isNaN(val) ? 1 : val);
+							}}
+							class="w-16 shrink-0 px-1 py-1.5 text-sm text-right rounded border transition-colors {hasActiveWeight
+								? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
+								: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
+							aria-label="{normalizationLabel} for {series.label}"
+						/>
+					</div>
+				{/each}
+			</div>
+
+			<!-- Mobile Links -->
+			{#if links.length > 0}
+				<div class="mt-4 px-2 pt-3 border-t border-slate-200 dark:border-slate-700">
+					<div class="flex justify-between w-full">
+						{#each links as link (link.label)}
+							<a
+								href={link.href ?? '#'}
+								onclick={link.onclick}
+								class="flex items-center gap-1.5 text-base text-slate-500 hover:text-slate-700 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
+							>
+								{#if link.icon}
+									<Icon name={link.icon} class="h-5 w-5" />
+								{/if}
+								{link.label}
+							</a>
+						{/each}
+					</div>
+				</div>
+			{/if}
+		</div>
+	{/if}
 
 	<!-- Tooltip -->
 	{#if tooltipData}
@@ -620,6 +754,12 @@
 
 <style lang="postcss">
 	@reference "@app-css";
+
+	.pareto-chart-container svg {
+		max-width: 100%;
+		height: auto;
+		display: block;
+	}
 
 	.pareto-chart-container :global(.annotation) {
 		transition: opacity 0.2s ease;
