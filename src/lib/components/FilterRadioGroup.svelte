@@ -27,7 +27,7 @@
 		{legend}
 	</legend>
 	<div
-		class="flex gap-4 h-9 mt-1 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 px-3 rounded-lg"
+		class="flex gap-4 h-9 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-3 rounded-lg"
 		role="radiogroup"
 		aria-label={ariaLabel}
 	>

@@ -1,19 +1,26 @@
 <script>
+	import { page } from '$app/state';
 	import Icon from '$lib/components/Icon.svelte';
+	import { navItems, isNavItemActive } from '$lib/data/navigation.js';
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
 	import {
 		getMobileFiltersOpen,
 		toggleMobileFilters
 	} from '$lib/stores/pageSettings.svelte.js';
 
-	/** @type {{ navItems: Array<{ label: string; href: string; isActive: boolean }> }} */
-	let { navItems = [] } = $props();
-
 	/** Mobile drawer open state */
 	let isDrawerOpen = $state(false);
 
 	/** Reactive getter for mobile filters panel state */
 	let mobileFiltersOpen = $derived(getMobileFiltersOpen());
+
+	/** Reactively compute active state for each nav item based on current pathname */
+	let computedNavItems = $derived(
+		navItems.map((item) => ({
+			...item,
+			isActive: isNavItemActive(item, page.url.pathname)
+		}))
+	);
 
 	/** Toggle mobile drawer */
 	const toggleDrawer = () => {
@@ -27,7 +34,7 @@
 </script>
 
 <header
-	class="sticky top-0 z-50 bg-white dark:bg-slate-900 border-b border-[#ECEEF5] dark:border-slate-700 h-[80px] font-instrument-sans transition-colors duration-200"
+	class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-[#ECEEF5] dark:border-slate-700 h-[80px] font-instrument-sans transition-colors duration-200"
 >
 	<div class="w-full h-full max-w-7xl mx-auto px-3 flex md:grid md:grid-cols-[1fr_auto_1fr] items-center justify-between">
 		<!-- Left: Logo -->
@@ -43,10 +50,9 @@
 
 		<!-- Center: Navigation (hidden on mobile) -->
 		<nav class="hidden md:flex gap-6 items-center h-full" aria-label="Main navigation">
-			{#each navItems as item (item.label)}
+			{#each computedNavItems as item (item.label)}
 				<a
 					href={item.href}
-					target="_blank"
 					class="px-2 py-1 {item.isActive
 						? 'border-b-2 border-[#CCEBD4] flex items-center justify-center h-full dark:border-emerald-600 text-slate-900 dark:text-white'
 						: 'text-slate-900 dark:text-slate-300 hover:text-slate-600 dark:hover:text-white'}"
@@ -139,7 +145,7 @@
 	<!-- Drawer Content -->
 	<nav class="flex flex-col p-4" aria-label="Mobile navigation">
 		<!-- Navigation Links -->
-		{#each navItems as item (item.label)}
+		{#each computedNavItems as item (item.label)}
 			<a
 				href={item.href}
 				target="_blank"

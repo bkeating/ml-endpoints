@@ -3,11 +3,27 @@
  * Centralized here for easy updates and potential future API integration.
  */
 
-/** @type {Array<{ label: string; href: string; isActive: boolean }>} */
+/**
+ * @typedef {'exact' | 'startsWith'} MatchType
+ * @typedef {{ label: string; href: string; match?: MatchType }} NavItem
+ */
+
+/** @type {NavItem[]} */
 export const navItems = [
-	{ label: 'Home', href: 'https://mlcommons.org', isActive: true },
-	{ label: 'Test Manager', href: 'https://mlcommons.org', isActive: false },
-	{ label: 'Resources', href: 'https://mlcommons.org', isActive: false },
-	{ label: 'Something', href: 'https://mlcommons.org', isActive: false }
+	{ label: 'Home', href: '/', match: 'exact' },
+	{ label: 'Test Manager', href: '/test-manager', match: 'startsWith' },
+	{ label: 'Benchmarks', href: '/benchmarks', match: 'startsWith' },
+	{ label: 'Admin Tools', href: '/admin-tools', match: 'startsWith' }
 ];
+
+/**
+ * Determines if a nav item is active based on the current pathname.
+ * @param {NavItem} item - The navigation item to check.
+ * @param {string} pathname - The current URL pathname.
+ * @returns {boolean} Whether the item is active.
+ */
+export const isNavItemActive = (item, pathname) => {
+	const match = item.match ?? 'startsWith';
+	return match === 'exact' ? pathname === item.href : pathname.startsWith(item.href);
+};
 

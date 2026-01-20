@@ -693,7 +693,7 @@
 							<a
 								href={link.href ?? '#'}
 								onclick={link.onclick}
-								class="flex items-center gap-1.5 text-base text-slate-500 hover:text-slate-700 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
+								class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
 							>
 								{#if link.icon}
 									<Icon name={link.icon} class="h-5 w-5" />

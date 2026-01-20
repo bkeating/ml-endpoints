@@ -72,7 +72,7 @@
 		<button
 			type="button"
 			onclick={() => (isOpen = !isOpen)}
-			class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+			class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
 			aria-expanded={isOpen}
 			aria-haspopup="listbox"
 			aria-labelledby={labelId}
@@ -98,7 +98,7 @@
 
 		{#if isOpen}
 			<div
-				class="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-200 bg-white shadow-lg dark:border-slate-600 dark:bg-slate-800"
+				class="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-200 bg-slate-50 shadow-lg dark:border-slate-600 dark:bg-slate-800"
 				role="listbox"
 				aria-multiselectable="true"
 			>

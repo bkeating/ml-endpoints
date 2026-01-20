@@ -3,6 +3,23 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			// Prevent theme flash by applying dark class before any rendering
+			(function() {
+				const cookie = document.cookie.match(/(?:^|; )theme=([^;]*)/);
+				const theme = cookie ? cookie[1] : null;
+				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+				const isDark = theme === 'dark' || (!theme && prefersDark);
+				if (isDark) {
+					document.documentElement.classList.add('dark');
+				}
+			})();
+		</script>
+		<style>
+			/* Prevent flash by setting background before CSS loads */
+			html { background-color: #fff; }
+			html.dark { background-color: #0f172a; }
+		</style>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" href="/favicon.webp" sizes="any">

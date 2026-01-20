@@ -97,7 +97,7 @@
 <!-- Mobile Filters Overlay -->
 {#if mobileFiltersOpen}
 	<div
-		class="fixed inset-0 bg-black/50 z-40 md:hidden"
+		class="fixed inset-0 bg-black/50 z-[44] md:hidden"
 		onclick={closeMobileFilters}
 		onkeydown={(e) => e.key === 'Escape' && closeMobileFilters()}
 		role="button"
@@ -108,10 +108,10 @@
 
 <!-- Mobile Filters Sidebar -->
 <div
-	class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[#1a1d23] z-40 transform transition-transform duration-300 ease-out md:hidden shadow-2xl overflow-y-auto {mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}"
+	class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[#1a1d23] z-[45] transform transition-transform duration-300 ease-out md:hidden shadow-2xl overflow-y-auto {mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}"
 >
 	<!-- Sidebar Header -->
-	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 bg-white dark:bg-[#1a1d23]">
+	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10 bg-white dark:bg-[#1a1d23]">
 		<span class="font-semibold text-slate-900 dark:text-white">Chart Filters</span>
 		<button
 			onclick={closeMobileFilters}

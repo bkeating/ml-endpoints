@@ -40,7 +40,7 @@
 		{id}
 		{value}
 		onchange={handleChange}
-		class="rounded-md border border-slate-300 h-9 bg-white px-3 py-2 text-sm text-slate-900 dm-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+		class="rounded-md border border-slate-300 h-9 bg-slate-50 px-3 py-2 text-sm text-slate-900 dm-mono focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
 		aria-label={label}
 	>
 		{#each options as option (option.id)}
