@@ -28,7 +28,7 @@
 				href="/phaneros"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="flex items-center justify-center gap-2 px-8 h-12 w-fit mb-3 md:mb-4 rounded-full bg-[#CCEBD4] dark:bg-emerald-600 text-[#10141F] dark:text-white transition-colors"
+				class="flex items-center justify-center gap-2 px-8 h-12 w-fit mb-3 md:mb-4 rounded-full bg-[#CCEBD4] dark:bg-yellow-500 text-[#10141F] dark:text-white transition-colors"
 			>
 				<span>Try MLPerf Endpoints Studio</span>
 				<Icon name="ExternalLink" class="h-5 w-5" />
@@ -37,7 +37,7 @@
 				href="/phaneros"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="flex items-center justify-center gap-2 px-8 h-12 w-fit mb-16 md:mb-0 rounded-full border border-[#CCEBD4] dark:border-emerald-600 text-emerald-100 dark:text-emerald-100 transition-colors"
+				class="flex items-center justify-center gap-2 px-8 h-12 w-fit mb-16 md:mb-0 rounded-full border border-[#CCEBD4] dark:border-yellow-500 text-yellow-100 dark:text-yellow-100 transition-colors"
 			>
       <Icon name="Artboard" class="h-5 w-5" />
 				<span>Preview Design System</span>

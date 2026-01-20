@@ -54,7 +54,7 @@
 				<a
 					href={item.href}
 					class="px-2 py-1 {item.isActive
-						? 'border-b-2 border-[#CCEBD4] flex items-center justify-center h-full dark:border-emerald-600 text-slate-900 dark:text-white'
+						? 'border-b-2 border-[#CCEBD4] flex items-center justify-center h-full dark:border-yellow-600 text-slate-900 dark:text-white'
 						: 'text-slate-900 dark:text-slate-300 hover:text-slate-600 dark:hover:text-white'}"
 				>
 					{item.label}
@@ -67,7 +67,7 @@
 			<a
 				href="https://mlcommons.org/get-involved/"
 				target="_blank"
-				class="bg-[#CCEBD4] dark:bg-emerald-600 px-6 flex items-center justify-center h-10 rounded-full text-[#10141F] dark:text-white transition-colors duration-200"
+				class="bg-[#CCEBD4] dark:bg-yellow-600 px-6 flex items-center justify-center h-10 rounded-full text-[#10141F] dark:text-white transition-colors duration-200"
 			>
 				Get Involved
 			</a>
@@ -94,7 +94,7 @@
 		<div class="md:hidden flex items-center gap-1">
 			<button
 				class="flex items-center justify-center h-10 w-10 rounded-lg transition-colors duration-200 {mobileFiltersOpen
-					? 'bg-emerald-500 text-white'
+					? 'bg-yellow-500 text-white'
 					: 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800'}"
 				onclick={toggleMobileFilters}
 				aria-label="Toggle chart filters"
@@ -150,7 +150,7 @@
 				href={item.href}
 				target="_blank"
 				onclick={closeDrawer}
-				class="py-3 px-4 rounded-lg text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 {item.isActive ? 'bg-[#CCEBD4]/20 dark:bg-emerald-600/20 border-l-4 border-[#CCEBD4] dark:border-emerald-600' : ''}"
+				class="py-3 px-4 rounded-lg text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 {item.isActive ? 'bg-[#CCEBD4]/20 dark:bg-yellow-600/20 border-l-4 border-[#CCEBD4] dark:border-yellow-600' : ''}"
 			>
 				{item.label}
 			</a>
@@ -187,7 +187,7 @@
 			href="https://mlcommons.org/get-involved/"
 			target="_blank"
 			onclick={closeDrawer}
-			class="mt-4 bg-[#CCEBD4] dark:bg-emerald-600 py-3 px-6 flex items-center justify-center rounded-full text-[#10141F] dark:text-white font-medium transition-colors duration-200"
+			class="mt-4 bg-[#CCEBD4] dark:bg-yellow-600 py-3 px-6 flex items-center justify-center rounded-full text-[#10141F] dark:text-white font-medium transition-colors duration-200"
 		>
 			Get Involved
 		</a>

@@ -308,7 +308,7 @@
 				<button
 					type="button"
 					onclick={() => (settingsOpen = !settingsOpen)}
-					class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {settingsOpen ? 'border-emerald-500 bg-emerald-500 hover:bg-emerald-600 dark:border-emerald-500 dark:bg-emerald-500 dark:hover:bg-emerald-600' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600'}"
+					class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {settingsOpen ? 'border-yellow-500 bg-yellow-500 hover:bg-yellow-600 dark:border-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600'}"
 					aria-expanded={settingsOpen}
 					aria-controls="settings-panel"
 					aria-label="Toggle advanced chart settings"
@@ -340,7 +340,7 @@
 								type="checkbox"
 								checked={hideNonOptimal}
 								onchange={toggleNonOptimal}
-								class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800"
+								class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
 							/>
 							<span class="text-sm text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
 						</label>
@@ -349,7 +349,7 @@
 								type="checkbox"
 								checked={hideLabels}
 								onchange={toggleLabels}
-								class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800"
+								class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
 							/>
 							<span class="text-sm text-slate-700 dark:text-slate-300">Hide Labels</span>
 						</label>
