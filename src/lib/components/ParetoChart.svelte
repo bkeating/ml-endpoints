@@ -77,6 +77,9 @@
 	 * @property {LegendSeries[]} [legendSeries] - All series to show in legend (for clickable legend)
 	 * @property {(id: string) => boolean} [isSeriesVisible] - Function to check if series is visible
 	 * @property {(id: string) => void} [onToggleSeries] - Callback when series visibility is toggled
+	 * @property {Record<string, number>} [normalizationValues] - Normalization weights per series (e.g., cost, power)
+	 * @property {(id: string, value: number) => void} [onNormalizationChange] - Callback when normalization value changes
+	 * @property {string} [normalizationLabel] - Label for the normalization input (e.g., "Cost", "Power")
 	 */
 
 	/** @type {Props} */
@@ -95,18 +98,23 @@
 		links = [],
 		legendSeries = [],
 		isSeriesVisible = () => true,
-		onToggleSeries = () => {}
+		onToggleSeries = () => {},
+		normalizationValues = {},
+		onNormalizationChange = () => {},
+		normalizationLabel = 'Weight'
 	} = $props();
 
 	// Use legendSeries if provided, otherwise fall back to data for legend display
 	let displayLegendSeries = $derived(legendSeries.length > 0 ? legendSeries : data);
 
-	// Responsive margins - more room for legend at larger widths
+	// Responsive margins - legend width based on available space
+	// Slightly wider to accommodate larger legend text
+	let legendWidth = $derived(Math.min(280, Math.max(200, width * 0.28)));
 	let margin = $derived({
 		top: 40,
-		right: width > 800 ? 240 : 280,
+		right: legendWidth + 20,
 		bottom: 60,
-		left: 90
+		left: 70
 	});
 
 	// Derived dimensions
@@ -373,7 +381,7 @@
 				<text
 					transform="rotate(-90)"
 					x={-innerHeight / 2}
-					y="-65"
+					y="-55"
 					text-anchor="middle"
 					class="fill-slate-700 text-sm font-medium dark:fill-slate-300"
 				>
@@ -465,46 +473,71 @@
 				</g>
 			{/each}
 
-			<!-- Legend (clickable) -->
+			<!-- Legend (clickable) with normalization inputs -->
 			<foreignObject
 				x={innerWidth + 12}
 				y="-8"
-				width={margin.right - 20}
-				height={displayLegendSeries.length * 44 + 24}
+				width={legendWidth}
+				height={displayLegendSeries.length * 48 + 40}
 			>
 				<div xmlns="http://www.w3.org/1999/xhtml" class="legend-container">
-					<span class="block mb-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 px-2">
-						Hardware
-					</span>
+					<div class="flex items-center justify-between mb-1 px-1">
+						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+							Hardware
+						</span>
+						<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+							{normalizationLabel}
+						</span>
+					</div>
 					{#each displayLegendSeries as series (series.id)}
 						{@const visible = isSeriesVisible(series.id)}
-						{@const maxLabelLength = width > 800 ? 24 : 16}
-						<button
-							type="button"
-							onclick={() => onToggleSeries(series.id)}
-							class="group flex w-full cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
-							aria-pressed={visible}
-							aria-label="Toggle {series.label} visibility"
-						>
-							<span
-								class="h-2.5 w-2.5 rounded-full shrink-0 transition-opacity duration-200"
-								style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
-							></span>
-							<span class="flex flex-col min-w-0">
+						{@const maxLabelLength = legendWidth > 220 ? 20 : 16}
+						{@const normValue = normalizationValues[series.id]}
+						{@const hasActiveWeight = normValue !== undefined && normValue !== 1}
+						<div class="flex items-center gap-1">
+							<button
+								type="button"
+								onclick={() => onToggleSeries(series.id)}
+								class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+								aria-pressed={visible}
+								aria-label="Toggle {series.label} visibility"
+							>
 								<span
-									class="text-[11px] font-medium leading-tight transition-opacity duration-200 truncate {visible
-										? 'text-slate-700 dark:text-slate-300'
-										: 'text-slate-400 line-through dark:text-slate-500'}"
-								>
-									{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
-								</span>
-								{#if series.vendor}
-									<span class="text-[9px] text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
-										{series.vendor}
+									class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
+									style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
+								></span>
+								<span class="flex flex-col min-w-0">
+									<span
+										class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
+											? 'text-slate-700 dark:text-slate-300'
+											: 'text-slate-400 line-through dark:text-slate-500'}"
+										title={series.label}
+									>
+										{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
 									</span>
-								{/if}
-							</span>
-						</button>
+									{#if series.vendor}
+										<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+											{series.vendor}
+										</span>
+									{/if}
+								</span>
+							</button>
+							<input
+								type="number"
+								step="0.01"
+								min="0"
+								placeholder="1.0"
+								value={normValue ?? ''}
+								oninput={(e) => {
+									const val = parseFloat(e.currentTarget.value);
+									onNormalizationChange(series.id, isNaN(val) ? 1 : val);
+								}}
+								class="w-14 shrink-0 px-1.5 py-1 text-sm text-right rounded border transition-colors {hasActiveWeight
+									? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
+									: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
+								aria-label="{normalizationLabel} for {series.label}"
+							/>
+						</div>
 					{/each}
 				</div>
 			</foreignObject>
@@ -513,8 +546,8 @@
 			{#if links.length > 0}
 				<foreignObject
 					x={innerWidth + 12}
-					y={displayLegendSeries.length * 44 + 24}
-					width={margin.right - 20}
+					y={displayLegendSeries.length * 48 + 44}
+					width={legendWidth}
 					height="150"
 				>
 					<div xmlns="http://www.w3.org/1999/xhtml" class="border-t border-slate-200 pt-3 dark:border-slate-700">
@@ -563,6 +596,19 @@
 					<div><strong>Utilization:</strong> {tooltipData.point.original.util.toFixed(1)}%</div>
 				{:else}
 					<div><strong>Value:</strong> {formatY(tooltipData.point.y)}</div>
+				{/if}
+				{#if tooltipData.point.appliedWeight && tooltipData.point.appliedWeight !== 1}
+					<div class="mt-1 pt-1 border-t border-slate-200 dark:border-slate-600">
+						<div class="text-amber-600 dark:text-amber-400">
+							<strong>Weight Applied:</strong> ×{tooltipData.point.appliedWeight.toFixed(2)}
+						</div>
+						<div class="text-slate-500 dark:text-slate-400">
+							<strong>Weighted Value:</strong> {formatY(tooltipData.point.y)}
+						</div>
+						<div class="text-slate-500 dark:text-slate-400">
+							<strong>Original:</strong> {formatY(tooltipData.point.originalY)}
+						</div>
+					</div>
 				{/if}
 				{#if tooltipData.point.isCompliancePoint}
 					<div class="mt-1 text-emerald-600 dark:text-emerald-400">★ Compliance Point</div>

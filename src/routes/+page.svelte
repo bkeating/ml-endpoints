@@ -45,7 +45,7 @@
 	<!-- Charts rendered from API data -->
   <ChartFilters />
 
-  <div class="relative bg-pattern-container w-full md:py-12">
+  <div class="relative bg-pattern-container w-full md:py-6">
 		<div class="relative z-10 flex flex-col gap-6 mx-auto max-w-7xl px-3">
       <ChartSection
 				chart={chartData.latencyChart}

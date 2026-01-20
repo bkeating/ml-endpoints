@@ -22,7 +22,7 @@
 
 <fieldset class="flex flex-col gap-1">
 	<legend
-		class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dm-mono"
+		class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono"
 	>
 		{legend}
 	</legend>

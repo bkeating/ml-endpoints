@@ -130,6 +130,43 @@ export function setShowParetoIdealLine(show) {
 }
 
 // ============================================================================
+// MOBILE FILTERS PANEL
+// ============================================================================
+
+/** @type {boolean} */
+let mobileFiltersOpen = $state(false);
+
+/**
+ * Get the mobile filters panel open state
+ * @returns {boolean}
+ */
+export function getMobileFiltersOpen() {
+	return mobileFiltersOpen;
+}
+
+/**
+ * Set the mobile filters panel open state
+ * @param {boolean} open
+ */
+export function setMobileFiltersOpen(open) {
+	mobileFiltersOpen = open;
+}
+
+/**
+ * Toggle the mobile filters panel
+ */
+export function toggleMobileFilters() {
+	mobileFiltersOpen = !mobileFiltersOpen;
+}
+
+/**
+ * Close the mobile filters panel
+ */
+export function closeMobileFilters() {
+	mobileFiltersOpen = false;
+}
+
+// ============================================================================
 // RESET
 // ============================================================================
 
@@ -146,4 +183,7 @@ export function resetPageSettings() {
 	showParetoInterpolation = false;
 	showParetoAnnotations = true;
 	showParetoIdealLine = false;
+	
+	// Mobile filters
+	mobileFiltersOpen = false;
 }

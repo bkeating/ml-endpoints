@@ -26,6 +26,20 @@
 	// Container width for responsive Pareto chart
 	let paretoContainerWidth = $state(0);
 
+	// Normalization weights per series (user-defined multipliers for cost/power analysis)
+	/** @type {Record<string, number>} */
+	let normalizationValues = $state({});
+
+	/**
+	 * Handle normalization weight change from the chart legend
+	 * @param {string} seriesId - The series ID to update
+	 * @param {number} value - The new weight value
+	 */
+	function handleNormalizationChange(seriesId, value) {
+		// Direct property assignment for proper Svelte 5 reactivity tracking
+		normalizationValues[seriesId] = value;
+	}
+
 	// Get display options from store
 	let showParetoInterpolation = $derived(getShowParetoInterpolation());
 	let showParetoAnnotations = $derived(getShowParetoAnnotations());
@@ -42,12 +56,36 @@
 	// Normalize utilization to global max when comparing multiple series
 	let normalizedParetoSeries = $derived(normalizeToGlobalMax(filteredParetoSeries));
 
-	// Transform data for active view
-	let paretoChartData = $derived(
+	// Transform data for active view (before applying user weights)
+	let baseChartData = $derived(
 		paretoViewMode === 'utilization'
 			? transformForView(normalizedParetoSeries, 'utilization')
 			: transformForView(filteredParetoSeries, paretoViewMode)
 	);
+
+	/**
+	 * Apply user-defined normalization weights to chart data
+	 * Multiplies Y values by the weight (default 1.0 if not set)
+	 */
+	let paretoChartData = $derived.by(() => {
+		// Access normalizationValues to ensure Svelte tracks dependency
+		const weights = normalizationValues;
+		return baseChartData.map((series) => {
+			const weight = weights[series.id] ?? 1;
+			// Only apply weight if it's different from default (1)
+			if (weight === 1) return series;
+			return {
+				...series,
+				points: series.points.map((point) => ({
+					...point,
+					y: point.y * weight,
+					// Store original Y for tooltip display
+					originalY: point.y,
+					appliedWeight: weight
+				}))
+			};
+		});
+	});
 
 	// Get current view config
 	let currentParetoViewConfig = $derived(viewModes[paretoViewMode]);
@@ -118,8 +156,7 @@
 
 				<!-- Display Options -->
 				<div class="flex items-center gap-3">
-					<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">Display</span>
-					<div class="flex flex-wrap gap-2">
+					<div class="flex flex-wrap gap-4">
 						<label class="inline-flex items-center gap-1.5 cursor-pointer">
 							<input
 								type="checkbox"
@@ -127,7 +164,7 @@
 								onchange={(e) => setShowParetoInterpolation(e.currentTarget.checked)}
 								class="w-3.5 h-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700"
 							/>
-							<span class="text-xs text-slate-600 dark:text-slate-400">Interpolation</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Interpolation</span>
 						</label>
 						<label class="inline-flex items-center gap-1.5 cursor-pointer">
 							<input
@@ -136,7 +173,7 @@
 								onchange={(e) => setShowParetoAnnotations(e.currentTarget.checked)}
 								class="w-3.5 h-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700"
 							/>
-							<span class="text-xs text-slate-600 dark:text-slate-400">Annotations</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Annotations</span>
 						</label>
 						<label class="inline-flex items-center gap-1.5 cursor-pointer">
 							<input
@@ -145,7 +182,7 @@
 								onchange={(e) => setShowParetoIdealLine(e.currentTarget.checked)}
 								class="w-3.5 h-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700"
 							/>
-							<span class="text-xs text-slate-600 dark:text-slate-400">Ideal Scaling</span>
+							<span class="text-sm text-slate-600 dark:text-slate-400">Ideal Scaling</span>
 						</label>
 					</div>
 				</div>
@@ -170,6 +207,9 @@
 						legendSeries={paretoSeries}
 						isSeriesVisible={isParetoSeriesVisible}
 						onToggleSeries={toggleParetoSeries}
+						{normalizationValues}
+						onNormalizationChange={handleNormalizationChange}
+						normalizationLabel="Weight"
 					/>
 				{/if}
 			</div>

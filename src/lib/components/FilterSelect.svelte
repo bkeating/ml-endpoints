@@ -32,7 +32,7 @@
 <div class="flex {minWidth} flex-col gap-1">
 	<label
 		for={id}
-		class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dm-mono"
+		class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono"
 	>
 		{label}
 	</label>

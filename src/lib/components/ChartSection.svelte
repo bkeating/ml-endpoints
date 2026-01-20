@@ -28,11 +28,11 @@
 </script>
 
 {#if layout === 'side-by-side'}
-	<!-- Side-by-side layout: description on left, chart on right (stacks on mobile) -->
-	<section class="flex md:flex-row flex-row-reverse gap-6 md:gap-8 items-start md:items-center mb-6 px-3 w-full">
+	<!-- Side-by-side layout: stacks on mobile (copy top, chart bottom), side-by-side on md+ -->
+	<section class="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center mb-6 md:px-3 w-full">
 		<div class="w-full md:w-1/3 shrink-0 flex items-center justify-center">
 			<div class="flex flex-col">
-				<h2 class="mb-3 text-3xl md:text-5xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-100 text-pretty">
+				<h2 class="mt-16 md:mt-0 mb-3 text-3xl md:text-5xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-100 text-pretty">
 					{chart.title}
 				</h2>
 				<p class="mb-4 text-slate-600 dark:text-slate-500 leading-relaxed">

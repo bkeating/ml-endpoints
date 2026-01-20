@@ -26,8 +26,11 @@
 	// Unique ID for accessibility
 	const labelId = `hardware-label-${Math.random().toString(36).slice(2, 9)}`;
 
-	// Count selected items
-	let selectedCount = $derived(options.filter((opt) => isSelected(opt.id)).length);
+	// Get selected items with their colors (for dot indicators)
+	let selectedOptions = $derived(options.filter((opt) => isSelected(opt.id)));
+	let selectedCount = $derived(selectedOptions.length);
+	// Take first 3 selected colors for the dot stack
+	let selectedColors = $derived(selectedOptions.slice(0, 3).map((opt) => opt.color));
 
 	/**
 	 * Handle click outside to close dropdown
@@ -62,7 +65,7 @@
 </script>
 
 <div class="flex min-w-36 flex-col gap-1" bind:this={dropdownRef}>
-	<span class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dm-mono" id={labelId}>
+	<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono" id={labelId}>
 		{label}
 	</span>
 	<div class="relative">
@@ -74,7 +77,17 @@
 			aria-haspopup="listbox"
 			aria-labelledby={labelId}
 		>
-			<span class="truncate dm-mono">
+			<span class="flex items-center gap-2 truncate dm-mono">
+				{#if selectedColors.length > 0}
+					<span class="relative flex items-center" style="width: {12 + (selectedColors.length - 1) * 6}px; height: 12px;">
+						{#each selectedColors as color, i (color + i)}
+							<span
+								class="absolute h-3 w-3 rounded-full"
+								style="background-color: {color}; left: {i * 6}px; box-shadow: 0 0 0 0.5px white;"
+							></span>
+						{/each}
+					</span>
+				{/if}
 				{selectedCount} of {options.length} selected
 			</span>
 			<Icon

@@ -1,12 +1,19 @@
 <script>
 	import Icon from '$lib/components/Icon.svelte';
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
+	import {
+		getMobileFiltersOpen,
+		toggleMobileFilters
+	} from '$lib/stores/pageSettings.svelte.js';
 
 	/** @type {{ navItems: Array<{ label: string; href: string; isActive: boolean }> }} */
 	let { navItems = [] } = $props();
 
 	/** Mobile drawer open state */
 	let isDrawerOpen = $state(false);
+
+	/** Reactive getter for mobile filters panel state */
+	let mobileFiltersOpen = $derived(getMobileFiltersOpen());
 
 	/** Toggle mobile drawer */
 	const toggleDrawer = () => {
@@ -77,15 +84,27 @@
 			</button>
 		</div>
 
-		<!-- Mobile: Hamburger menu button -->
-		<button
-			class="md:hidden flex items-center justify-center h-10 w-10 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
-			onclick={toggleDrawer}
-			aria-label="Open menu"
-			aria-expanded={isDrawerOpen}
-		>
-			<Icon name="Menu" class="h-6 w-6" />
-		</button>
+		<!-- Mobile: Filters and Hamburger menu buttons -->
+		<div class="md:hidden flex items-center gap-1">
+			<button
+				class="flex items-center justify-center h-10 w-10 rounded-lg transition-colors duration-200 {mobileFiltersOpen
+					? 'bg-emerald-500 text-white'
+					: 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800'}"
+				onclick={toggleMobileFilters}
+				aria-label="Toggle chart filters"
+				aria-expanded={mobileFiltersOpen}
+			>
+				<Icon name="AdjustmentsCog" class="h-6 w-6" />
+			</button>
+			<button
+				class="flex items-center justify-center h-10 w-10 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+				onclick={toggleDrawer}
+				aria-label="Open menu"
+				aria-expanded={isDrawerOpen}
+			>
+				<Icon name="Menu" class="h-6 w-6" />
+			</button>
+		</div>
 	</div>
 </header>
 
