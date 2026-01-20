@@ -78,7 +78,7 @@ const defaultFilters = {
 let filters = $state({ ...defaultFilters });
 
 /** @type {ParetoViewMode} */
-let paretoViewMode = $state('throughput');
+let paretoViewMode = $state('utilization');
 
 /**
  * Get the current filter values
@@ -173,7 +173,7 @@ export function setYAxisMetric(yAxisMetric) {
  */
 export function resetFilters() {
 	filters = { ...defaultFilters };
-	paretoViewMode = 'throughput';
+	paretoViewMode = 'utilization';
 }
 
 /**

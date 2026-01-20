@@ -73,13 +73,13 @@ export function setShowThresholds(show) {
 // ============================================================================
 
 /** @type {boolean} */
-let showParetoInterpolation = $state(false);
+let showParetoInterpolation = $state(true);
 
 /** @type {boolean} */
-let showParetoAnnotations = $state(true);
+let showParetoAnnotations = $state(false);
 
 /** @type {boolean} */
-let showParetoIdealLine = $state(false);
+let showParetoIdealLine = $state(true);
 
 /**
  * Get the Pareto interpolation visibility state
@@ -180,9 +180,9 @@ export function resetPageSettings() {
 	showThresholds = false;
 	
 	// Pareto chart
-	showParetoInterpolation = false;
-	showParetoAnnotations = true;
-	showParetoIdealLine = false;
+	showParetoInterpolation = true;
+	showParetoAnnotations = false;
+	showParetoIdealLine = true;
 	
 	// Mobile filters
 	mobileFiltersOpen = false;
