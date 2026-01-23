@@ -1,0 +1,57 @@
+meta {
+  name: Get Chart Configuration
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/chartConfigurations/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: chart-interactivity
+}
+
+docs {
+  # Get Chart Configuration by ID
+
+  Returns a single chart configuration.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Configuration identifier |
+
+  ## Available IDs
+
+  - `chart-interactivity`
+  - `chart-concurrency`
+  - `chart-latency-throughput`
+  - `chart-normalized`
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "chart-interactivity",
+    "name": "System Throughput vs Interactivity",
+    "description": "Token Throughput per GPU vs Interactivity",
+    "xAxis": {
+      "field": "interactivity",
+      "label": "Interactivity",
+      "unit": "Tokens/sec per user",
+      "isLogarithmic": false
+    },
+    "yAxis": {
+      "field": "systemThroughput",
+      "label": "System Throughput",
+      "unit": "Tokens/sec",
+      "isLogarithmic": true
+    },
+    "hoverFields": ["ttft", "concurrentUsers", "normalizedThroughput"]
+  }
+  ```
+}

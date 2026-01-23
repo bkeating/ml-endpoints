@@ -1,0 +1,70 @@
+meta {
+  name: List Data Points
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/dataPoints
+  body: none
+  auth: none
+}
+
+params:query {
+  ~paretoCurveId: pareto-001
+  ~_sort: systemThroughput
+  ~_order: desc
+  ~_page: 1
+  ~_limit: 10
+}
+
+docs {
+  # List Data Points
+
+  Returns benchmark data points for Pareto curves. Each point represents performance at a specific concurrency level.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "dp-001-01",
+      "paretoCurveId": "pareto-001",
+      "concurrentUsers": { "min": 1, "max": 1.99 },
+      "ttft": 210,
+      "systemThroughput": 200,
+      "interactivity": 200,
+      "normalizedThroughput": 50
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique data point identifier |
+  | paretoCurveId | string | Reference to parent Pareto curve |
+  | concurrentUsers | object | Concurrency range `{ min, max }` |
+  | ttft | number | Time To First Token in milliseconds |
+  | systemThroughput | number | Total system throughput (tokens/sec) |
+  | interactivity | number | Tokens per second per user |
+  | normalizedThroughput | number | Throughput normalized by chip count |
+
+  ## Concurrency Ranges
+
+  The `concurrentUsers` field contains a range:
+  - `min`: Lower bound (inclusive)
+  - `max`: Upper bound (exclusive, except for final point)
+
+  Example ranges: `1-1.99`, `2-3.99`, `4-7.99`, `8-15.99`, etc.
+
+  ## Filter Examples
+
+  - `?paretoCurveId=pareto-001` - Points for a specific curve
+
+  ## Nested Property Filtering
+
+  Filter by nested properties using dot notation:
+  - `?concurrentUsers.min=1` - Points starting at 1 concurrent user
+}

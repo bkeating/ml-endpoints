@@ -1,0 +1,40 @@
+meta {
+  name: Get Model
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/models/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: deepseek-r1
+}
+
+docs {
+  # Get Model by ID
+
+  Returns a single ML model by its identifier.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Model identifier (e.g., `deepseek-r1`, `llama2-70b`, `qwen3`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "deepseek-r1",
+    "name": "DeepSeek R1",
+    "description": "DeepSeek reasoning model",
+    "parameterCount": "671B",
+    "architecture": "MoE",
+    "category": "llm"
+  }
+  ```
+}

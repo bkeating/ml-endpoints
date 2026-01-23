@@ -1,0 +1,41 @@
+meta {
+  name: Get Accelerator
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/accelerators/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: h100-sxm-80gb
+}
+
+docs {
+  # Get Accelerator by ID
+
+  Returns a single accelerator by its identifier.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Accelerator identifier (e.g., `b200-sxm-180gb`, `h100-sxm-80gb`, `mi300x`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "h100-sxm-80gb",
+    "vendorId": "nvidia",
+    "name": "NVIDIA H100-SXM-80GB",
+    "memoryCapacity": "80 GB",
+    "memoryType": "HBM3",
+    "interconnect": "NVLink 4.0",
+    "tdp": 700
+  }
+  ```
+}

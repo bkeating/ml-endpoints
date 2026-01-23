@@ -1,0 +1,47 @@
+meta {
+  name: Create User Preferences
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/userPreferences
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "user-002",
+    "defaultChartId": "chart-concurrency",
+    "theme": "dark",
+    "showNormalized": true
+  }
+}
+
+docs {
+  # Create User Preferences
+
+  Creates a new user preferences record.
+
+  ## Request Body
+
+  ```json
+  {
+    "userId": "user-002",
+    "defaultChartId": "chart-concurrency",
+    "theme": "dark",
+    "showNormalized": true
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Auto-generated if omitted |
+  | userId | string | Yes | User identifier |
+  | defaultChartId | string | Yes | Chart configuration ID |
+  | theme | string | Yes | `light` or `dark` |
+  | showNormalized | boolean | Yes | Default normalization setting |
+}

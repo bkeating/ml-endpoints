@@ -1,0 +1,56 @@
+meta {
+  name: Get Pareto Annotation
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/paretoAnnotations/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: ann-throughput-max
+}
+
+docs {
+  # Get Pareto Annotation by ID
+
+  Returns a single chart annotation.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Annotation identifier |
+
+  ## Available Annotations
+
+  **Throughput View:**
+  - `ann-throughput-max`: Max concurrency peak
+  - `ann-throughput-min`: Single client baseline
+  - `ann-throughput-scaling`: Linear scaling region
+
+  **Utilization View:**
+  - `ann-util-max`: Peak utilization
+  - `ann-util-gap`: Scaling inefficiency indicator
+
+  **Interactivity View:**
+  - `ann-interact-best`: Best user experience point
+  - `ann-interact-degrade`: Degradation indicator
+  - `ann-interact-min`: Minimum interactivity
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "ann-throughput-max",
+    "viewMode": "throughput",
+    "text": "Max concurrency where\nsystem throughput peaks",
+    "targetPoint": { "x": 4096, "y": 700000 },
+    "labelOffset": { "dx": -120, "dy": -50 },
+    "anchor": "end"
+  }
+  ```
+}

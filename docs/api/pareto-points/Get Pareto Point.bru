@@ -1,0 +1,54 @@
+meta {
+  name: Get Pareto Point
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/paretoPoints/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: pp-gb200-01
+}
+
+docs {
+  # Get Pareto Point by ID
+
+  Returns a single performance data point.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Point identifier (e.g., `pp-gb200-01`, `pp-h200-03`) |
+
+  ## ID Convention
+
+  Point IDs follow the pattern: `pp-{hardware}-{number}`
+  - `pp-gb200-01`: First GB200 point
+  - `pp-h200-03`: Third H200 point
+  - `pp-mi300-05`: Fifth MI300X point
+  - `pp-gaudi-02`: Second Gaudi3 point
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "pp-gb200-01",
+    "hardwareConfigId": "gb200x72-dynamo-fp4",
+    "concurrentClients": 1,
+    "totalThroughput": 5000,
+    "tokensPerSecondPerUser": 5000,
+    "utilization": 0.7,
+    "isCompliancePoint": true
+  }
+  ```
+
+  ## Metrics Relationship
+
+  - `tokensPerSecondPerUser = totalThroughput / concurrentClients`
+  - `utilization = (totalThroughput / maxThroughput) * 100`
+}

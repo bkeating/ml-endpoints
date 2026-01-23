@@ -1,0 +1,70 @@
+meta {
+  name: List Pareto Points
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/paretoPoints
+  body: none
+  auth: none
+}
+
+params:query {
+  ~hardwareConfigId: gb200x72-dynamo-fp4
+  ~isCompliancePoint: true
+  ~_sort: concurrentClients
+  ~_order: asc
+  ~_page: 1
+  ~_limit: 20
+}
+
+docs {
+  # List Pareto Points
+
+  Returns performance data points for Pareto chart visualizations.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "pp-gb200-01",
+      "hardwareConfigId": "gb200x72-dynamo-fp4",
+      "concurrentClients": 1,
+      "totalThroughput": 5000,
+      "tokensPerSecondPerUser": 5000,
+      "utilization": 0.7,
+      "isCompliancePoint": true
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique point identifier |
+  | hardwareConfigId | string | Reference to hardware config |
+  | concurrentClients | number | Number of concurrent clients |
+  | totalThroughput | number | Total system throughput (tok/s) |
+  | tokensPerSecondPerUser | number | Per-user throughput |
+  | utilization | number | Percentage of max throughput (0-100) |
+  | isCompliancePoint | boolean | Whether this is an official compliance measurement |
+
+  ## Compliance Points
+
+  Compliance points (`isCompliancePoint: true`) mark official benchmark measurements:
+  - Single client baseline (concurrency = 1)
+  - Maximum concurrency point
+
+  ## Filter Examples
+
+  - `?hardwareConfigId=gb200x72-dynamo-fp4` - Points for specific hardware
+  - `?isCompliancePoint=true` - Only compliance points
+
+  ## Pagination
+
+  There are 26 points total. Use pagination for large requests:
+  - `?_page=1&_limit=10` - First 10 points
+}

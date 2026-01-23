@@ -1,0 +1,52 @@
+meta {
+  name: Update Vendor
+  type: http
+  seq: 4
+}
+
+patch {
+  url: {{baseUrl}}/api/vendors/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: nvidia
+}
+
+body:json {
+  {
+    "description": "Updated description for the vendor"
+  }
+}
+
+docs {
+  # Update Vendor (Partial)
+
+  Partially updates a vendor. Only provided fields are modified.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Vendor identifier |
+
+  ## Request Body
+
+  Include only the fields you want to update:
+
+  ```json
+  {
+    "description": "Updated description"
+  }
+  ```
+
+  ## Response
+
+  Returns the complete updated vendor object.
+
+  ## Error Responses
+
+  - `404 Not Found`: Vendor does not exist
+  - `400 Bad Request`: Invalid JSON body
+}

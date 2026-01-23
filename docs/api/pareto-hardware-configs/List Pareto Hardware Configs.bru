@@ -1,0 +1,65 @@
+meta {
+  name: List Pareto Hardware Configs
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/paretoHardwareConfigs
+  body: none
+  auth: none
+}
+
+params:query {
+  ~vendorId: nvidia
+  ~_sort: maxThroughput
+  ~_order: desc
+}
+
+docs {
+  # List Pareto Hardware Configurations
+
+  Returns hardware configurations used in Pareto chart visualizations.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "gb200x72-dynamo-fp4",
+      "label": "GB200x72 w/ Dynamo TRT FP4",
+      "hardwareConfig": "GB200x72_Dynamo_TRT_FP4",
+      "vendorId": "nvidia",
+      "color": "#2563eb",
+      "maxThroughput": 700000,
+      "minConcurrency": 1,
+      "maxConcurrency": 4096
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique configuration identifier |
+  | label | string | Human-readable display label |
+  | hardwareConfig | string | Technical configuration name |
+  | vendorId | string | Reference to vendor |
+  | color | string | Hex color for chart rendering |
+  | maxThroughput | number | Maximum achievable throughput (tok/s) |
+  | minConcurrency | number | Minimum concurrent clients |
+  | maxConcurrency | number | Maximum concurrent clients |
+
+  ## Available Configurations
+
+  - `gb200x72-dynamo-fp4`: NVIDIA GB200 with Dynamo TRT FP4
+  - `h200x8-vllm-fp8`: NVIDIA H200 with vLLM FP8
+  - `mi300x-rocm-fp8`: AMD MI300X with ROCm FP8
+  - `gaudi3-synapse-bf16`: Intel Gaudi3 with Synapse BF16
+
+  ## Filter Examples
+
+  - `?vendorId=nvidia` - NVIDIA configurations only
+  - `?vendorId=amd` - AMD configurations only
+}

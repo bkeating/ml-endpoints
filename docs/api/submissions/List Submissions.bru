@@ -1,0 +1,63 @@
+meta {
+  name: List Submissions
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/submissions
+  body: none
+  auth: none
+}
+
+params:query {
+  ~systemId: system1
+  ~modelId: deepseek-r1
+  ~resultValid: true
+  ~_sort: submissionDate
+  ~_order: desc
+}
+
+docs {
+  # List Submissions
+
+  Returns all benchmark submissions linking systems to models with results.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "sub-001",
+      "systemId": "system1",
+      "modelId": "deepseek-r1",
+      "submissionDate": "2026-01-15T10:30:00Z",
+      "publishDate": "2026-03-16T00:00:00Z",
+      "resultValid": true
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique submission identifier |
+  | systemId | string | Reference to system |
+  | modelId | string | Reference to ML model |
+  | submissionDate | string | ISO 8601 timestamp of submission |
+  | publishDate | string | ISO 8601 timestamp of publication |
+  | resultValid | boolean | Whether results passed validation |
+
+  ## Relationships
+
+  - Links to `systems` via `systemId`
+  - Links to `models` via `modelId`
+  - Referenced by `paretoCurves` via `submissionId`
+
+  ## Filter Examples
+
+  - `?systemId=system1` - Submissions for a specific system
+  - `?modelId=deepseek-r1` - Submissions for a specific model
+  - `?resultValid=true` - Only valid submissions
+}

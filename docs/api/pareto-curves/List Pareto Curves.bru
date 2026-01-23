@@ -1,0 +1,59 @@
+meta {
+  name: List Pareto Curves
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/paretoCurves
+  body: none
+  auth: none
+}
+
+params:query {
+  ~submissionId: sub-001
+  ~systemId: system1
+}
+
+docs {
+  # List Pareto Curves
+
+  Returns all Pareto curve definitions. Each curve represents a performance frontier for a submission.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "pareto-001",
+      "submissionId": "sub-001",
+      "systemId": "system1",
+      "description": "System 1 - DeepSeek R1 Pareto frontier",
+      "minConcurrency": 1,
+      "maxConcurrency": 64
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique pareto curve identifier |
+  | submissionId | string | Reference to submission |
+  | systemId | string | Reference to system |
+  | description | string | Human-readable description |
+  | minConcurrency | number | Minimum concurrent users tested |
+  | maxConcurrency | number | Maximum concurrent users tested |
+
+  ## Relationships
+
+  - Links to `submissions` via `submissionId`
+  - Links to `systems` via `systemId`
+  - Referenced by `dataPoints` via `paretoCurveId`
+
+  ## Filter Examples
+
+  - `?systemId=system1` - Curves for a specific system
+  - `?submissionId=sub-001` - Curve for a specific submission
+}

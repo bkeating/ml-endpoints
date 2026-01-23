@@ -1,0 +1,54 @@
+meta {
+  name: Get Data Point
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/dataPoints/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: dp-001-01
+}
+
+docs {
+  # Get Data Point by ID
+
+  Returns a single benchmark data point.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Data point identifier (e.g., `dp-001-01`, `dp-002-03`) |
+
+  ## ID Convention
+
+  Data point IDs follow the pattern: `dp-{curveNumber}-{pointNumber}`
+  - `dp-001-01`: First point of pareto-001
+  - `dp-002-03`: Third point of pareto-002
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "dp-001-01",
+    "paretoCurveId": "pareto-001",
+    "concurrentUsers": { "min": 1, "max": 1.99 },
+    "ttft": 210,
+    "systemThroughput": 200,
+    "interactivity": 200,
+    "normalizedThroughput": 50
+  }
+  ```
+
+  ## Metrics Explained
+
+  - **ttft**: Time To First Token - latency before first response token
+  - **systemThroughput**: Total tokens/second the system produces
+  - **interactivity**: Per-user throughput (user experience metric)
+  - **normalizedThroughput**: Throughput divided by chip count for fair comparison
+}

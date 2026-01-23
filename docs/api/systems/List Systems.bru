@@ -1,0 +1,106 @@
+meta {
+  name: List Systems
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/systems
+  body: none
+  auth: none
+}
+
+params:query {
+  ~submitter: NVIDIA
+  ~division: closed
+  ~status: available
+  ~systemType: datacenter
+  ~_sort: chips
+  ~_order: desc
+}
+
+docs {
+  # List Systems
+
+  Returns all benchmark systems. Systems are complex objects containing detailed hardware and software configurations.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "system1",
+      "submitter": "NVIDIA",
+      "systemName": "NVIDIA DGX B200 (4x B200-SXM-180GB, TensorRT)",
+      "division": "closed",
+      "status": "available",
+      "systemType": "datacenter",
+      "systemTypeDetail": "N/A",
+      "numberOfNodes": 1,
+      "chips": 4,
+      "normalizingFactor": 1,
+      "accelerator": {
+        "modelName": "NVIDIA B200-SXM-180GB",
+        "acceleratorsPerNode": 4,
+        "memoryCapacity": "180 GB",
+        "memoryConfiguration": "HBM3e",
+        "frequency": "",
+        "hostInterconnect": "PCIe Gen5 x16",
+        "interconnect": "18x 5th Gen NVLink, 14.4 TB/s aggregated bandwidth",
+        "interconnectTopology": "",
+        "onChipMemories": ""
+      },
+      "processor": {
+        "modelName": "Intel(R) Xeon(R) Platinum 8570",
+        "processorsPerNode": 2,
+        "coreCount": 56,
+        "frequency": "",
+        "caches": "",
+        "interconnect": ""
+      },
+      "memory": {
+        "hostCapacity": "2 TB",
+        "hostConfiguration": "32x 64GB HMCG94AGBRA179N"
+      },
+      "storage": { ... },
+      "networking": { ... },
+      "power": { ... },
+      "firmware": { ... },
+      "software": { ... },
+      "notes": { ... }
+    }
+  ]
+  ```
+
+  ## Top-Level Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique system identifier |
+  | submitter | string | Company that submitted the system |
+  | systemName | string | Full system name with configuration |
+  | division | string | Benchmark division: `closed` or `open` |
+  | status | string | System availability status |
+  | systemType | string | Type: `datacenter`, `edge`, etc. |
+  | numberOfNodes | number | Number of nodes in the system |
+  | chips | number | Total accelerator count |
+  | normalizingFactor | number | Factor for normalized comparisons |
+
+  ## Nested Objects
+
+  - **accelerator**: GPU/accelerator specifications
+  - **processor**: CPU specifications
+  - **memory**: Host memory configuration
+  - **storage**: Storage configuration
+  - **networking**: Network configuration
+  - **power**: Power and cooling details
+  - **firmware**: Firmware versions
+  - **software**: Software stack (framework, OS)
+  - **notes**: Additional notes
+
+  ## Filter Examples
+
+  - `?submitter=NVIDIA` - Systems from NVIDIA
+  - `?division=closed` - Closed division systems
+  - `?systemType=datacenter` - Datacenter systems only
+}

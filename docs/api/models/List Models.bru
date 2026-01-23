@@ -1,0 +1,59 @@
+meta {
+  name: List Models
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/models
+  body: none
+  auth: none
+}
+
+params:query {
+  ~category: llm
+  ~architecture: dense
+  ~_sort: name
+  ~_order: asc
+}
+
+vars:pre-request {
+  baseUrl: http://localhost:5173
+}
+
+docs {
+  # List Models
+
+  Returns all ML models available for benchmarking.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "deepseek-r1",
+      "name": "DeepSeek R1",
+      "description": "DeepSeek reasoning model",
+      "parameterCount": "671B",
+      "architecture": "MoE",
+      "category": "llm"
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique model identifier |
+  | name | string | Display name of the model |
+  | description | string | Brief description |
+  | parameterCount | string | Number of parameters (e.g., "70B", "671B") |
+  | architecture | string | Model architecture: `dense` or `MoE` (Mixture of Experts) |
+  | category | string | Model category (e.g., `llm`) |
+
+  ## Filter Examples
+
+  - `?category=llm` - Filter by category
+  - `?architecture=MoE` - Filter by architecture type
+}

@@ -1,0 +1,50 @@
+meta {
+  name: Create Submission
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/submissions
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "systemId": "system1",
+    "modelId": "llama2-70b",
+    "submissionDate": "2026-01-22T14:00:00Z",
+    "publishDate": "2026-04-01T00:00:00Z",
+    "resultValid": true
+  }
+}
+
+docs {
+  # Create Submission
+
+  Creates a new benchmark submission record.
+
+  ## Request Body
+
+  ```json
+  {
+    "systemId": "system1",
+    "modelId": "llama2-70b",
+    "submissionDate": "2026-01-22T14:00:00Z",
+    "publishDate": "2026-04-01T00:00:00Z",
+    "resultValid": true
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Auto-generated if omitted |
+  | systemId | string | Yes | Must reference existing system |
+  | modelId | string | Yes | Must reference existing model |
+  | submissionDate | string | Yes | ISO 8601 timestamp |
+  | publishDate | string | Yes | ISO 8601 timestamp |
+  | resultValid | boolean | Yes | Validation status |
+}

@@ -1,0 +1,47 @@
+meta {
+  name: Get Pareto Hardware Config
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/paretoHardwareConfigs/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: gb200x72-dynamo-fp4
+}
+
+docs {
+  # Get Pareto Hardware Config by ID
+
+  Returns a single hardware configuration.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Configuration identifier |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "gb200x72-dynamo-fp4",
+    "label": "GB200x72 w/ Dynamo TRT FP4",
+    "hardwareConfig": "GB200x72_Dynamo_TRT_FP4",
+    "vendorId": "nvidia",
+    "color": "#2563eb",
+    "maxThroughput": 700000,
+    "minConcurrency": 1,
+    "maxConcurrency": 4096
+  }
+  ```
+
+  ## Related Endpoints
+
+  To get performance points for this configuration:
+  `GET /api/paretoPoints?hardwareConfigId=gb200x72-dynamo-fp4`
+}

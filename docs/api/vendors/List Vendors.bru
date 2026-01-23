@@ -1,0 +1,59 @@
+meta {
+  name: List Vendors
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/vendors
+  body: none
+  auth: none
+}
+
+params:query {
+  ~_sort: name
+  ~_order: asc
+  ~_page: 1
+  ~_limit: 10
+}
+
+docs {
+  # List Vendors
+
+  Returns all hardware vendors in the system.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "nvidia",
+      "name": "NVIDIA",
+      "description": "GPU and AI computing company",
+      "website": "https://nvidia.com"
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique vendor identifier |
+  | name | string | Display name of the vendor |
+  | description | string | Brief description of the vendor |
+  | website | string | Vendor's website URL |
+
+  ## Query Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | _sort | Field to sort by (e.g., `name`) |
+  | _order | Sort order: `asc` or `desc` |
+  | _page | Page number for pagination |
+  | _limit | Items per page |
+
+  ## Response Headers
+
+  - `X-Total-Count`: Total number of items (when using pagination)
+}

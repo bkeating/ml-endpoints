@@ -1,0 +1,53 @@
+meta {
+  name: Create Data Point
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/dataPoints
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "paretoCurveId": "pareto-001",
+    "concurrentUsers": { "min": 128, "max": 128 },
+    "ttft": 650,
+    "systemThroughput": 18000,
+    "interactivity": 141,
+    "normalizedThroughput": 4500
+  }
+}
+
+docs {
+  # Create Data Point
+
+  Adds a new benchmark data point to a Pareto curve.
+
+  ## Request Body
+
+  ```json
+  {
+    "paretoCurveId": "pareto-001",
+    "concurrentUsers": { "min": 128, "max": 128 },
+    "ttft": 650,
+    "systemThroughput": 18000,
+    "interactivity": 141,
+    "normalizedThroughput": 4500
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Auto-generated if omitted |
+  | paretoCurveId | string | Yes | Parent curve reference |
+  | concurrentUsers | object | Yes | `{ min, max }` range |
+  | ttft | number | Yes | Time To First Token (ms) |
+  | systemThroughput | number | Yes | Tokens/sec |
+  | interactivity | number | Yes | Tokens/sec/user |
+  | normalizedThroughput | number | Yes | Normalized tokens/sec |
+}

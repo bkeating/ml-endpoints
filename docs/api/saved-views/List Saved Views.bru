@@ -1,0 +1,75 @@
+meta {
+  name: List Saved Views
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/savedViews
+  body: none
+  auth: none
+}
+
+params:query {
+  ~userId: user-001
+  ~chartConfigurationId: chart-interactivity
+}
+
+docs {
+  # List Saved Views
+
+  Returns user-saved chart views with specific system selections and filters.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "view-001",
+      "userId": "user-001",
+      "name": "System 1 vs System 2 Comparison",
+      "chartConfigurationId": "chart-interactivity",
+      "selectedSystems": ["system1", "system2"],
+      "filters": {
+        "modelId": "deepseek-r1",
+        "division": "closed"
+      },
+      "normalization": {
+        "enabled": false,
+        "overrides": {}
+      },
+      "layers": [],
+      "createdAt": "2026-01-20T14:30:00Z",
+      "updatedAt": "2026-01-20T14:30:00Z"
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique view identifier |
+  | userId | string | Owner user ID |
+  | name | string | User-defined view name |
+  | chartConfigurationId | string | Base chart configuration |
+  | selectedSystems | array | System IDs to display |
+  | filters | object | Active filter settings |
+  | normalization | object | Normalization settings with overrides |
+  | layers | array | Additional data layers to display |
+  | createdAt | string | ISO 8601 creation timestamp |
+  | updatedAt | string | ISO 8601 last update timestamp |
+
+  ## Normalization Object
+
+  ```json
+  {
+    "enabled": true,
+    "overrides": {
+      "system2": 0.5
+    }
+  }
+  ```
+
+  Allows per-system normalization factor overrides.
+}

@@ -1,0 +1,63 @@
+meta {
+  name: Get Pareto View Modes
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/paretoViewModes
+  body: none
+  auth: none
+}
+
+docs {
+  # Get Pareto View Modes
+
+  Returns the configuration object for Pareto chart view modes. This is a **singleton resource** (returns an object, not an array).
+
+  ## Data Shape
+
+  ```json
+  {
+    "throughput": {
+      "yField": "totalThroughput",
+      "yLabel": "Total System Throughput (Tok/s)",
+      "stepDirection": "after",
+      "description": "Total system throughput at each concurrency level"
+    },
+    "utilization": {
+      "yField": "utilization",
+      "yLabel": "% Utilization of Max Throughput",
+      "stepDirection": "after",
+      "description": "Percentage of maximum achievable throughput"
+    },
+    "interactivity": {
+      "yField": "tokensPerSecondPerUser",
+      "yLabel": "Interactivity (Tok/s/user)",
+      "stepDirection": "after",
+      "description": "Per-user token throughput (user experience metric)"
+    }
+  }
+  ```
+
+  ## View Mode Properties
+
+  Each view mode object contains:
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | yField | string | Data field to plot on Y-axis |
+  | yLabel | string | Y-axis label text |
+  | stepDirection | string | Step chart direction: `after` or `before` |
+  | description | string | Human-readable description |
+
+  ## Available View Modes
+
+  - **throughput**: Shows total system throughput vs concurrency
+  - **utilization**: Shows percentage of max capacity being used
+  - **interactivity**: Shows per-user experience (tokens/sec/user)
+
+  ## Note
+
+  This is a singleton resource. POST, PUT, PATCH, and DELETE operations are not supported. Use GET only.
+}

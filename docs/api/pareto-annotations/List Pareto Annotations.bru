@@ -1,0 +1,59 @@
+meta {
+  name: List Pareto Annotations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/paretoAnnotations
+  body: none
+  auth: none
+}
+
+params:query {
+  ~viewMode: throughput
+}
+
+docs {
+  # List Pareto Annotations
+
+  Returns chart annotations for Pareto visualizations. Annotations provide contextual labels on charts.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "ann-throughput-max",
+      "viewMode": "throughput",
+      "text": "Max concurrency where\nsystem throughput peaks",
+      "targetPoint": { "x": 4096, "y": 700000 },
+      "labelOffset": { "dx": -120, "dy": -50 },
+      "anchor": "end"
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique annotation identifier |
+  | viewMode | string | Chart view mode this applies to |
+  | text | string | Annotation text (supports `\n` for line breaks) |
+  | targetPoint | object | `{ x, y }` coordinates to annotate |
+  | labelOffset | object | `{ dx, dy }` offset from target point |
+  | anchor | string | Text anchor: `start`, `middle`, or `end` |
+
+  ## View Modes
+
+  Annotations are specific to chart view modes:
+  - `throughput`: Total system throughput view
+  - `utilization`: Utilization percentage view
+  - `interactivity`: Per-user throughput view
+
+  ## Filter Examples
+
+  - `?viewMode=throughput` - Annotations for throughput chart
+  - `?viewMode=interactivity` - Annotations for interactivity chart
+}

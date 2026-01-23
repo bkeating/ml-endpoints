@@ -1,0 +1,54 @@
+meta {
+  name: Replace Vendor
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/vendors/:id
+  body: json
+  auth: none
+}
+
+params:path {
+  id: nvidia
+}
+
+body:json {
+  {
+    "name": "NVIDIA Corporation",
+    "description": "Leading GPU and AI computing company",
+    "website": "https://nvidia.com"
+  }
+}
+
+docs {
+  # Replace Vendor
+
+  Completely replaces a vendor. All fields must be provided (except `id` which is preserved from the URL).
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Vendor identifier |
+
+  ## Request Body
+
+  ```json
+  {
+    "name": "NVIDIA Corporation",
+    "description": "Leading GPU and AI computing company",
+    "website": "https://nvidia.com"
+  }
+  ```
+
+  ## Response
+
+  Returns the replaced vendor object with status `200 OK`.
+
+  ## Error Responses
+
+  - `404 Not Found`: Vendor does not exist
+  - `400 Bad Request`: Invalid JSON body
+}

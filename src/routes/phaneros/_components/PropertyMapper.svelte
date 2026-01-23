@@ -120,7 +120,7 @@
 						id="data-path"
 						value={mapping.dataPath || '(root)'}
 						onchange={handleDataPathChange}
-						class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+						class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 					>
 						{#each analyzedStructure as array (array.path)}
 							<option value={array.path}>
@@ -144,7 +144,7 @@
 								id="x-prop"
 								value={mapping.xProp}
 								onchange={handleXPropChange}
-								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 							>
 								<option value="">Select property...</option>
 								{#each allProperties as prop (prop.name)}
@@ -168,7 +168,7 @@
 								id="y-prop"
 								value={mapping.yProp}
 								onchange={handleYPropChange}
-								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 							>
 								<option value="">Select property...</option>
 								{#each numericProperties as prop (prop.name)}
@@ -193,7 +193,7 @@
 								id="label-prop"
 								value={mapping.labelProp}
 								onchange={handleLabelPropChange}
-								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
+								class="dm-mono h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 							>
 								<option value="">Use X-Axis value</option>
 								{#each allProperties as prop (prop.name)}

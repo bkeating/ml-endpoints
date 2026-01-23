@@ -36,14 +36,14 @@
 				type="button"
 				onclick={() => onTypeChange('bar')}
 				class="flex-1 rounded-lg border-2 p-4 transition-all {chartType === 'bar'
-					? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+					? 'border-[#CCEBD4] bg-[#CCEBD4]/30 dark:border-[#887B40] dark:bg-[#887B40]/20'
 					: 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600'}"
 				aria-pressed={chartType === 'bar'}
 			>
 				<div class="flex flex-col items-center gap-2">
 					<svg
 						class="h-8 w-8 {chartType === 'bar'
-							? 'text-emerald-600 dark:text-emerald-400'
+							? 'text-slate-900 dark:text-slate-100'
 							: 'text-slate-400 dark:text-slate-500'}"
 						fill="none"
 						stroke="currentColor"
@@ -58,7 +58,7 @@
 					</svg>
 					<span
 						class="text-sm font-medium {chartType === 'bar'
-							? 'text-emerald-700 dark:text-emerald-400'
+							? 'text-slate-900 dark:text-slate-100'
 							: 'text-slate-600 dark:text-slate-400'}"
 					>
 						Bar Chart
@@ -71,14 +71,14 @@
 				type="button"
 				onclick={() => onTypeChange('line')}
 				class="flex-1 rounded-lg border-2 p-4 transition-all {chartType === 'line'
-					? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
+					? 'border-[#CCEBD4] bg-[#CCEBD4]/30 dark:border-[#887B40] dark:bg-[#887B40]/20'
 					: 'border-slate-200 hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600'}"
 				aria-pressed={chartType === 'line'}
 			>
 				<div class="flex flex-col items-center gap-2">
 					<svg
 						class="h-8 w-8 {chartType === 'line'
-							? 'text-emerald-600 dark:text-emerald-400'
+							? 'text-slate-900 dark:text-slate-100'
 							: 'text-slate-400 dark:text-slate-500'}"
 						fill="none"
 						stroke="currentColor"
@@ -93,7 +93,7 @@
 					</svg>
 					<span
 						class="text-sm font-medium {chartType === 'line'
-							? 'text-emerald-700 dark:text-emerald-400'
+							? 'text-slate-900 dark:text-slate-100'
 							: 'text-slate-600 dark:text-slate-400'}"
 					>
 						Line Chart

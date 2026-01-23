@@ -7,7 +7,7 @@
 </script>
 
 <div
-	class="mb-12 flex flex-col gap-8 border-b-2 border-[#CCEBD4] pb-12 lg:flex-row lg:items-start lg:gap-6 dark:border-slate-700"
+	class="mb-12 flex flex-col gap-8 border-b-2 border-[#CCEBD4] pb-20 lg:flex-row lg:items-start lg:gap-6 dark:border-slate-700"
 >
 	<div class="w-full lg:w-1/2 lg:pr-6">
 		<h2

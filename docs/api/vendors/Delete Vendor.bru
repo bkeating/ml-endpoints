@@ -1,0 +1,39 @@
+meta {
+  name: Delete Vendor
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/api/vendors/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: new-vendor
+}
+
+docs {
+  # Delete Vendor
+
+  Removes a vendor from the database.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Vendor identifier to delete |
+
+  ## Response
+
+  Returns `204 No Content` on successful deletion.
+
+  ## Error Responses
+
+  - `404 Not Found`: Vendor does not exist
+
+  ## Note
+
+  This operation is performed in-memory. Changes persist until server restart.
+}

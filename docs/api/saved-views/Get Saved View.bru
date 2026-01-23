@@ -1,0 +1,58 @@
+meta {
+  name: Get Saved View
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/savedViews/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: view-001
+}
+
+docs {
+  # Get Saved View by ID
+
+  Returns a single saved view configuration.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Saved view identifier (e.g., `view-001`, `view-002`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "view-001",
+    "userId": "user-001",
+    "name": "System 1 vs System 2 Comparison",
+    "chartConfigurationId": "chart-interactivity",
+    "selectedSystems": ["system1", "system2"],
+    "filters": {
+      "modelId": "deepseek-r1",
+      "division": "closed"
+    },
+    "normalization": {
+      "enabled": false,
+      "overrides": {}
+    },
+    "layers": [],
+    "createdAt": "2026-01-20T14:30:00Z",
+    "updatedAt": "2026-01-20T14:30:00Z"
+  }
+  ```
+
+  ## Use Case
+
+  Saved views allow users to bookmark specific chart configurations for quick access, including:
+  - Which systems to compare
+  - Active filters (model, division)
+  - Normalization settings
+  - Additional visualization layers
+}

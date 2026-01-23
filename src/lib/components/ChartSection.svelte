@@ -1,6 +1,8 @@
 <script>
 	import BenchmarkChart from '$lib/components/BenchmarkChart.svelte';
 	import BarChart from '$lib/components/BarChart.svelte';
+	import FilterSelect from '$lib/components/FilterSelect.svelte';
+	import { yAxisMetricOptions, getYAxisMetric, setYAxisMetric } from '$lib/stores/chartFilters.svelte.js';
 
 	/**
 	 * Reusable chart section wrapper that handles title, subtitle, and responsive sizing.
@@ -25,6 +27,25 @@
 
 	// Reactive container width for fluid chart sizing
 	let containerWidth = $state(0);
+
+	let currentYAxisMetric = $derived(getYAxisMetric());
+	
+	// Get the label for the current Y-axis metric
+	let currentYAxisMetricLabel = $derived(
+		yAxisMetricOptions.find((opt) => opt.id === currentYAxisMetric)?.label ?? 
+		'Token Throughput per GPU'
+	);
+	
+	// Generate dynamic title based on Y-axis metric and chart type
+	let dynamicTitle = $derived(
+		layout === 'side-by-side'
+			? // For latency chart: "{Y-Axis Metric} vs. End-to-end Latency"
+			  `${currentYAxisMetricLabel} vs. End-to-end Latency`
+			: // For other charts, use the original title or generate based on xLabel
+			  chart.xLabel?.includes('Interactivity')
+				? `${currentYAxisMetricLabel} vs. Interactivity`
+				: chart.title
+	);
 </script>
 
 {#if layout === 'side-by-side'}
@@ -37,12 +58,23 @@
 				<h2
 					class="font-instrument-sans-100 mt-16 mb-3 text-3xl font-semibold text-pretty text-slate-800 md:mt-0 md:text-5xl dark:text-slate-200"
 				>
-					{chart.title}
+					{dynamicTitle}
 				</h2>
 				<p class="mb-4 leading-relaxed text-slate-600 dark:text-slate-500">
 					{chart.subtitle}
 				</p>
-				<p class="leading-relaxed text-slate-500 dark:text-slate-400">
+
+        <!-- Y-Axis Metric Select -->
+        <FilterSelect
+          id="mobile-y-axis-select"
+          value={currentYAxisMetric}
+          options={yAxisMetricOptions}
+          onchange={(v) => setYAxisMetric(/** @type {any} */ (v))}
+          minWidth=""
+          maxWidth="max-w-[400px] pr-4"
+        />
+
+				<p class="mt-4 leading-relaxed text-slate-500 dark:text-slate-400">
 					Measures tokens processed per second on one GPU—raw efficiency for batch inference and
 					training.
 				</p>
@@ -77,7 +109,7 @@
 		<h2
 			class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-3xl dark:text-slate-200"
 		>
-			{chart.title}
+			{dynamicTitle}
 		</h2>
 		<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
 			{chart.subtitle}

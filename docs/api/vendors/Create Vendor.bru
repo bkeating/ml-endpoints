@@ -1,0 +1,50 @@
+meta {
+  name: Create Vendor
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/vendors
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "new-vendor",
+    "name": "New Vendor",
+    "description": "A new hardware vendor",
+    "website": "https://example.com"
+  }
+}
+
+docs {
+  # Create Vendor
+
+  Creates a new vendor entry. If `id` is omitted, one will be auto-generated.
+
+  ## Request Body
+
+  ```json
+  {
+    "id": "new-vendor",
+    "name": "New Vendor",
+    "description": "A new hardware vendor",
+    "website": "https://example.com"
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Unique identifier (auto-generated if omitted) |
+  | name | string | Yes | Display name |
+  | description | string | Yes | Brief description |
+  | website | string | Yes | Website URL |
+
+  ## Response
+
+  Returns the created vendor with status `201 Created`.
+}

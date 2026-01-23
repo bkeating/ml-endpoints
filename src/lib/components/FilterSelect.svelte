@@ -17,7 +17,7 @@
 	 */
 
 	/** @type {Props} */
-	let { id, label, value, options, onchange, minWidth = 'min-w-48' } = $props();
+	let { id, label, value, options, onchange, minWidth = 'min-w-48', maxWidth = 'max-w-48' } = $props();
 
 	/**
 	 * Handle select change event
@@ -29,13 +29,15 @@
 	}
 </script>
 
-<div class="flex {minWidth} flex-col gap-1">
+<div class="flex {minWidth} {maxWidth} flex-col gap-1">
+  {#if label}
 	<label
 		for={id}
-		class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
-	>
-		{label}
-	</label>
+      class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+    >
+      {label}
+    </label>
+  {/if}
 	<select
 		{id}
 		{value}

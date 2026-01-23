@@ -2,32 +2,18 @@
 	/**
 	 * Chart Builder Main Component
 	 *
-	 * Orchestrates the chart building workflow:
-	 * 1. Select chart type (bar/line)
-	 * 2. Configure data layers with API endpoints
-	 * 3. Map properties to chart axes
-	 * 4. Preview chart in real-time
-	 * 5. Save chart configuration
+	 * Streamlined chart preview with toolbar-based configuration.
+	 * All layer configuration is handled by the LayerToolbar in the layout.
 	 */
-	import ChartTypeSelector from './ChartTypeSelector.svelte';
-	import DataLayerPanel from './DataLayerPanel.svelte';
+	import { slide } from 'svelte/transition';
 	import ChartPreview from './ChartPreview.svelte';
 	import {
 		getChartType,
-		setChartType,
 		getLayers,
 		getChartConfig,
 		setChartConfig,
-		addLayer,
-		removeLayer,
-		updateLayer,
-		updateLayerMapping,
-		toggleLayerVisibility,
-		moveLayer,
-		fetchLayerData,
 		getAllChartData,
-		buildChartPayload,
-		resetChartBuilder
+		buildChartPayload
 	} from '$lib/stores/chartBuilder.svelte.js';
 
 	// Reactive store values
@@ -38,220 +24,237 @@
 
 	// Preview container for responsive sizing
 	let previewContainerWidth = $state(0);
+	let chartContainerWidth = $state(0);
 
-	// Save feedback state
-	let saveStatus = $state(/** @type {'idle' | 'saving' | 'saved'} */ ('idle'));
+	// Sidebar state
+	let showPayloadSidebar = $state(false);
+	let sidebarWidth = $state(384); // Default width in pixels (w-96 = 384px)
+	const minSidebarWidth = 300;
+	const maxSidebarWidth = 800;
+	let selectedLayerId = $state('');
 
-	/**
-	 * Handle save chart action
-	 */
-	async function handleSave() {
-		saveStatus = 'saving';
+	// Drag state
+	let isDragging = $state(false);
+	let dragStartX = $state(0);
+	let dragStartWidth = $state(0);
 
-		const payload = buildChartPayload();
+	// Get layers with responses
+	let layersWithResponses = $derived(layers.filter((l) => l.response !== null));
 
-		// Log the POST payload (as requested)
-		console.log('=== CHART SAVE PAYLOAD ===');
-		console.log('POST /api/charts');
-		console.log(JSON.stringify(payload, null, 2));
-		console.log('=========================');
-
-		// Simulate API delay
-		await new Promise((resolve) => setTimeout(resolve, 500));
-
-		saveStatus = 'saved';
-
-		// Reset status after 2 seconds
-		setTimeout(() => {
-			saveStatus = 'idle';
-		}, 2000);
-	}
-
-	/**
-	 * Handle reset chart action
-	 */
-	function handleReset() {
-		if (confirm('Are you sure you want to reset? All configuration will be lost.')) {
-			resetChartBuilder();
+	// Initialize selected layer when sidebar opens or layers change
+	$effect(() => {
+		if (showPayloadSidebar && layersWithResponses.length > 0) {
+			// If no selection or selected layer no longer has response, select first available
+			if (
+				!selectedLayerId ||
+				!layersWithResponses.find((l) => l.id === selectedLayerId)
+			) {
+				selectedLayerId = layersWithResponses[0].id;
+			}
 		}
+	});
+
+	// Get selected layer's response JSON
+	let selectedLayer = $derived(layers.find((l) => l.id === selectedLayerId));
+	let formattedPayload = $derived(
+		selectedLayer?.response ? JSON.stringify(selectedLayer.response, null, 2) : ''
+	);
+
+	// Handle drag start
+	function handleDragStart(e) {
+		isDragging = true;
+		dragStartX = e.clientX;
+		dragStartWidth = sidebarWidth;
+		e.preventDefault();
 	}
+
+	// Handle drag
+	function handleDrag(e) {
+		if (!isDragging) return;
+		const deltaX = dragStartX - e.clientX; // Inverted because we're dragging left edge
+		const newWidth = Math.max(
+			minSidebarWidth,
+			Math.min(maxSidebarWidth, dragStartWidth + deltaX)
+		);
+		sidebarWidth = newWidth;
+	}
+
+	// Handle drag end
+	function handleDragEnd() {
+		isDragging = false;
+	}
+
+	// Set up global mouse event listeners
+	$effect(() => {
+		if (isDragging) {
+			const handleMouseMove = (e) => handleDrag(e);
+			const handleMouseUp = () => handleDragEnd();
+
+			// Prevent text selection while dragging
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+
+			window.addEventListener('mousemove', handleMouseMove);
+			window.addEventListener('mouseup', handleMouseUp);
+
+			return () => {
+				window.removeEventListener('mousemove', handleMouseMove);
+				window.removeEventListener('mouseup', handleMouseUp);
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+			};
+		}
+	});
+
+	/**
+	 * Format property name to a readable label
+	 * @param {string} propName
+	 * @returns {string}
+	 */
+	function formatPropertyLabel(propName) {
+		if (!propName) return '';
+		// Convert camelCase to Title Case
+		return propName
+			.replace(/([A-Z])/g, ' $1')
+			.replace(/^./, (str) => str.toUpperCase())
+			.trim();
+	}
+
+	// Derive axis labels from the first visible layer's mapping
+	let xAxisLabel = $derived.by(() => {
+		const visibleLayer = layers.find((l) => l.visible && l.mapping.xProp);
+		return visibleLayer?.mapping.xProp ? formatPropertyLabel(visibleLayer.mapping.xProp) : 'X Axis';
+	});
+
+	let yAxisLabel = $derived.by(() => {
+		const visibleLayer = layers.find((l) => l.visible && l.mapping.yProp);
+		return visibleLayer?.mapping.yProp ? formatPropertyLabel(visibleLayer.mapping.yProp) : 'Y Axis';
+	});
 </script>
 
-<div class="flex h-full flex-col gap-4 overflow-hidden p-4 lg:flex-row">
-	<!-- Left Panel: Configuration -->
-	<div class="flex shrink-0 flex-col gap-4 overflow-y-auto pb-4 lg:w-96 xl:w-[420px]">
-		<!-- Chart Title & Config -->
-		<div
-			class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
-		>
-			<div
-				class="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
-			>
-				<h3
-					class="dm-mono text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
-				>
-					Chart Configuration
-				</h3>
-			</div>
-			<div class="space-y-4 p-4">
-				<div class="flex flex-col gap-1">
-					<label
-						for="chart-title"
-						class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-					>
-						Chart Title
-					</label>
-					<input
-						id="chart-title"
-						type="text"
-						value={chartConfig.title}
-						onchange={(e) => setChartConfig({ title: e.target.value })}
-						class="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
-					/>
-				</div>
-				<div class="grid grid-cols-2 gap-4">
-					<div class="flex flex-col gap-1">
-						<label
-							for="x-axis-label"
-							class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-						>
-							X-Axis Label
-						</label>
-						<input
-							id="x-axis-label"
-							type="text"
-							value={chartConfig.xAxisLabel}
-							onchange={(e) => setChartConfig({ xAxisLabel: e.target.value })}
-							class="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
-						/>
-					</div>
-					<div class="flex flex-col gap-1">
-						<label
-							for="y-axis-label"
-							class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-						>
-							Y-Axis Label
-						</label>
-						<input
-							id="y-axis-label"
-							type="text"
-							value={chartConfig.yAxisLabel}
-							onchange={(e) => setChartConfig({ yAxisLabel: e.target.value })}
-							class="h-9 rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
-						/>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Chart Type Selector -->
-		<ChartTypeSelector {chartType} onTypeChange={setChartType} />
-
-		<!-- Data Layers -->
-		<DataLayerPanel
-			{layers}
-			onFetch={fetchLayerData}
-			onLayerUpdate={updateLayer}
-			onMappingUpdate={updateLayerMapping}
-			onToggleVisibility={toggleLayerVisibility}
-			onMoveLayer={moveLayer}
-			onRemoveLayer={removeLayer}
-			onAddLayer={addLayer}
-		/>
-	</div>
-
-	<!-- Right Panel: Preview & Actions -->
-	<div class="flex min-w-0 flex-1 flex-col gap-4 overflow-hidden">
-		<!-- Preview Area -->
-		<div class="min-h-0 flex-1 overflow-auto" bind:clientWidth={previewContainerWidth}>
-			{#if previewContainerWidth > 0}
+<!-- Chart Preview Area -->
+<div class="flex h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+	<!-- Main Chart Area -->
+	<div
+		class="flex min-w-0 flex-1 items-start justify-center overflow-auto bg-slate-100 p-6 dark:bg-slate-900"
+		bind:clientWidth={chartContainerWidth}
+	>
+		{#if chartContainerWidth > 0}
+			<div class="w-full max-w-7xl">
 				<ChartPreview
 					{chartType}
 					layers={chartData}
 					title={chartConfig.title}
-					xAxisLabel={chartConfig.xAxisLabel}
-					yAxisLabel={chartConfig.yAxisLabel}
-					width={Math.min(previewContainerWidth - 32, 800)}
+					xAxisLabel={xAxisLabel}
+					yAxisLabel={yAxisLabel}
+					width={Math.min(chartContainerWidth - 48, 1280)}
 					height={400}
+					showPayloadToggle={true}
+					onTogglePayload={() => (showPayloadSidebar = !showPayloadSidebar)}
+					chartTitle={chartConfig.title}
+					onChartTitleChange={(title) => setChartConfig({ title })}
+					onSave={() => {
+						const payload = buildChartPayload();
+						console.log('=== CHART SAVE PAYLOAD ===');
+						console.log('POST /api/charts');
+						console.log(JSON.stringify(payload, null, 2));
+						console.log('=========================');
+					}}
 				/>
-			{/if}
-		</div>
+			</div>
+		{/if}
+	</div>
 
-		<!-- Action Bar -->
+	<!-- JSON Payload Sidebar -->
+	{#if showPayloadSidebar}
 		<div
-			class="shrink-0 rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800"
+			transition:slide={{ axis: 'x', duration: 200 }}
+			class="relative flex h-full shrink-0 flex-col border-l border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+			style="width: {sidebarWidth}px;"
 		>
-			<div class="flex flex-col items-stretch justify-between gap-4 sm:flex-row sm:items-center">
-				<!-- Info -->
-				<div class="text-sm text-slate-600 dark:text-slate-400">
-					<span class="font-medium text-slate-800 dark:text-slate-200">{layers.length}</span>
-					layer{layers.length !== 1 ? 's' : ''} configured •
-					<span class="font-medium text-slate-800 dark:text-slate-200"
-						>{chartData.reduce((sum, l) => sum + l.data.length, 0)}</span
-					> data points
-				</div>
+			<!-- Resize Handle -->
+			<button
+				type="button"
+				class="absolute left-0 top-0 z-10 h-full w-1 cursor-col-resize bg-transparent transition-colors hover:bg-[#CCEBD4] dark:hover:bg-[#887B40] {isDragging
+					? 'bg-[#b8dcc4] dark:bg-[#9a8d4d]'
+					: ''}"
+				onmousedown={handleDragStart}
+				aria-label="Resize sidebar"
+			></button>
+			<!-- Header -->
+			<div
+				class="flex shrink-0 items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+			>
+				<h3
+					class="dm-mono text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
+				>
+					API Responses
+				</h3>
+				<button
+					type="button"
+					onclick={() => (showPayloadSidebar = false)}
+					class="flex h-7 w-7 items-center justify-center rounded text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+					aria-label="Close sidebar"
+				>
+					<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				</button>
+			</div>
 
-				<!-- Actions -->
-				<div class="flex items-center gap-3">
-					<button
-						type="button"
-						onclick={handleReset}
-						class="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-					>
-						Reset
-					</button>
-					<button
-						type="button"
-						onclick={handleSave}
-						disabled={saveStatus !== 'idle'}
-						class="flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600 disabled:bg-emerald-400"
-					>
-						{#if saveStatus === 'saving'}
-							<svg
-								class="h-4 w-4 animate-spin"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<circle
-									class="opacity-25"
-									cx="12"
-									cy="12"
-									r="10"
-									stroke="currentColor"
-									stroke-width="4"
-								></circle>
-								<path
-									class="opacity-75"
-									fill="currentColor"
-									d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-								></path>
-							</svg>
-							Saving...
-						{:else if saveStatus === 'saved'}
-							<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M5 13l4 4L19 7"
-								/>
-							</svg>
-							Saved!
-						{:else}
-							<svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-								/>
-							</svg>
-							Save Chart
-						{/if}
-					</button>
+			<!-- Layer List -->
+			<div class="shrink-0 border-b border-slate-200 dark:border-slate-700">
+				<div class="max-h-48 overflow-y-auto p-2">
+					{#if layersWithResponses.length === 0}
+						<div class="py-4 text-center text-xs text-slate-500 dark:text-slate-400">
+							No API responses yet
+						</div>
+					{:else}
+						<div class="space-y-1">
+							{#each layersWithResponses as layer (layer.id)}
+								<button
+									type="button"
+									onclick={() => (selectedLayerId = layer.id)}
+									class="flex w-full items-center gap-2 rounded px-3 py-2 text-left text-xs transition-colors {selectedLayerId === layer.id
+										? 'bg-[#CCEBD4] text-slate-900 dark:bg-[#887B40] dark:text-slate-100'
+										: 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700'}"
+								>
+									<!-- Color Indicator -->
+									<div
+										class="h-3 w-3 shrink-0 rounded-full"
+										style="background-color: {layer.mapping.color}"
+									></div>
+									<!-- Layer Name -->
+									<span class="min-w-0 flex-1 truncate font-medium">{layer.name}</span>
+									<!-- Status Indicator -->
+									{#if layer.error}
+										<svg class="h-3.5 w-3.5 shrink-0 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+										</svg>
+									{:else if layer.response}
+										<svg class="h-3.5 w-3.5 shrink-0 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+										</svg>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			</div>
+
+			<!-- JSON Content -->
+			<div class="min-h-0 flex-1 overflow-auto p-4">
+				{#if selectedLayer && formattedPayload}
+					<pre
+						class="dm-mono h-full overflow-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100 dark:bg-slate-950"
+					><code>{formattedPayload}</code></pre>
+				{:else}
+					<div class="flex h-full items-center justify-center text-xs text-slate-500 dark:text-slate-400">
+						Select a layer to view its API response
+					</div>
+				{/if}
+			</div>
 		</div>
-	</div>
+	{/if}
 </div>

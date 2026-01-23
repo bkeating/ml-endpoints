@@ -163,16 +163,6 @@
 			ariaLabel="Floating point precision"
 		/>
 
-		<!-- Y-Axis Metric Select -->
-		<FilterSelect
-			id="mobile-y-axis-select"
-			label="Y-Axis Metric"
-			value={currentYAxisMetric}
-			options={yAxisMetricOptions}
-			onchange={(v) => setYAxisMetric(/** @type {any} */ (v))}
-			minWidth=""
-		/>
-
 		<!-- Divider -->
 		<hr class="border-slate-200 dark:border-slate-700" />
 
@@ -271,7 +261,7 @@
 
 					<FilterSelect
 						id="isl-osl-select"
-						label="ISL/OSL"
+						label="Workload"
 						value={currentIslOsl}
 						options={islOslOptions}
 						onchange={(v) => setIslOsl(/** @type {any} */ (v))}
@@ -285,15 +275,6 @@
 						options={precisionOptions}
 						onchange={(v) => setPrecision(/** @type {any} */ (v))}
 						ariaLabel="Floating point precision"
-					/>
-
-					<FilterSelect
-						id="y-axis-select"
-						label="Y-Axis Metric"
-						value={currentYAxisMetric}
-						options={yAxisMetricOptions}
-						onchange={(v) => setYAxisMetric(/** @type {any} */ (v))}
-						minWidth=""
 					/>
 				</div>
 

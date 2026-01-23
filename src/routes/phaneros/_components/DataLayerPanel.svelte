@@ -70,7 +70,7 @@
 		<button
 			type="button"
 			onclick={onAddLayer}
-			class="flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-emerald-600"
+			class="flex items-center gap-1.5 rounded-lg bg-[#CCEBD4] px-3 py-1.5 text-xs font-medium text-slate-900 transition-colors hover:bg-[#b8dcc4] dark:bg-[#887B40] dark:text-slate-100 dark:hover:bg-[#9a8d4d]"
 		>
 			<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -89,7 +89,7 @@
 						type="button"
 						onclick={() => onToggleVisibility(layer.id)}
 						class="flex h-8 w-8 items-center justify-center rounded-lg transition-colors {layer.visible
-							? 'text-emerald-600 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-900/20'
+							? 'text-slate-900 hover:bg-[#CCEBD4]/30 dark:text-slate-200 dark:hover:bg-[#887B40]/20'
 							: 'text-slate-400 hover:bg-slate-100 dark:text-slate-500 dark:hover:bg-slate-700'}"
 						aria-label={layer.visible ? 'Hide layer' : 'Show layer'}
 					>
@@ -131,7 +131,7 @@
 						type="text"
 						value={layer.name}
 						onchange={(e) => onLayerUpdate(layer.id, { name: e.target.value })}
-						class="h-8 min-w-0 flex-1 rounded border border-transparent bg-transparent px-2 text-sm font-medium text-slate-800 hover:border-slate-300 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:text-slate-200 dark:hover:border-slate-600"
+						class="h-8 min-w-0 flex-1 rounded border border-transparent bg-transparent px-2 text-sm font-medium text-slate-800 hover:border-slate-300 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:text-slate-200 dark:hover:border-slate-600 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 						aria-label="Layer name"
 					/>
 

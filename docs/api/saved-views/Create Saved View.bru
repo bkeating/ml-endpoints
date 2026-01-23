@@ -1,0 +1,70 @@
+meta {
+  name: Create Saved View
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/savedViews
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userId": "user-001",
+    "name": "All Systems Normalized",
+    "chartConfigurationId": "chart-normalized",
+    "selectedSystems": ["system1", "system2", "system3"],
+    "filters": {
+      "modelId": "deepseek-r1"
+    },
+    "normalization": {
+      "enabled": true,
+      "overrides": {}
+    },
+    "layers": ["ttft"]
+  }
+}
+
+docs {
+  # Create Saved View
+
+  Creates a new saved view for a user.
+
+  ## Request Body
+
+  ```json
+  {
+    "userId": "user-001",
+    "name": "All Systems Normalized",
+    "chartConfigurationId": "chart-normalized",
+    "selectedSystems": ["system1", "system2", "system3"],
+    "filters": {
+      "modelId": "deepseek-r1"
+    },
+    "normalization": {
+      "enabled": true,
+      "overrides": {}
+    },
+    "layers": ["ttft"]
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Auto-generated |
+  | userId | string | Yes | Owner user ID |
+  | name | string | Yes | Display name |
+  | chartConfigurationId | string | Yes | Base chart config |
+  | selectedSystems | array | Yes | System IDs to include |
+  | filters | object | No | Filter criteria |
+  | normalization | object | No | Normalization settings |
+  | layers | array | No | Additional data layers |
+
+  ## Response
+
+  Returns created view with auto-generated `id`, `createdAt`, and `updatedAt`.
+}

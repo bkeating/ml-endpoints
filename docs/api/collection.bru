@@ -1,0 +1,116 @@
+meta {
+  name: ML Endpoints API
+}
+
+docs {
+  # ML Endpoints API
+
+  REST API for ML Commons benchmark data, mirroring json-server behavior with SvelteKit.
+
+  ## Base URL
+
+  - **Local Development**: `http://localhost:5173`
+  - **Production**: Configure in environment settings
+
+  ## Authentication
+
+  Currently no authentication required (development mode).
+
+  ## Resources Overview
+
+  ### Core Resources (CRUD)
+
+  | Resource | Description | Items |
+  |----------|-------------|-------|
+  | `/api/vendors` | Hardware vendors (NVIDIA, AMD, etc.) | 4 |
+  | `/api/models` | ML models for benchmarking | 3 |
+  | `/api/accelerators` | Hardware accelerators (GPUs, TPUs) | 3 |
+  | `/api/systems` | Complete system configurations | 3 |
+  | `/api/submissions` | Benchmark submission records | 3 |
+
+  ### Pareto Data Resources
+
+  | Resource | Description | Items |
+  |----------|-------------|-------|
+  | `/api/paretoCurves` | Pareto curve definitions | 3 |
+  | `/api/dataPoints` | Benchmark data points | 22 |
+  | `/api/paretoHardwareConfigs` | Hardware configurations | 4 |
+  | `/api/paretoPoints` | Pareto performance points | 26 |
+  | `/api/paretoAnnotations` | Chart annotations | 7 |
+
+  ### User & Chart Resources
+
+  | Resource | Description | Items |
+  |----------|-------------|-------|
+  | `/api/chartConfigurations` | Chart display settings | 4 |
+  | `/api/userPreferences` | User preference settings | 1 |
+  | `/api/savedViews` | Saved chart views | 2 |
+
+  ### Singleton Resources (GET only)
+
+  | Resource | Description |
+  |----------|-------------|
+  | `/api/paretoViewModes` | View mode configurations |
+  | `/api/vendorColors` | Vendor color mappings |
+
+  ## HTTP Methods
+
+  ### Collection Endpoints (`/api/{resource}`)
+
+  | Method | Description | Status |
+  |--------|-------------|--------|
+  | GET | List all items | 200 |
+  | POST | Create new item | 201 |
+
+  ### Item Endpoints (`/api/{resource}/{id}`)
+
+  | Method | Description | Status |
+  |--------|-------------|--------|
+  | GET | Get single item | 200 |
+  | PUT | Replace item | 200 |
+  | PATCH | Partial update | 200 |
+  | DELETE | Remove item | 204 |
+
+  ## Query Parameters
+
+  ### Filtering
+
+  Filter by any field:
+  ```
+  GET /api/accelerators?vendorId=nvidia
+  GET /api/dataPoints?paretoCurveId=pareto-001
+  ```
+
+  Nested field filtering (dot notation):
+  ```
+  GET /api/dataPoints?concurrentUsers.min=1
+  ```
+
+  ### Sorting
+
+  ```
+  GET /api/vendors?_sort=name&_order=asc
+  GET /api/paretoPoints?_sort=totalThroughput&_order=desc
+  ```
+
+  ### Pagination
+
+  ```
+  GET /api/dataPoints?_page=1&_limit=10
+  ```
+
+  Returns `X-Total-Count` header with total items.
+
+  ## Error Responses
+
+  | Status | Description |
+  |--------|-------------|
+  | 400 | Bad Request - Invalid resource or JSON |
+  | 404 | Not Found - Item doesn't exist |
+  | 405 | Method Not Allowed - Operation not supported |
+  | 500 | Server Error - Unexpected error |
+
+  ## Data Persistence
+
+  Data is stored in-memory and loaded from `static/db.json` on server startup. Changes persist until server restart.
+}

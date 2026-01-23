@@ -16,6 +16,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import ParetoChart from '$lib/components/ParetoChart.svelte';
+	import BenchmarkRange from '$lib/components/BenchmarkRange.svelte';
 	import {
 		initializeParetoData,
 		transformForView,
@@ -378,6 +379,78 @@
 							links={tradeoffChartLinks}
 						/>
 					{/if}
+				</div>
+			</section>
+
+			<!-- Benchmark Range Component Demo -->
+			<section
+				class="mb-8 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-800"
+			>
+				<div class="mb-6">
+					<h2 class="text-xl font-semibold text-slate-800 dark:text-slate-200">
+						Benchmark Range Visualization
+					</h2>
+					<p class="mt-1 text-sm text-slate-500 dark:text-slate-400">
+						Gradient range component for displaying benchmark quality scores • Lower violation
+						percentage is better
+					</p>
+				</div>
+
+				<div class="space-y-8">
+					<!-- Default Example with Reference -->
+					<BenchmarkRange value={9.4} referenceValue={28.1} />
+
+					<!-- Multiple Rows Example -->
+					<div class="border-t border-slate-200 pt-6 dark:border-slate-700">
+						<h3 class="mb-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+							Multiple Benchmark Categories
+						</h3>
+						<div class="space-y-6">
+						<BenchmarkRange
+							label="Latency"
+							value={5.2}
+							metricLabel="P99 Latency"
+							showSegmentLabels={false}
+							showDirectionIndicator={false}
+						/>
+						<BenchmarkRange
+							label="Accuracy"
+							value={42.5}
+							metricLabel="Error Rate %"
+							showSegmentLabels={false}
+							showDirectionIndicator={false}
+						/>
+						<BenchmarkRange
+							label="Throughput"
+							value={15.8}
+							referenceValue={20}
+							metricLabel="Degradation %"
+							showSegmentLabels={false}
+							showDirectionIndicator={false}
+						/>
+						</div>
+					</div>
+
+					<!-- Custom Segments Example -->
+					<div class="border-t border-slate-200 pt-6 dark:border-slate-700">
+						<h3 class="mb-4 text-sm font-medium text-slate-600 dark:text-slate-400">
+							Custom Scale Configuration
+						</h3>
+					<BenchmarkRange
+						label="Custom"
+						value={25}
+						segments={[
+							{ label: 'Critical', threshold: 100 },
+							{ label: 'Warning', threshold: 50 },
+							{ label: 'Normal', threshold: 25 },
+							{ label: 'Optimal', threshold: 0 }
+						]}
+						scaleValues={[100, 75, 50, 25, 0]}
+						metricLabel="Score"
+						showSegmentLabels={false}
+						showDirectionIndicator={false}
+					/>
+					</div>
 				</div>
 			</section>
 		{/if}

@@ -80,7 +80,7 @@ const getNextColor = (layers) => {
 const createEmptyLayer = (existingLayers) => ({
 	id: generateId(),
 	name: `Layer ${existingLayers.length + 1}`,
-	endpoint: '',
+	endpoint: 'http://localhost:5173/api/dataPoints',
 	response: null,
 	mapping: {
 		dataPath: '',

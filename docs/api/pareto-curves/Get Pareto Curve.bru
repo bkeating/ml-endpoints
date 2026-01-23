@@ -1,0 +1,45 @@
+meta {
+  name: Get Pareto Curve
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/paretoCurves/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: pareto-001
+}
+
+docs {
+  # Get Pareto Curve by ID
+
+  Returns a single Pareto curve definition.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Pareto curve identifier (e.g., `pareto-001`, `pareto-002`, `pareto-003`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "pareto-001",
+    "submissionId": "sub-001",
+    "systemId": "system1",
+    "description": "System 1 - DeepSeek R1 Pareto frontier",
+    "minConcurrency": 1,
+    "maxConcurrency": 64
+  }
+  ```
+
+  ## Related Endpoints
+
+  To get the data points for this curve, use:
+  `GET /api/dataPoints?paretoCurveId=pareto-001`
+}

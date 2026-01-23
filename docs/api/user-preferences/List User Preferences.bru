@@ -1,0 +1,49 @@
+meta {
+  name: List User Preferences
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/userPreferences
+  body: none
+  auth: none
+}
+
+params:query {
+  ~userId: user-001
+}
+
+docs {
+  # List User Preferences
+
+  Returns user preference settings for chart display and theming.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "pref-001",
+      "userId": "user-001",
+      "defaultChartId": "chart-interactivity",
+      "theme": "light",
+      "showNormalized": false
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique preference record ID |
+  | userId | string | User identifier |
+  | defaultChartId | string | Reference to default chart configuration |
+  | theme | string | UI theme: `light` or `dark` |
+  | showNormalized | boolean | Whether to show normalized values by default |
+
+  ## Filter Examples
+
+  - `?userId=user-001` - Get preferences for specific user
+}

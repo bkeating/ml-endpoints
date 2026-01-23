@@ -1,0 +1,43 @@
+meta {
+  name: Get Vendor
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/vendors/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: nvidia
+}
+
+docs {
+  # Get Vendor by ID
+
+  Returns a single vendor by its unique identifier.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Vendor identifier (e.g., `nvidia`, `amd`, `google`, `intel`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "nvidia",
+    "name": "NVIDIA",
+    "description": "GPU and AI computing company",
+    "website": "https://nvidia.com"
+  }
+  ```
+
+  ## Error Responses
+
+  - `404 Not Found`: Vendor with given ID does not exist
+  - `400 Bad Request`: Invalid resource name
+}

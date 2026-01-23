@@ -1,0 +1,68 @@
+meta {
+  name: List Chart Configurations
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/chartConfigurations
+  body: none
+  auth: none
+}
+
+docs {
+  # List Chart Configurations
+
+  Returns predefined chart configurations that define how to visualize benchmark data.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "chart-interactivity",
+      "name": "System Throughput vs Interactivity",
+      "description": "Token Throughput per GPU vs Interactivity (tok/s/user)",
+      "xAxis": {
+        "field": "interactivity",
+        "label": "Interactivity",
+        "unit": "Tokens/sec per user",
+        "isLogarithmic": false
+      },
+      "yAxis": {
+        "field": "systemThroughput",
+        "label": "System Throughput",
+        "unit": "Tokens/sec",
+        "isLogarithmic": true
+      },
+      "hoverFields": ["ttft", "concurrentUsers", "normalizedThroughput"]
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique configuration identifier |
+  | name | string | Display name for the chart |
+  | description | string | Detailed description |
+  | xAxis | object | X-axis configuration |
+  | yAxis | object | Y-axis configuration |
+  | hoverFields | array | Fields to show on hover tooltip |
+
+  ## Axis Configuration
+
+  Each axis object contains:
+  - `field`: Data field to plot (supports dot notation for nested)
+  - `label`: Display label
+  - `unit`: Unit of measurement
+  - `isLogarithmic`: Whether to use log scale
+
+  ## Available Configurations
+
+  - `chart-interactivity`: Throughput vs Interactivity
+  - `chart-concurrency`: TTFT vs Concurrency
+  - `chart-latency-throughput`: Latency vs Throughput
+  - `chart-normalized`: Normalized Throughput vs Interactivity
+}

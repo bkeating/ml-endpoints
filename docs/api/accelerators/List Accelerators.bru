@@ -1,0 +1,57 @@
+meta {
+  name: List Accelerators
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/api/accelerators
+  body: none
+  auth: none
+}
+
+params:query {
+  ~vendorId: nvidia
+  ~memoryType: HBM3
+  ~_sort: tdp
+  ~_order: desc
+}
+
+docs {
+  # List Accelerators
+
+  Returns all hardware accelerators (GPUs, TPUs, etc.) in the database.
+
+  ## Data Shape
+
+  ```json
+  [
+    {
+      "id": "b200-sxm-180gb",
+      "vendorId": "nvidia",
+      "name": "NVIDIA B200-SXM-180GB",
+      "memoryCapacity": "180 GB",
+      "memoryType": "HBM3e",
+      "interconnect": "18x 5th Gen NVLink",
+      "tdp": 1000
+    }
+  ]
+  ```
+
+  ## Fields
+
+  | Field | Type | Description |
+  |-------|------|-------------|
+  | id | string | Unique accelerator identifier |
+  | vendorId | string | Reference to vendor (e.g., `nvidia`, `amd`) |
+  | name | string | Full product name |
+  | memoryCapacity | string | Memory size (e.g., "180 GB") |
+  | memoryType | string | Memory technology (e.g., `HBM3`, `HBM3e`) |
+  | interconnect | string | Chip interconnect technology |
+  | tdp | number | Thermal Design Power in watts |
+
+  ## Filter Examples
+
+  - `?vendorId=nvidia` - All NVIDIA accelerators
+  - `?memoryType=HBM3` - Filter by memory type
+}

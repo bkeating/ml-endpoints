@@ -1,0 +1,56 @@
+meta {
+  name: Create Model
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/models
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "description": "OpenAI multimodal model",
+    "parameterCount": "unknown",
+    "architecture": "dense",
+    "category": "llm"
+  }
+}
+
+docs {
+  # Create Model
+
+  Adds a new ML model to the database.
+
+  ## Request Body
+
+  ```json
+  {
+    "id": "gpt-4o",
+    "name": "GPT-4o",
+    "description": "OpenAI multimodal model",
+    "parameterCount": "unknown",
+    "architecture": "dense",
+    "category": "llm"
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Unique identifier (auto-generated if omitted) |
+  | name | string | Yes | Display name |
+  | description | string | Yes | Model description |
+  | parameterCount | string | Yes | Parameter count (e.g., "70B") |
+  | architecture | string | Yes | `dense` or `MoE` |
+  | category | string | Yes | Model category |
+
+  ## Response
+
+  Returns created model with status `201 Created`.
+}

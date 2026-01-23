@@ -28,10 +28,31 @@
 	 * @property {string} yAxisLabel
 	 * @property {number} [width]
 	 * @property {number} [height]
+	 * @property {() => void} [onTogglePayload]
+	 * @property {boolean} [showPayloadToggle]
+	 * @property {string} [chartTitle]
+	 * @property {(title: string) => void} [onChartTitleChange]
+	 * @property {() => void} [onSave]
 	 */
 
 	/** @type {Props} */
-	let { chartType, layers, title, xAxisLabel, yAxisLabel, width = 600, height = 400 } = $props();
+	let {
+		chartType,
+		layers,
+		title,
+		xAxisLabel,
+		yAxisLabel,
+		width = 600,
+		height = 400,
+		onTogglePayload,
+		showPayloadToggle = false,
+		chartTitle,
+		onChartTitleChange,
+		onSave
+	} = $props();
+
+	// Save state
+	let saveStatus = $state(/** @type {'idle' | 'saving' | 'saved'} */ ('idle'));
 
 	const margin = { top: 40, right: 30, bottom: 60, left: 70 };
 
@@ -99,24 +120,88 @@
 </script>
 
 <div
-	class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+	class="flex h-full w-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
 >
 	<!-- Header -->
 	<div
-		class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+		class="flex shrink-0 items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
 	>
-		<h3
-			class="dm-mono text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
-		>
-			Preview
-		</h3>
-		{#if hasData}
-			<span
-				class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400"
+		<div class="flex items-center gap-3">
+			<h3
+				class="dm-mono text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
 			>
-				{layers.reduce((sum, l) => sum + l.data.length, 0)} data points
-			</span>
-		{/if}
+				Preview
+			</h3>
+			{#if chartTitle !== undefined && onChartTitleChange}
+				<div class="h-4 w-px bg-slate-300 dark:bg-slate-600"></div>
+				<input
+					id="chart-title"
+					type="text"
+					value={chartTitle}
+					onchange={(e) => onChartTitleChange(e.target.value)}
+					class="h-7 w-48 rounded border border-slate-300 bg-white px-2 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
+					placeholder="Chart title..."
+					aria-label="Chart title"
+				/>
+			{/if}
+		</div>
+		<div class="flex items-center gap-2">
+			{#if hasData}
+				<span
+					class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400"
+				>
+					{layers.reduce((sum, l) => sum + l.data.length, 0)} data points
+				</span>
+			{/if}
+			{#if showPayloadToggle && onTogglePayload}
+				<button
+					type="button"
+					onclick={onTogglePayload}
+					class="flex h-7 items-center gap-1.5 rounded border border-slate-300 bg-white px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+					aria-label="Toggle JSON payload"
+				>
+					<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+					</svg>
+					JSON
+				</button>
+			{/if}
+			{#if onSave}
+				<button
+					type="button"
+					onclick={async () => {
+						saveStatus = 'saving';
+						onSave();
+						await new Promise((resolve) => setTimeout(resolve, 500));
+						saveStatus = 'saved';
+						setTimeout(() => {
+							saveStatus = 'idle';
+						}, 2000);
+					}}
+					disabled={saveStatus !== 'idle'}
+					class="flex h-7 items-center gap-1.5 rounded border border-slate-300 bg-white px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+					aria-label="Save chart"
+				>
+					{#if saveStatus === 'saving'}
+						<svg class="h-3.5 w-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+						</svg>
+						Saving...
+					{:else if saveStatus === 'saved'}
+						<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						</svg>
+						Saved
+					{:else}
+						<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+						</svg>
+						Save
+					{/if}
+				</button>
+			{/if}
+		</div>
 	</div>
 
 	<div class="p-4">
@@ -140,7 +225,12 @@
 				</div>
 			</div>
 		{:else}
-			<svg {width} {height} class="font-instrument-sans overflow-visible">
+			<svg
+				{width}
+				{height}
+				class="font-instrument-sans h-auto w-full overflow-visible"
+				style="max-width: 100%;"
+			>
 				<defs>
 					<!-- Gradient for chart background -->
 					<linearGradient id="chartPreviewBg" x1="0%" y1="0%" x2="0%" y2="100%">

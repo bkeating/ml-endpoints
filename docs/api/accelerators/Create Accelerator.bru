@@ -1,0 +1,55 @@
+meta {
+  name: Create Accelerator
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{baseUrl}}/api/accelerators
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "tpu-v5p",
+    "vendorId": "google",
+    "name": "Google TPU v5p",
+    "memoryCapacity": "95 GB",
+    "memoryType": "HBM2e",
+    "interconnect": "ICI",
+    "tdp": 450
+  }
+}
+
+docs {
+  # Create Accelerator
+
+  Adds a new hardware accelerator to the database.
+
+  ## Request Body
+
+  ```json
+  {
+    "id": "tpu-v5p",
+    "vendorId": "google",
+    "name": "Google TPU v5p",
+    "memoryCapacity": "95 GB",
+    "memoryType": "HBM2e",
+    "interconnect": "ICI",
+    "tdp": 450
+  }
+  ```
+
+  ## Fields
+
+  | Field | Type | Required | Description |
+  |-------|------|----------|-------------|
+  | id | string | No | Unique identifier |
+  | vendorId | string | Yes | Reference to existing vendor |
+  | name | string | Yes | Full product name |
+  | memoryCapacity | string | Yes | Memory size with unit |
+  | memoryType | string | Yes | Memory technology |
+  | interconnect | string | Yes | Interconnect description |
+  | tdp | number | Yes | TDP in watts |
+}

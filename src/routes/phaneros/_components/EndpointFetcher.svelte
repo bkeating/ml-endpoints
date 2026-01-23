@@ -91,7 +91,7 @@
 					oninput={handleInput}
 					onkeydown={handleKeydown}
 					placeholder="https://api.example.com/data"
-					class="dm-mono h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500"
+					class="dm-mono h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-[#CCEBD4] focus:ring-1 focus:ring-[#CCEBD4] focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-[#887B40] dark:focus:ring-[#887B40]"
 					aria-label="API endpoint URL"
 				/>
 				{#if isLoading}
@@ -103,7 +103,7 @@
 			<button
 				type="submit"
 				disabled={isLoading || !displayEndpoint.trim()}
-				class="flex h-10 items-center gap-2 rounded-lg bg-emerald-500 px-4 text-sm font-medium text-white transition-colors hover:bg-emerald-600 disabled:bg-slate-300 dark:disabled:bg-slate-600"
+				class="flex h-10 items-center gap-2 rounded-lg bg-[#CCEBD4] px-4 text-sm font-medium text-slate-900 transition-colors hover:bg-[#b8dcc4] disabled:bg-slate-300 dark:bg-[#887B40] dark:text-slate-100 dark:hover:bg-[#9a8d4d] dark:disabled:bg-slate-600"
 			>
 				{#if isLoading}
 					<Icon name="Spinner" class="h-4 w-4 animate-spin" />

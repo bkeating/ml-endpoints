@@ -1,0 +1,63 @@
+meta {
+  name: Get System
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/systems/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: system1
+}
+
+docs {
+  # Get System by ID
+
+  Returns complete system details including all nested hardware and software configuration.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | System identifier (e.g., `system1`, `system2`, `system3`) |
+
+  ## Response
+
+  Returns the full system object with all nested configurations. See "List Systems" for complete data shape.
+
+  ## Nested Object Details
+
+  ### accelerator
+  ```json
+  {
+    "modelName": "NVIDIA B200-SXM-180GB",
+    "acceleratorsPerNode": 4,
+    "memoryCapacity": "180 GB",
+    "memoryConfiguration": "HBM3e",
+    "hostInterconnect": "PCIe Gen5 x16",
+    "interconnect": "18x 5th Gen NVLink"
+  }
+  ```
+
+  ### processor
+  ```json
+  {
+    "modelName": "Intel(R) Xeon(R) Platinum 8570",
+    "processorsPerNode": 2,
+    "coreCount": 56
+  }
+  ```
+
+  ### software
+  ```json
+  {
+    "framework": "TensorRT 10.11, CUDA 12.9",
+    "operatingSystem": "Ubuntu 24.04",
+    "otherSoftwareStack": "TensorRT 10.11, CUDA 12.9, cuDNN 9.10"
+  }
+  ```
+}

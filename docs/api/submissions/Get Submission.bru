@@ -1,0 +1,40 @@
+meta {
+  name: Get Submission
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/submissions/:id
+  body: none
+  auth: none
+}
+
+params:path {
+  id: sub-001
+}
+
+docs {
+  # Get Submission by ID
+
+  Returns a single submission record.
+
+  ## Path Parameters
+
+  | Param | Description |
+  |-------|-------------|
+  | id | Submission identifier (e.g., `sub-001`, `sub-002`, `sub-003`) |
+
+  ## Response Shape
+
+  ```json
+  {
+    "id": "sub-001",
+    "systemId": "system1",
+    "modelId": "deepseek-r1",
+    "submissionDate": "2026-01-15T10:30:00Z",
+    "publishDate": "2026-03-16T00:00:00Z",
+    "resultValid": true
+  }
+  ```
+}

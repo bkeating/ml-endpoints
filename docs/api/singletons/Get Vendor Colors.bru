@@ -1,0 +1,54 @@
+meta {
+  name: Get Vendor Colors
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{baseUrl}}/api/vendorColors
+  body: none
+  auth: none
+}
+
+docs {
+  # Get Vendor Colors
+
+  Returns the color mapping for hardware vendors. This is a **singleton resource** (returns an object, not an array).
+
+  ## Data Shape
+
+  ```json
+  {
+    "nvidia": "#76b900",
+    "amd": "#ed1c24",
+    "intel": "#0071c5",
+    "google": "#4285f4",
+    "meta": "#0668e1",
+    "microsoft": "#00a4ef"
+  }
+  ```
+
+  ## Color Mapping
+
+  | Vendor | Color | Description |
+  |--------|-------|-------------|
+  | nvidia | #76b900 | NVIDIA green |
+  | amd | #ed1c24 | AMD red |
+  | intel | #0071c5 | Intel blue |
+  | google | #4285f4 | Google blue |
+  | meta | #0668e1 | Meta blue |
+  | microsoft | #00a4ef | Microsoft blue |
+
+  ## Usage
+
+  Use these colors for consistent vendor identification across charts and visualizations.
+
+  ```javascript
+  const colors = await fetch('/api/vendorColors').then(r => r.json());
+  const nvidiaColor = colors.nvidia; // "#76b900"
+  ```
+
+  ## Note
+
+  This is a singleton resource. POST, PUT, PATCH, and DELETE operations are not supported. Use GET only.
+}
