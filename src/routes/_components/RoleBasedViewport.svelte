@@ -8,6 +8,13 @@
 	import DefaultRoleView from './DefaultRoleView.svelte';
 	import InvestorView from './InvestorView.svelte';
 	import ModelDeveloperView from './ModelDeveloperView.svelte';
+	import EnterpriseBuyerView from './EnterpriseBuyerView.svelte';
+	import NeoCloudView from './NeoCloudView.svelte';
+	import InfraEngineerView from './InfraEngineerView.svelte';
+	import ITBuyerView from './ITBuyerView.svelte';
+	import HardwareManufacturerView from './HardwareManufacturerView.svelte';
+	import BaaSUserView from './BaaSUserView.svelte';
+	import JournalistView from './JournalistView.svelte';
 
 	/**
 	 * @typedef {Object} Props
@@ -75,6 +82,20 @@
 				return 'investor';
 			case 'model-developer':
 				return 'model-developer';
+			case 'enterprise-buyer':
+				return 'enterprise-buyer';
+			case 'neo-cloud':
+				return 'neo-cloud';
+			case 'infra-engineer':
+				return 'infra-engineer';
+			case 'it-buyer':
+				return 'it-buyer';
+			case 'hardware-mfg':
+				return 'hardware-mfg';
+			case 'baas-user':
+				return 'baas-user';
+			case 'journalist':
+				return 'journalist';
 			default:
 				return 'default';
 		}
@@ -110,6 +131,132 @@
 				/>
 			{:else if currentView === 'model-developer'}
 				<ModelDeveloperView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'enterprise-buyer'}
+				<EnterpriseBuyerView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'neo-cloud'}
+				<NeoCloudView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'infra-engineer'}
+				<InfraEngineerView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'it-buyer'}
+				<ITBuyerView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'hardware-mfg'}
+				<HardwareManufacturerView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'baas-user'}
+				<BaaSUserView
+					{axisChartWidth}
+					{axisChartHeight}
+					{axisSelectorLoading}
+					{systemsData}
+					{axisChartData}
+					{chartTitle}
+					{xAxisOption}
+					{yAxisOption}
+					{logScaleX}
+					{logScaleY}
+					{onXAxisChange}
+					{onYAxisChange}
+					{selectedXAxis}
+					{selectedYAxis}
+					{axisOptions}
+				/>
+			{:else if currentView === 'journalist'}
+				<JournalistView
 					{axisChartWidth}
 					{axisChartHeight}
 					{axisSelectorLoading}

@@ -46,6 +46,7 @@
 	import GpuReliabilitySection from './_components/GpuReliabilitySection.svelte';
 	import SubmissionRequirements from './_components/SubmissionRequirements.svelte';
 	import RoleBasedViewport from './_components/RoleBasedViewport.svelte';
+	import SystemBladesSection from './_components/SystemBladesSection.svelte';
 
 	// $derived() creates a reactive value that automatically updates when getFilters() changes
 	let filters = $derived(getFilters());
@@ -218,12 +219,17 @@
 			</div>
 		</div>
 
+		<!-- System Blades Grid -->
+		<div class="mt-12 pb-12">
+			<SystemBladesSection />
+		</div>
+
 		<!-- GPU Inference Benchmark Table with Sparklines -->
 		<SparklineTable
 			title="GPU Inference Performance"
 			rows={gpuInferenceBenchmarks}
 			columns={gpuBenchmarkColumns}
-			class="mt-12 pb-12"
+			class="px-3 mt-12 pb-12"
 		/>
 	</div>
 {:catch error}

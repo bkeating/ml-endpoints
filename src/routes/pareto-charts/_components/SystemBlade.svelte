@@ -19,12 +19,17 @@
 	 * @typedef {Object} Props
 	 * @property {Object} systemData - System benchmark data
 	 * @property {string} color - Color for this system's charts
-	 * @property {number} [chartWidth] - Width for each chart
 	 * @property {number} [chartHeight] - Height for each chart
 	 */
 
 	/** @type {Props} */
-	let { systemData, color, chartWidth = 400, chartHeight = 280 } = $props();
+	let { systemData, color, chartHeight = 280 } = $props();
+
+	// Bind to container width for fluid charts
+	let containerWidth = $state(0);
+
+	// Calculate chart width from container (accounting for padding)
+	let chartWidth = $derived(Math.max(200, containerWidth - 24));
 
 	// Prepare data for each chart
 	let ttftData = $derived(prepareTTFTChartData(systemData));
@@ -56,47 +61,55 @@
 	<!-- Charts Grid -->
 	<div class="space-y-6">
 		<!-- Chart 1: TTFT vs Concurrent Users -->
-		<div class="chart-wrapper">
-			<TTFTChart
-				data={ttftData}
-				{color}
-				width={chartWidth}
-				height={chartHeight}
-				title="Chart 1: TTFT vs # Concurrent Users"
-			/>
+		<div class="chart-wrapper" bind:clientWidth={containerWidth}>
+			{#if containerWidth > 0}
+				<TTFTChart
+					data={ttftData}
+					{color}
+					width={chartWidth}
+					height={chartHeight}
+					title="Chart 1: TTFT vs # Concurrent Users"
+				/>
+			{/if}
 		</div>
 
 		<!-- Chart 2: System Throughput vs Interactivity -->
 		<div class="chart-wrapper">
-			<ThroughputInteractivityChart
-				data={throughputInteractivityData}
-				{color}
-				width={chartWidth}
-				height={chartHeight}
-				title="Chart 2: System Throughput vs Interactivity"
-			/>
+			{#if containerWidth > 0}
+				<ThroughputInteractivityChart
+					data={throughputInteractivityData}
+					{color}
+					width={chartWidth}
+					height={chartHeight}
+					title="Chart 2: System Throughput vs Interactivity"
+				/>
+			{/if}
 		</div>
 
 		<!-- Chart 3: Normalized Throughput vs Concurrent Users -->
 		<div class="chart-wrapper">
-			<NormalizedThroughputChart
-				data={normalizedThroughputData}
-				{color}
-				width={chartWidth}
-				height={chartHeight}
-				title="Chart 3: Normalized Throughput vs # Concurrent Users"
-			/>
+			{#if containerWidth > 0}
+				<NormalizedThroughputChart
+					data={normalizedThroughputData}
+					{color}
+					width={chartWidth}
+					height={chartHeight}
+					title="Chart 3: Normalized Throughput vs # Concurrent Users"
+				/>
+			{/if}
 		</div>
 
 		<!-- Chart 4: Normalized Throughput vs TTFT -->
 		<div class="chart-wrapper">
-			<NormalizedTTFTChart
-				data={normalizedTTFTData}
-				{color}
-				width={chartWidth}
-				height={chartHeight}
-				title="Chart 4: Normalized Throughput vs TTFT"
-			/>
+			{#if containerWidth > 0}
+				<NormalizedTTFTChart
+					data={normalizedTTFTData}
+					{color}
+					width={chartWidth}
+					height={chartHeight}
+					title="Chart 4: Normalized Throughput vs TTFT"
+				/>
+			{/if}
 		</div>
 	</div>
 </div>

@@ -76,7 +76,6 @@
 				<SystemBlade
 					systemData={system}
 					color={getSystemColor(index)}
-					chartWidth={400}
 					chartHeight={280}
 				/>
 			{/each}

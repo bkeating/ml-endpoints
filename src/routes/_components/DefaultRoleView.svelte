@@ -81,6 +81,7 @@
 				<div class="grid gap-6 p-6 md:grid-cols-2">
 					<!-- System Details -->
 					<div>
+            <img src="/logo-asus.png" alt="ASUS" class="h-10 mb-3 dark:invert" />
 						<p class="text-lg font-semibold text-slate-800 dark:text-slate-100">
 							ASUSTeK Computer Inc.
 						</p>
@@ -155,7 +156,8 @@
 							<span class="w-24 shrink-0 font-medium text-slate-600 dark:text-slate-400"
 								>CPU Name:</span
 							>
-							<span class="text-slate-800 dark:text-slate-200">AMD EPYC 9355</span>
+
+							<span class="text-slate-800 dark:text-slate-200"><img src="/logo-amd.png" alt="AMD" class="h-10 block mb-3 grayscale dark:invert" /> AMD EPYC 9355</span>
 						</div>
 						<div class="flex gap-4 px-4 py-2">
 							<span class="w-24 shrink-0 font-medium text-slate-600 dark:text-slate-400">Max MHz:</span
@@ -220,7 +222,9 @@
 						<div class="flex gap-4 px-4 py-2">
 							<span class="w-28 shrink-0 font-medium text-slate-600 dark:text-slate-400">OS:</span>
 							<span class="text-slate-800 dark:text-slate-200"
-								>SUSE Linux Enterprise Server 15 SP6 (x86_64) Kernel 6.4.0-150600.21-default</span
+								>
+                <img src="/OpenSUSE_Logo.svg" alt="SUSE" class="h-13 mb-2" />
+                SUSE Linux Enterprise Server 15 SP6 (x86_64) Kernel 6.4.0-150600.21-default</span
 							>
 						</div>
 						<div class="flex gap-4 px-4 py-2">
