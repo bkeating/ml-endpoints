@@ -1,6 +1,7 @@
 <script>
 	import Icon from '$lib/components/Icon.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import StatCard from '$lib/components/StatCard.svelte';
 
 	/** Placeholder model submissions */
 	const submissions = [
@@ -75,31 +76,15 @@
 	</div>
 
 	<!-- Submission Stats -->
-	<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-		<div
-			class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
-		>
-			<div class="text-2xl font-bold text-blue-700 dark:text-blue-400">2</div>
-			<div class="text-sm text-blue-600 dark:text-blue-500">Running</div>
-		</div>
-		<div
-			class="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-700/50"
-		>
-			<div class="text-2xl font-bold text-slate-700 dark:text-slate-300">1</div>
-			<div class="text-sm text-slate-500 dark:text-slate-400">Queued</div>
-		</div>
-		<div
-			class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20"
-		>
-			<div class="text-2xl font-bold text-emerald-700 dark:text-emerald-400">156</div>
-			<div class="text-sm text-emerald-600 dark:text-emerald-500">Completed</div>
-		</div>
-		<div
-			class="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-900/20"
-		>
-			<div class="text-2xl font-bold text-red-700 dark:text-red-400">3</div>
-			<div class="text-sm text-red-600 dark:text-red-500">Failed</div>
-		</div>
+	<div class="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+		<StatCard value="2" label="Running" valueColor="text-blue-600 dark:text-blue-400" />
+		<StatCard value="1" label="Queued" />
+		<StatCard
+			value="156"
+			label="Completed"
+			valueColor="text-emerald-600 dark:text-emerald-400"
+		/>
+		<StatCard value="3" label="Failed" valueColor="text-red-600 dark:text-red-400" />
 	</div>
 
 	<!-- Submissions Table -->

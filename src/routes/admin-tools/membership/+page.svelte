@@ -1,5 +1,6 @@
 <script>
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import StatCard from '$lib/components/StatCard.svelte';
 	import { tierColors } from '$lib/constants/colors.js';
 
 	/** Placeholder members */
@@ -64,37 +65,25 @@
 	</div>
 
 	<!-- Tier Summary -->
-	<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-		<div
-			class="rounded-xl border border-amber-200 bg-linear-to-br from-amber-50 to-amber-100 p-6 dark:border-amber-800 dark:from-amber-900/20 dark:to-amber-800/20"
-		>
-			<div class="mb-3 flex items-center justify-between">
-				<span class="font-semibold text-amber-700 dark:text-amber-400">Premier</span>
-				<span class="text-2xl">&#9733;</span>
-			</div>
-			<div class="text-4xl font-bold text-amber-800 dark:text-amber-300">12</div>
-			<div class="text-sm text-amber-600 dark:text-amber-500">$250,000/year</div>
-		</div>
-		<div
-			class="rounded-xl border border-blue-200 bg-linear-to-br from-blue-50 to-blue-100 p-6 dark:border-blue-800 dark:from-blue-900/20 dark:to-blue-800/20"
-		>
-			<div class="mb-3 flex items-center justify-between">
-				<span class="font-semibold text-blue-700 dark:text-blue-400">General</span>
-				<span class="text-xl">&#9734;</span>
-			</div>
-			<div class="text-4xl font-bold text-blue-800 dark:text-blue-300">28</div>
-			<div class="text-sm text-blue-600 dark:text-blue-500">$100,000/year</div>
-		</div>
-		<div
-			class="rounded-xl border border-slate-200 bg-linear-to-br from-slate-50 to-slate-100 p-6 dark:border-slate-600 dark:from-slate-800/50 dark:to-slate-700/50"
-		>
-			<div class="mb-3 flex items-center justify-between">
-				<span class="font-semibold text-slate-700 dark:text-slate-300">Associate</span>
-				<span class="text-lg text-slate-400">&#9675;</span>
-			</div>
-			<div class="text-4xl font-bold text-slate-800 dark:text-slate-200">18</div>
-			<div class="text-sm text-slate-500 dark:text-slate-400">$15,000/year</div>
-		</div>
+	<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+		<StatCard
+			value="12"
+			label="Premier ★"
+			subtitle="$250,000/year"
+			valueColor="text-amber-600 dark:text-amber-400"
+		/>
+		<StatCard
+			value="28"
+			label="General ☆"
+			subtitle="$100,000/year"
+			valueColor="text-blue-600 dark:text-blue-400"
+		/>
+		<StatCard
+			value="18"
+			label="Associate ○"
+			subtitle="$15,000/year"
+			valueColor="text-slate-600 dark:text-slate-400"
+		/>
 	</div>
 
 	<!-- Member Table -->
@@ -181,25 +170,6 @@
 					{/each}
 				</tbody>
 			</table>
-		</div>
-	</div>
-
-	<!-- Upcoming Renewals -->
-	<div
-		class="rounded-xl border border-amber-200 bg-amber-50 p-6 dark:border-amber-800 dark:bg-amber-900/20"
-	>
-		<h3 class="mb-3 font-semibold text-amber-800 dark:text-amber-300">
-			Upcoming Renewals (Next 90 Days)
-		</h3>
-		<div class="flex flex-wrap gap-3">
-			{#each members.filter((m) => m.renewal.includes('2026')) as member (member.company)}
-				<div
-					class="rounded-lg border border-amber-200 bg-white px-4 py-2 dark:border-amber-700 dark:bg-slate-800"
-				>
-					<span class="font-medium text-slate-900 dark:text-white">{member.company}</span>
-					<span class="ml-2 text-sm text-slate-500 dark:text-slate-400">{member.renewal}</span>
-				</div>
-			{/each}
 		</div>
 	</div>
 </div>

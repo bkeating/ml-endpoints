@@ -32,7 +32,8 @@
 </script>
 
 <div
-	class="sticky top-[80px] z-30 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+	class="sticky top-[80px] z-30 border-b border-slate-200 dark:border-slate-700"
+	style="background-color: #151a20;"
 >
 	<div class="mx-auto max-w-7xl px-4">
 		<nav class="scrollbar-hide -mb-px flex gap-1 overflow-x-auto" aria-label={ariaLabel}>

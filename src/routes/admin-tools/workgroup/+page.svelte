@@ -1,6 +1,7 @@
 <script>
 	import Icon from '$lib/components/Icon.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import StatCard from '$lib/components/StatCard.svelte';
 
 	/** Placeholder workgroups */
 	const workgroups = [
@@ -35,6 +36,18 @@
 		<p class="mt-1 text-slate-600 dark:text-slate-400">
 			Track participation and engagement across ML Commons working groups
 		</p>
+	</div>
+
+	<!-- Participation Overview -->
+	<div class="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+		<StatCard value="127" label="Total Participants" />
+		<StatCard
+			value="78%"
+			label="Avg Attendance"
+			valueColor="text-emerald-600 dark:text-emerald-400"
+		/>
+		<StatCard value="30" label="Meetings This Month" valueColor="text-blue-600 dark:text-blue-400" />
+		<StatCard value="4" label="Active Groups" valueColor="text-purple-600 dark:text-purple-400" />
 	</div>
 
 	<!-- Workgroup Cards -->
@@ -104,32 +117,5 @@
 				</div>
 			</div>
 		{/each}
-	</div>
-
-	<!-- Participation Summary -->
-	<div
-		class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
-	>
-		<h3 class="mb-4 text-lg font-semibold text-slate-900 dark:text-white">
-			Participation Overview
-		</h3>
-		<div class="grid grid-cols-2 gap-6 md:grid-cols-4">
-			<div>
-				<div class="text-3xl font-bold text-slate-900 dark:text-white">127</div>
-				<div class="text-sm text-slate-500 dark:text-slate-400">Total Participants</div>
-			</div>
-			<div>
-				<div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">78%</div>
-				<div class="text-sm text-slate-500 dark:text-slate-400">Avg Attendance</div>
-			</div>
-			<div>
-				<div class="text-3xl font-bold text-blue-600 dark:text-blue-400">30</div>
-				<div class="text-sm text-slate-500 dark:text-slate-400">Meetings This Month</div>
-			</div>
-			<div>
-				<div class="text-3xl font-bold text-purple-600 dark:text-purple-400">4</div>
-				<div class="text-sm text-slate-500 dark:text-slate-400">Active Groups</div>
-			</div>
-		</div>
 	</div>
 </div>

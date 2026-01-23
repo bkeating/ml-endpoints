@@ -74,6 +74,18 @@
 		</div>
 	</div>
 
+	<!-- Quick Stats -->
+	<div class="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+		<StatCard value="247" label="Total Contacts" />
+		<StatCard value="189" label="Active" valueColor="text-emerald-600 dark:text-emerald-400" />
+		<StatCard
+			value="34"
+			label="Pending Follow-up"
+			valueColor="text-amber-600 dark:text-amber-400"
+		/>
+		<StatCard value="58" label="Organizations" valueColor="text-blue-600 dark:text-blue-400" />
+	</div>
+
 	<!-- Contact Cards -->
 	<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 		{#each crmContacts as contact (contact.name)}
@@ -123,17 +135,5 @@
 				</div>
 			</div>
 		{/each}
-	</div>
-
-	<!-- Quick Stats -->
-	<div class="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-		<StatCard value="247" label="Total Contacts" />
-		<StatCard value="189" label="Active" valueColor="text-emerald-600 dark:text-emerald-400" />
-		<StatCard
-			value="34"
-			label="Pending Follow-up"
-			valueColor="text-amber-600 dark:text-amber-400"
-		/>
-		<StatCard value="58" label="Organizations" valueColor="text-blue-600 dark:text-blue-400" />
 	</div>
 </div>

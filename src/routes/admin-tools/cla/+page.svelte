@@ -1,5 +1,6 @@
 <script>
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
+	import StatCard from '$lib/components/StatCard.svelte';
 
 	/** Placeholder CLAs */
 	const claAgreements = [
@@ -51,6 +52,22 @@
 		>
 			Request New CLA
 		</button>
+	</div>
+
+	<!-- CLA Stats -->
+	<div class="mb-8 grid grid-cols-2 gap-4 md:grid-cols-4">
+		<StatCard
+			value="42"
+			label="Signed CLAs"
+			valueColor="text-emerald-600 dark:text-emerald-400"
+		/>
+		<StatCard
+			value="8"
+			label="Pending Signatures"
+			valueColor="text-amber-600 dark:text-amber-400"
+		/>
+		<StatCard value="3" label="Under Review" valueColor="text-blue-600 dark:text-blue-400" />
+		<StatCard value="156" label="Total Signatories" />
 	</div>
 
 	<!-- CLA Table -->
@@ -123,34 +140,6 @@
 					{/each}
 				</tbody>
 			</table>
-		</div>
-	</div>
-
-	<!-- CLA Stats -->
-	<div class="grid grid-cols-2 gap-4 md:grid-cols-4">
-		<div
-			class="rounded-lg border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20"
-		>
-			<div class="text-2xl font-bold text-emerald-700 dark:text-emerald-400">42</div>
-			<div class="text-sm text-emerald-600 dark:text-emerald-500">Signed CLAs</div>
-		</div>
-		<div
-			class="rounded-lg border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-900/20"
-		>
-			<div class="text-2xl font-bold text-amber-700 dark:text-amber-400">8</div>
-			<div class="text-sm text-amber-600 dark:text-amber-500">Pending Signatures</div>
-		</div>
-		<div
-			class="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20"
-		>
-			<div class="text-2xl font-bold text-blue-700 dark:text-blue-400">3</div>
-			<div class="text-sm text-blue-600 dark:text-blue-500">Under Review</div>
-		</div>
-		<div
-			class="rounded-lg border border-slate-200 bg-slate-50 p-4 dark:border-slate-600 dark:bg-slate-700/50"
-		>
-			<div class="text-2xl font-bold text-slate-700 dark:text-slate-300">156</div>
-			<div class="text-sm text-slate-500 dark:text-slate-400">Total Signatories</div>
 		</div>
 	</div>
 </div>
