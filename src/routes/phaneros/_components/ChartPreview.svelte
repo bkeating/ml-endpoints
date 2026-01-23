@@ -30,6 +30,7 @@
 	 * @property {number} [height]
 	 * @property {() => void} [onTogglePayload]
 	 * @property {boolean} [showPayloadToggle]
+	 * @property {boolean} [payloadOpen]
 	 * @property {string} [chartTitle]
 	 * @property {(title: string) => void} [onChartTitleChange]
 	 * @property {() => void} [onSave]
@@ -46,6 +47,7 @@
 		height = 400,
 		onTogglePayload,
 		showPayloadToggle = false,
+		payloadOpen = false,
 		chartTitle,
 		onChartTitleChange,
 		onSave
@@ -157,7 +159,7 @@
 				<button
 					type="button"
 					onclick={onTogglePayload}
-					class="flex h-7 items-center gap-1.5 rounded border border-slate-300 bg-white px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
+					class="flex h-7 items-center gap-1.5 rounded border border-slate-300 bg-white px-2.5 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600 {payloadOpen ? 'bg-[#CCEBD4]/10 border-[#CCEBD4]/50 dark:bg-[#887B40]/10 dark:border-[#887B40]/50' : ''}"
 					aria-label="Toggle JSON payload"
 				>
 					<svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

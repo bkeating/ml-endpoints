@@ -76,7 +76,7 @@
 >
 	<!-- Minimal Admin Header -->
 	<header
-		class="flex h-14 shrink-0 items-center justify-between border-b border-slate-300 bg-slate-800 px-4 dark:border-slate-600 dark:bg-slate-900"
+		class="flex h-14 shrink-0 items-center justify-between border-b border-slate-300 bg-[#11151a] px-4 dark:border-slate-600 dark:bg-[#11151a]"
 	>
 		<div class="flex items-center gap-3">
 			<a

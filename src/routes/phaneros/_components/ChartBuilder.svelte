@@ -7,6 +7,7 @@
 	 */
 	import { slide } from 'svelte/transition';
 	import ChartPreview from './ChartPreview.svelte';
+	import BenchmarkSidebar from './BenchmarkSidebar.svelte';
 	import {
 		getChartType,
 		getLayers,
@@ -26,17 +27,28 @@
 	let previewContainerWidth = $state(0);
 	let chartContainerWidth = $state(0);
 
-	// Sidebar state
+	// Left sidebar (Benchmark Controls) state
+	let showBenchmarkSidebar = $state(true);
+	let leftSidebarWidth = $state(320);
+	const minLeftSidebarWidth = 280;
+	const maxLeftSidebarWidth = 500;
+
+	// Right sidebar (API Responses) state
 	let showPayloadSidebar = $state(false);
 	let sidebarWidth = $state(384); // Default width in pixels (w-96 = 384px)
 	const minSidebarWidth = 300;
 	const maxSidebarWidth = 800;
 	let selectedLayerId = $state('');
 
-	// Drag state
+	// Drag state for right sidebar
 	let isDragging = $state(false);
 	let dragStartX = $state(0);
 	let dragStartWidth = $state(0);
+
+	// Drag state for left sidebar
+	let isLeftDragging = $state(false);
+	let leftDragStartX = $state(0);
+	let leftDragStartWidth = $state(0);
 
 	// Get layers with responses
 	let layersWithResponses = $derived(layers.filter((l) => l.response !== null));
@@ -60,7 +72,7 @@
 		selectedLayer?.response ? JSON.stringify(selectedLayer.response, null, 2) : ''
 	);
 
-	// Handle drag start
+	// Handle drag start for right sidebar
 	function handleDragStart(e) {
 		isDragging = true;
 		dragStartX = e.clientX;
@@ -68,7 +80,7 @@
 		e.preventDefault();
 	}
 
-	// Handle drag
+	// Handle drag for right sidebar
 	function handleDrag(e) {
 		if (!isDragging) return;
 		const deltaX = dragStartX - e.clientX; // Inverted because we're dragging left edge
@@ -79,16 +91,62 @@
 		sidebarWidth = newWidth;
 	}
 
-	// Handle drag end
+	// Handle drag end for right sidebar
 	function handleDragEnd() {
 		isDragging = false;
 	}
 
-	// Set up global mouse event listeners
+	// Handle drag start for left sidebar
+	function handleLeftDragStart(e) {
+		isLeftDragging = true;
+		leftDragStartX = e.clientX;
+		leftDragStartWidth = leftSidebarWidth;
+		e.preventDefault();
+	}
+
+	// Handle drag for left sidebar
+	function handleLeftDrag(e) {
+		if (!isLeftDragging) return;
+		const deltaX = e.clientX - leftDragStartX; // Normal direction for right edge
+		const newWidth = Math.max(
+			minLeftSidebarWidth,
+			Math.min(maxLeftSidebarWidth, leftDragStartWidth + deltaX)
+		);
+		leftSidebarWidth = newWidth;
+	}
+
+	// Handle drag end for left sidebar
+	function handleLeftDragEnd() {
+		isLeftDragging = false;
+	}
+
+	// Set up global mouse event listeners for right sidebar
 	$effect(() => {
 		if (isDragging) {
 			const handleMouseMove = (e) => handleDrag(e);
 			const handleMouseUp = () => handleDragEnd();
+
+			// Prevent text selection while dragging
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+
+			window.addEventListener('mousemove', handleMouseMove);
+			window.addEventListener('mouseup', handleMouseUp);
+
+			return () => {
+				window.removeEventListener('mousemove', handleMouseMove);
+				window.removeEventListener('mouseup', handleMouseUp);
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+			};
+		}
+	});
+
+	// Set up global mouse event listeners for left sidebar
+	$effect(() => {
+		if (isLeftDragging) {
+			const handleMouseMove = (e) => handleLeftDrag(e);
+			const handleMouseUp = () => handleLeftDragEnd();
 
 			// Prevent text selection while dragging
 			document.body.style.cursor = 'col-resize';
@@ -134,9 +192,29 @@
 
 <!-- Chart Preview Area -->
 <div class="flex h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+	<!-- Left Sidebar (Benchmark Controls) -->
+	{#if showBenchmarkSidebar}
+		<div
+			transition:slide={{ axis: 'x', duration: 200 }}
+			class="relative flex h-full shrink-0 flex-col border-r border-slate-700 bg-slate-900"
+			style="width: {leftSidebarWidth}px;"
+		>
+			<BenchmarkSidebar width={leftSidebarWidth} />
+			<!-- Resize Handle (right edge) -->
+			<button
+				type="button"
+				class="absolute right-0 top-0 z-10 h-full w-1 cursor-col-resize bg-transparent transition-colors hover:bg-[#CCEBD4] dark:hover:bg-[#887B40] {isLeftDragging
+					? 'bg-[#b8dcc4] dark:bg-[#9a8d4d]'
+					: ''}"
+				onmousedown={handleLeftDragStart}
+				aria-label="Resize sidebar"
+			></button>
+		</div>
+	{/if}
+
 	<!-- Main Chart Area -->
 	<div
-		class="flex min-w-0 flex-1 items-start justify-center overflow-auto bg-slate-100 p-6 dark:bg-slate-900"
+		class="flex min-w-0 flex-1 flex-col items-start justify-start overflow-auto bg-slate-100 p-6 dark:bg-slate-900"
 		bind:clientWidth={chartContainerWidth}
 	>
 		{#if chartContainerWidth > 0}
@@ -151,6 +229,7 @@
 					height={400}
 					showPayloadToggle={true}
 					onTogglePayload={() => (showPayloadSidebar = !showPayloadSidebar)}
+					payloadOpen={showPayloadSidebar}
 					chartTitle={chartConfig.title}
 					onChartTitleChange={(title) => setChartConfig({ title })}
 					onSave={() => {
@@ -165,7 +244,7 @@
 		{/if}
 	</div>
 
-	<!-- JSON Payload Sidebar -->
+	<!-- Right Sidebar (JSON Payload) -->
 	{#if showPayloadSidebar}
 		<div
 			transition:slide={{ axis: 'x', duration: 200 }}
@@ -247,7 +326,7 @@
 			<div class="min-h-0 flex-1 overflow-auto p-4">
 				{#if selectedLayer && formattedPayload}
 					<pre
-						class="dm-mono h-full overflow-auto rounded-lg bg-slate-900 p-4 text-xs text-slate-100 dark:bg-slate-950"
+						class="dm-mono h-full overflow-auto rounded-lg bg-slate-900/60 p-4 text-xs text-slate-100 dark:bg-slate-950/60"
 					><code>{formattedPayload}</code></pre>
 				{:else}
 					<div class="flex h-full items-center justify-center text-xs text-slate-500 dark:text-slate-400">
