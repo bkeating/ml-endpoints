@@ -80,7 +80,7 @@ const getNextColor = (layers) => {
 const createEmptyLayer = (existingLayers) => ({
 	id: generateId(),
 	name: `Layer ${existingLayers.length + 1}`,
-	endpoint: 'http://localhost:5173/api/dataPoints',
+	endpoint: 'https://mlendpoints.bulletpages.com/api/dataPoints',
 	response: null,
 	mapping: {
 		dataPath: '',

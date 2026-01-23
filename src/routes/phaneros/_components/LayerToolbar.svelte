@@ -85,7 +85,7 @@
 		}
 	});
 
-	const defaultEndpoint = 'http://localhost:5173/api/dataPoints';
+	const defaultEndpoint = 'https://mlendpoints.bulletpages.com/';
 	let displayEndpoint = $derived(hasEdited ? editedEndpoint : selectedLayer?.endpoint || defaultEndpoint);
 
 	function handleEndpointInput(e) {
