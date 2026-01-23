@@ -13,10 +13,8 @@
 	import ChartSection from '$lib/components/ChartSection.svelte';
 	import ChartSettingsSidebar from '$lib/components/ChartSettingsSidebar.svelte';
 	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
-	import SparklineTable from '$lib/components/SparklineTable.svelte';
 	import { getChartData } from '$lib/remotes/chartData.js';
 	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
-	import { gpuInferenceBenchmarks, gpuBenchmarkColumns } from '$lib/data/placeholders.js';
 
 	// Axis selector store
 	import {
@@ -223,14 +221,6 @@
 		<div class="mt-12 pb-12">
 			<SystemBladesSection />
 		</div>
-
-		<!-- GPU Inference Benchmark Table with Sparklines -->
-		<SparklineTable
-			title="GPU Inference Performance"
-			rows={gpuInferenceBenchmarks}
-			columns={gpuBenchmarkColumns}
-			class="px-3 mt-12 pb-12"
-		/>
 	</div>
 {:catch error}
 	<ErrorBanner message={error?.message} />
