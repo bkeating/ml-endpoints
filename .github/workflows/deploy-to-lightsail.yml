@@ -37,8 +37,12 @@ jobs:
             echo "Building the project..."
             /home/ubuntu/.bun/bin/bun run build
 
+            echo "Installing systemd service..."
+            sudo cp /var/www/ml-endpoints/systemd.service /etc/systemd/system/ml-endpoints.service
+            sudo systemctl daemon-reload
+
             echo "Restarting the Node.js service..."
-            sudo systemctl restart ml-endpoint
+            sudo systemctl restart ml-endpoints.service
 
             echo "Updating nginx configuration..."
             sudo cp /var/www/ml-endpoints/nginx.conf /etc/nginx/sites-available/mlendpoints.bulletpages.com
