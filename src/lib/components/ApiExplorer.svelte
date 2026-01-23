@@ -58,24 +58,34 @@
 	}
 </script>
 
-<div class="rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50">
+<div
+	class="rounded-lg border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/50"
+>
 	<!-- Header with endpoint and play button -->
 	<div class="flex items-center gap-3 border-b border-slate-200 p-4 dark:border-slate-700">
-		<div class="flex flex-1 min-w-0 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700">
-			<span class="shrink-0 rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400">
+		<div
+			class="flex min-w-0 flex-1 items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-2 dark:border-slate-600 dark:bg-slate-700"
+		>
+			<span
+				class="shrink-0 rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400"
+			>
 				GET
 			</span>
-			<code class="flex-1 min-w-0 overflow-hidden text-ellipsis text-sm text-slate-700 dm-mono dark:text-slate-300 whitespace-nowrap">
+			<code
+				class="dm-mono min-w-0 flex-1 overflow-hidden text-sm text-ellipsis whitespace-nowrap text-slate-700 dark:text-slate-300"
+			>
 				{endpointUrl}
 			</code>
-			<span class="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/50 dark:text-amber-400">
+			<span
+				class="shrink-0 rounded bg-amber-100 px-1.5 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900/50 dark:text-amber-400"
+			>
 				mock
 			</span>
 		</div>
 		<button
 			onclick={executeRequest}
 			disabled={isLoading}
-			class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white transition-colors hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-800"
+			class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white transition-colors hover:bg-emerald-600 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-800"
 			aria-label="Execute API request"
 		>
 			{#if isLoading}
@@ -116,31 +126,41 @@
 		{#if activeTab === 'params'}
 			<!-- Params Panel -->
 			<div class="space-y-2">
-				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">model</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.model}</span>
+				<div class="grid grid-cols-[100px_1fr] gap-2 text-sm sm:grid-cols-[120px_1fr]">
+					<span class="dm-mono truncate text-slate-500 dark:text-slate-400">model</span>
+					<span class="dm-mono truncate text-slate-800 dark:text-slate-200">{filters.model}</span>
 				</div>
-				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">islOsl</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.islOsl}</span>
+				<div class="grid grid-cols-[100px_1fr] gap-2 text-sm sm:grid-cols-[120px_1fr]">
+					<span class="dm-mono truncate text-slate-500 dark:text-slate-400">islOsl</span>
+					<span class="dm-mono truncate text-slate-800 dark:text-slate-200">{filters.islOsl}</span>
 				</div>
-				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">precision</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.precision}</span>
+				<div class="grid grid-cols-[100px_1fr] gap-2 text-sm sm:grid-cols-[120px_1fr]">
+					<span class="dm-mono truncate text-slate-500 dark:text-slate-400">precision</span>
+					<span class="dm-mono truncate text-slate-800 dark:text-slate-200"
+						>{filters.precision}</span
+					>
 				</div>
-				<div class="grid grid-cols-[100px_1fr] sm:grid-cols-[120px_1fr] gap-2 text-sm">
-					<span class="text-slate-500 dark:text-slate-400 dm-mono truncate">yAxisMetric</span>
-					<span class="text-slate-800 dark:text-slate-200 dm-mono truncate">{filters.yAxisMetric}</span>
+				<div class="grid grid-cols-[100px_1fr] gap-2 text-sm sm:grid-cols-[120px_1fr]">
+					<span class="dm-mono truncate text-slate-500 dark:text-slate-400">yAxisMetric</span>
+					<span class="dm-mono truncate text-slate-800 dark:text-slate-200"
+						>{filters.yAxisMetric}</span
+					>
 				</div>
 			</div>
 		{:else}
 			<!-- Response Panel -->
 			{#if error}
-				<div class="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
-					<strong>Error:</strong> {error}
+				<div
+					class="rounded-md bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400"
+				>
+					<strong>Error:</strong>
+					{error}
 				</div>
 			{:else if response}
-				<pre class="text-xs text-slate-700 dark:text-slate-300 dm-mono whitespace-pre-wrap break-words">{formatJson(response)}</pre>
+				<pre
+					class="dm-mono text-xs break-words whitespace-pre-wrap text-slate-700 dark:text-slate-300">{formatJson(
+						response
+					)}</pre>
 			{:else}
 				<p class="text-sm text-slate-500 dark:text-slate-400">
 					Click the play button to execute the request and see the response.

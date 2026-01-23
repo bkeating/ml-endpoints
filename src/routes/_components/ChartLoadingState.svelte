@@ -6,7 +6,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 </script>
 
-<div class="flex items-center justify-center py-12 mx-auto max-w-7xl px-3">
+<div class="mx-auto flex max-w-7xl items-center justify-center px-3 py-12">
 	<div class="flex items-center gap-3 text-slate-500 dark:text-slate-400">
 		<Icon name="Spinner" class="h-5 w-5 animate-spin" />
 		<span>Loading chart data...</span>

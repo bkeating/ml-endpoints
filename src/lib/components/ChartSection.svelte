@@ -29,17 +29,22 @@
 
 {#if layout === 'side-by-side'}
 	<!-- Side-by-side layout: stacks on mobile (copy top, chart bottom), side-by-side on md+ -->
-	<section class="flex flex-col md:flex-row gap-6 md:gap-8 items-start md:items-center mb-6 md:px-3 w-full">
-		<div class="w-full md:w-1/3 shrink-0 flex items-center justify-center">
+	<section
+		class="mb-6 flex w-full flex-col items-start gap-6 md:flex-row md:items-center md:gap-8 md:px-3"
+	>
+		<div class="flex w-full shrink-0 items-center justify-center md:w-1/3">
 			<div class="flex flex-col">
-				<h2 class="mt-16 md:mt-0 mb-3 text-3xl md:text-5xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans-100 text-pretty">
+				<h2
+					class="font-instrument-sans-100 mt-16 mb-3 text-3xl font-semibold text-pretty text-slate-800 md:mt-0 md:text-5xl dark:text-slate-200"
+				>
 					{chart.title}
 				</h2>
-				<p class="mb-4 text-slate-600 dark:text-slate-500 leading-relaxed">
+				<p class="mb-4 leading-relaxed text-slate-600 dark:text-slate-500">
 					{chart.subtitle}
 				</p>
-				<p class="text-slate-500 dark:text-slate-400 leading-relaxed">
-					Measures tokens processed per second on one GPU—raw efficiency for batch inference and training.
+				<p class="leading-relaxed text-slate-500 dark:text-slate-400">
+					Measures tokens processed per second on one GPU—raw efficiency for batch inference and
+					training.
 				</p>
 			</div>
 		</div>
@@ -68,8 +73,10 @@
 	</section>
 {:else}
 	<!-- Default layout: title/subtitle above, full-width chart below -->
-	<section class="mb-12 px-3 w-full">
-		<h2 class="mb-1 text-2xl md:text-3xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans">
+	<section class="mb-12 w-full px-3">
+		<h2
+			class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-3xl dark:text-slate-200"
+		>
 			{chart.title}
 		</h2>
 		<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">

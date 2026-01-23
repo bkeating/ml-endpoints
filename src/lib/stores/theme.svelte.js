@@ -45,4 +45,3 @@ export function initTheme(cookieTheme) {
 		theme = prefersDark ? 'dark' : 'light';
 	}
 }
-

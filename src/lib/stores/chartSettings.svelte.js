@@ -85,7 +85,7 @@ export function toggleParetoSeries(seriesId) {
  */
 export function getVisibleParetoSeriesIds() {
 	return Object.entries(paretoVisibility)
-		.filter(([_, visible]) => visible)
+		.filter(([, visible]) => visible)
 		.map(([id]) => id);
 }
 
@@ -128,4 +128,3 @@ export function resetSettings() {
 	hideNonOptimal = false;
 	hideLabels = false;
 }
-

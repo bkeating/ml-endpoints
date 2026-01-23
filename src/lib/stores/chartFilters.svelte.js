@@ -52,17 +52,38 @@ export const yAxisMetricOptions = /** @type {const} */ ([
 	{ id: 'input-token-throughput-per-gpu', label: 'Input Token Throughput per GPU' },
 	{ id: 'output-token-throughput-per-gpu', label: 'Output Token Throughput per GPU' },
 	{ id: 'token-throughput-per-mw', label: 'Token Throughput per All in Utility MW' },
-	{ id: 'cost-per-million-owning-hyperscaler', label: 'Cost per Million Tokens (Owning - Hyperscaler)' },
-	{ id: 'cost-per-million-owning-neocloud', label: 'Cost per Million Tokens (Owning - Neocloud Giant)' },
+	{
+		id: 'cost-per-million-owning-hyperscaler',
+		label: 'Cost per Million Tokens (Owning - Hyperscaler)'
+	},
+	{
+		id: 'cost-per-million-owning-neocloud',
+		label: 'Cost per Million Tokens (Owning - Neocloud Giant)'
+	},
 	{ id: 'cost-per-million-3yr-rental', label: 'Cost per Million Tokens (3 Year rental)' },
-	{ id: 'cost-per-million-customer-values', label: 'Cost per Million Tokens (Customer User Values)' }
+	{
+		id: 'cost-per-million-customer-values',
+		label: 'Cost per Million Tokens (Customer User Values)'
+	}
 ]);
 
 /** Pareto view mode options for the filter form */
 export const paretoViewModeOptions = /** @type {const} */ ([
-	{ id: 'throughput', label: 'Throughput', description: 'Total system throughput at each concurrency level' },
-	{ id: 'utilization', label: 'Utilization', description: 'Percentage of maximum achievable throughput' },
-	{ id: 'interactivity', label: 'Interactivity', description: 'Per-user token throughput (user experience metric)' }
+	{
+		id: 'throughput',
+		label: 'Throughput',
+		description: 'Total system throughput at each concurrency level'
+	},
+	{
+		id: 'utilization',
+		label: 'Utilization',
+		description: 'Percentage of maximum achievable throughput'
+	},
+	{
+		id: 'interactivity',
+		label: 'Interactivity',
+		description: 'Per-user token throughput (user experience metric)'
+	}
 ]);
 
 /** @type {ChartFilters} */

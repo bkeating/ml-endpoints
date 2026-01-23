@@ -31,12 +31,14 @@
 </script>
 
 <aside
-	class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-slate-50/80 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/60 p-3 shadow-lg"
+	class="flex flex-col gap-4 rounded-lg border border-slate-200 bg-slate-50/80 p-3 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/60"
 	aria-label="Chart quick settings"
 >
 	<!-- Hardware Legend Section -->
 	<div>
-		<h4 class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+		<h4
+			class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
+		>
 			Hardware
 		</h4>
 		<div class="flex flex-col gap-0.5">
@@ -56,11 +58,15 @@
 
 	<!-- Display Options Section -->
 	<div>
-		<h4 class="mb-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
+		<h4
+			class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
+		>
 			Display
 		</h4>
 		<div class="flex flex-col gap-2">
-			<label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50">
+			<label
+				class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50"
+			>
 				<input
 					type="checkbox"
 					checked={hideNonOptimal}
@@ -69,7 +75,9 @@
 				/>
 				<span class="text-xs font-medium text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
 			</label>
-			<label class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50">
+			<label
+				class="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50"
+			>
 				<input
 					type="checkbox"
 					checked={hideLabels}
@@ -81,4 +89,3 @@
 		</div>
 	</div>
 </aside>
-

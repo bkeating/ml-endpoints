@@ -68,7 +68,13 @@
 				aria-pressed={showLineOverlay}
 				aria-label="Toggle efficiency trend line"
 			>
-				<svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="toggle-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M3 17L9 11L13 15L21 7" stroke-linecap="round" stroke-linejoin="round" />
 					<circle cx="21" cy="7" r="2" fill="currentColor" />
 					<circle cx="13" cy="15" r="2" fill="currentColor" />
@@ -87,7 +93,13 @@
 				aria-pressed={showThresholds}
 				aria-label="Toggle threshold reference lines"
 			>
-				<svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="toggle-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="3" y1="8" x2="21" y2="8" stroke-dasharray="4 2" />
 					<line x1="3" y1="16" x2="21" y2="16" stroke-dasharray="4 2" />
 					<rect x="16" y="5" width="5" height="6" rx="1" fill="currentColor" opacity="0.3" />
@@ -96,7 +108,6 @@
 				<span>Thresholds</span>
 			</button>
 		</div>
-
 	</div>
 </div>
 
@@ -108,11 +119,7 @@
 	}
 
 	.toolbar-inner {
-		@apply flex flex-wrap items-center justify-center gap-4 rounded-xl
-			   bg-linear-to-r from-slate-50 via-slate-100/50 to-slate-100
-			   dark:from-slate-800/50 dark:via-slate-800 dark:to-slate-800/50
-			   border border-slate-200 dark:border-slate-700
-			   px-4 py-3 shadow-sm;
+		@apply flex flex-wrap items-center justify-center gap-4 rounded-xl border border-slate-200 bg-linear-to-r from-slate-50 via-slate-100/50 to-slate-100 px-4 py-3 shadow-sm dark:border-slate-700 dark:from-slate-800/50 dark:via-slate-800 dark:to-slate-800/50;
 	}
 
 	.control-group {
@@ -120,24 +127,19 @@
 	}
 
 	.control-label {
-		@apply text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide;
+		@apply text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400;
 	}
 
 	.button-group {
-		@apply flex rounded-lg bg-slate-300/50 dark:bg-slate-700/50 p-0.5;
+		@apply flex rounded-lg bg-slate-300/50 p-0.5 dark:bg-slate-700/50;
 	}
 
 	.sort-button {
-		@apply flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium
-			   text-slate-600 dark:text-slate-400
-			   rounded-md transition-all duration-200
-			   cursor-pointer
-			   hover:text-slate-900 dark:hover:text-slate-200
-			   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
+		@apply flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition-all duration-200 hover:text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-400 dark:hover:text-slate-200;
 	}
 
 	.sort-button.active {
-		background-color: #CCEBD4;
+		background-color: #ccebd4;
 		@apply text-emerald-800 shadow-sm;
 	}
 
@@ -155,7 +157,7 @@
 	}
 
 	.divider {
-		@apply w-px h-8 bg-slate-300 dark:bg-slate-600;
+		@apply h-8 w-px bg-slate-300 dark:bg-slate-600;
 	}
 
 	.toggle-group {
@@ -163,41 +165,20 @@
 	}
 
 	.toggle-button {
-		@apply flex items-center gap-2 px-3 py-2 text-sm font-medium
-			   text-slate-600 dark:text-slate-400
-			   bg-white/50 dark:bg-slate-700/50
-			   border border-slate-200 dark:border-slate-600
-			   rounded-lg transition-all duration-200
-			   cursor-pointer
-			   hover:border-emerald-300 dark:hover:border-emerald-600
-			   hover:text-emerald-700 dark:hover:text-emerald-300
-			   focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500;
+		@apply flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white/50 px-3 py-2 text-sm font-medium text-slate-600 transition-all duration-200 hover:border-emerald-300 hover:text-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-400 dark:hover:border-emerald-600 dark:hover:text-emerald-300;
 	}
 
 	.toggle-button.active {
-		background-color: #CCEBD4;
-		@apply text-emerald-800 border-emerald-300 shadow-sm;
+		background-color: #ccebd4;
+		@apply border-emerald-300 text-emerald-800 shadow-sm;
 	}
 
 	:global(.dark) .toggle-button.active {
 		background-color: #009966;
-		@apply text-white border-emerald-700;
+		@apply border-emerald-700 text-white;
 	}
 
 	.toggle-icon {
-		@apply w-4 h-4;
-	}
-
-	.d3-badge {
-		@apply flex items-center gap-1.5 px-2.5 py-1
-			   text-xs font-semibold text-orange-600 dark:text-orange-400
-			   bg-orange-50 dark:bg-orange-900/20
-			   border border-orange-200 dark:border-orange-800
-			   rounded-full;
-	}
-
-	.d3-logo {
-		@apply w-4 h-4;
+		@apply h-4 w-4;
 	}
 </style>
-

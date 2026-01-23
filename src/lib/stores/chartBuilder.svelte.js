@@ -1,11 +1,11 @@
 /**
  * Chart Builder State Management
- * 
+ *
  * Manages the state for the Phaneros chart builder including:
  * - Chart type selection (bar/line)
  * - Data layers with endpoint and property mappings
  * - Chart configuration (title, axis labels)
- * 
+ *
  * @module chartBuilder
  */
 
@@ -50,7 +50,7 @@ const LAYER_COLORS = [
 	'#8b5cf6', // violet-500
 	'#06b6d4', // cyan-500
 	'#ef4444', // red-500
-	'#84cc16'  // lime-500
+	'#84cc16' // lime-500
 ];
 
 /**
@@ -66,7 +66,10 @@ const generateId = () => Math.random().toString(36).slice(2, 11);
  */
 const getNextColor = (layers) => {
 	const usedColors = new Set(layers.map((l) => l.mapping.color));
-	return LAYER_COLORS.find((c) => !usedColors.has(c)) ?? LAYER_COLORS[layers.length % LAYER_COLORS.length];
+	return (
+		LAYER_COLORS.find((c) => !usedColors.has(c)) ??
+		LAYER_COLORS[layers.length % LAYER_COLORS.length]
+	);
 };
 
 /**
@@ -276,22 +279,22 @@ export function moveLayer(layerId, direction) {
  * @returns {Promise<void>}
  */
 export async function fetchLayerData(layerId, endpoint) {
-	updateLayer(layerId, { 
-		endpoint, 
-		isLoading: true, 
+	updateLayer(layerId, {
+		endpoint,
+		isLoading: true,
 		error: null,
-		response: null 
+		response: null
 	});
 
 	try {
 		const response = await fetch(endpoint);
-		
+
 		if (!response.ok) {
 			throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 		}
 
 		const data = await response.json();
-		
+
 		updateLayer(layerId, {
 			response: data,
 			isLoading: false,
@@ -331,7 +334,7 @@ export function extractLayerData(layer) {
 	}
 
 	const dataArray = getValueAtPath(layer.response, layer.mapping.dataPath);
-	
+
 	if (!Array.isArray(dataArray)) {
 		return [];
 	}
@@ -339,7 +342,9 @@ export function extractLayerData(layer) {
 	return dataArray.map((item) => ({
 		x: item[layer.mapping.xProp],
 		y: Number(item[layer.mapping.yProp]) || 0,
-		label: layer.mapping.labelProp ? String(item[layer.mapping.labelProp]) : String(item[layer.mapping.xProp]),
+		label: layer.mapping.labelProp
+			? String(item[layer.mapping.labelProp])
+			: String(item[layer.mapping.xProp]),
 		color: layer.mapping.color
 	}));
 }
@@ -376,7 +381,7 @@ export function analyzeJsonStructure(obj, path = '') {
 			name,
 			type: typeof value
 		}));
-		
+
 		results.push({
 			path: path || '(root)',
 			properties,
@@ -413,7 +418,7 @@ export function buildChartPayload() {
 			mapping: layer.mapping,
 			visible: layer.visible
 		})),
-		createdAt: new Date().toISOString()
+		createdAt: Date.now()
 	};
 }
 

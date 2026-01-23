@@ -22,17 +22,17 @@
 
 <fieldset class="flex flex-col gap-1">
 	<legend
-		class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono"
+		class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
 	>
 		{legend}
 	</legend>
 	<div
-		class="flex gap-4 h-9 mt-1 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 px-3 rounded-lg"
+		class="mt-1 flex h-9 gap-4 rounded-lg border border-slate-300 bg-slate-50 px-3 dark:border-slate-600 dark:bg-slate-800"
 		role="radiogroup"
 		aria-label={ariaLabel}
 	>
 		{#each options as option (option.id)}
-			<label class="flex cursor-pointer items-center gap-1.5 justify-center dm-mono">
+			<label class="dm-mono flex cursor-pointer items-center justify-center gap-1.5">
 				<input
 					type="radio"
 					{name}
@@ -46,4 +46,3 @@
 		{/each}
 	</div>
 </fieldset>
-

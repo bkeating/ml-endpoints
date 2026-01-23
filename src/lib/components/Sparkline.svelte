@@ -2,12 +2,12 @@
 	/**
 	 * Reusable Sparkline component
 	 * Renders an SVG sparkline with gradient fill and end-point indicator
-	 * 
+	 *
 	 * @component
 	 */
 
 	/** @type {number[]} */
-	let { 
+	let {
 		data = [],
 		width = 120,
 		height = 36,
@@ -20,10 +20,10 @@
 
 	// Chart padding
 	const padding = { top: 4, right: 6, bottom: 4, left: 4 };
-	
+
 	/** @type {number} */
 	let chartWidth = $derived(width - padding.left - padding.right);
-	
+
 	/** @type {number} */
 	let chartHeight = $derived(height - padding.top - padding.bottom);
 
@@ -33,11 +33,11 @@
 	 */
 	let points = $derived.by(() => {
 		if (data.length === 0) return [];
-		
+
 		const minY = Math.min(...data);
 		const maxY = Math.max(...data);
 		const range = maxY - minY || 1;
-		
+
 		return data.map((value, index) => ({
 			x: padding.left + (index / (data.length - 1)) * chartWidth,
 			y: padding.top + chartHeight - ((value - minY) / range) * chartHeight
@@ -70,9 +70,9 @@
 	let lastPoint = $derived(points.length > 0 ? points[points.length - 1] : null);
 </script>
 
-<svg 
-	{width} 
-	{height} 
+<svg
+	{width}
+	{height}
 	viewBox="0 0 {width} {height}"
 	role="img"
 	aria-label="Sparkline chart"
@@ -84,33 +84,24 @@
 			<stop offset="100%" style="stop-color:{color};stop-opacity:0.05" />
 		</linearGradient>
 	</defs>
-	
+
 	{#if points.length > 0}
 		<!-- Gradient fill area -->
-		<path 
-			d={areaPath} 
-			fill="url(#{gradientId})"
-		/>
-		
+		<path d={areaPath} fill="url(#{gradientId})" />
+
 		<!-- Line stroke -->
-		<path 
-			d={linePath} 
-			fill="none" 
-			stroke={color} 
-			stroke-width={strokeWidth} 
-			stroke-linecap="round" 
+		<path
+			d={linePath}
+			fill="none"
+			stroke={color}
+			stroke-width={strokeWidth}
+			stroke-linecap="round"
 			stroke-linejoin="round"
 		/>
-		
+
 		<!-- End point indicator -->
 		{#if showEndPoint && lastPoint}
-			<circle 
-				cx={lastPoint.x} 
-				cy={lastPoint.y} 
-				r="3" 
-				fill={color}
-			/>
+			<circle cx={lastPoint.x} cy={lastPoint.y} r="3" fill={color} />
 		{/if}
 	{/if}
 </svg>
-

@@ -178,12 +178,12 @@ export function resetPageSettings() {
 	barSortOrder = 'original';
 	showLineOverlay = false;
 	showThresholds = false;
-	
+
 	// Pareto chart
 	showParetoInterpolation = true;
 	showParetoAnnotations = false;
 	showParetoIdealLine = true;
-	
+
 	// Mobile filters
 	mobileFiltersOpen = false;
 }

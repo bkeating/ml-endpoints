@@ -39,7 +39,7 @@
 	<!-- Admin panel uses its own layout without Header/Footer -->
 	{@render children()}
 {:else}
-	<div class="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-200">
+	<div class="min-h-screen bg-white transition-colors duration-200 dark:bg-slate-900">
 		<Header {navItems} />
 		<main class="flex-1">
 			{@render children()}

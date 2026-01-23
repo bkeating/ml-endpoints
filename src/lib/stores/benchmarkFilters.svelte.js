@@ -8,6 +8,8 @@
  * @typedef {'Offline' | 'Server'} Scenario
  */
 
+import { SvelteSet } from 'svelte/reactivity';
+
 /**
  * @typedef {Object} BenchmarkResult
  * @property {string} id - Unique identifier
@@ -184,7 +186,7 @@ const sampleData = [
 		accelerator: 'NVIDIA A100-SXM-80GB',
 		acceleratorCount: 8,
 		systemName: 'NVIDIA DGX A100 (8xA100-SXM-80GB)',
-		performance: 45678.90
+		performance: 45678.9
 	},
 	{
 		id: '14',
@@ -258,7 +260,7 @@ export function getDataByVersion() {
  */
 export function getAvailableModels() {
 	const versionData = getDataByVersion();
-	const models = [...new Set(versionData.map((d) => d.model))];
+	const models = [...new SvelteSet(versionData.map((d) => d.model))];
 	return models.map((m) => ({ id: m, label: m }));
 }
 
@@ -276,7 +278,7 @@ export function getDataByVersionAndModel() {
  */
 export function getAvailableScenarios() {
 	const data = getDataByVersionAndModel();
-	const scenarios = [...new Set(data.map((d) => d.scenario))];
+	const scenarios = [...new SvelteSet(data.map((d) => d.scenario))];
 	return scenarios.map((s) => ({ id: s, label: s }));
 }
 
@@ -288,7 +290,7 @@ export function getAvailableOrganizations() {
 	const data = getDataByVersionAndModel().filter(
 		(d) => selectedScenarios.length === 0 || selectedScenarios.includes(d.scenario)
 	);
-	const orgs = [...new Set(data.map((d) => d.organization))];
+	const orgs = [...new SvelteSet(data.map((d) => d.organization))];
 	return orgs.map((o) => ({ id: o, label: o }));
 }
 
@@ -302,7 +304,7 @@ export function getAvailableAccelerators() {
 			(selectedScenarios.length === 0 || selectedScenarios.includes(d.scenario)) &&
 			(selectedOrganizations.length === 0 || selectedOrganizations.includes(d.organization))
 	);
-	const accelerators = [...new Set(data.map((d) => d.accelerator))];
+	const accelerators = [...new SvelteSet(data.map((d) => d.accelerator))];
 	return accelerators.map((a) => ({ id: a, label: a }));
 }
 
@@ -317,7 +319,7 @@ export function getAvailableAcceleratorCounts() {
 			(selectedOrganizations.length === 0 || selectedOrganizations.includes(d.organization)) &&
 			(selectedAccelerators.length === 0 || selectedAccelerators.includes(d.accelerator))
 	);
-	const counts = [...new Set(data.map((d) => d.acceleratorCount))].sort((a, b) => a - b);
+	const counts = [...new SvelteSet(data.map((d) => d.acceleratorCount))].sort((a, b) => a - b);
 	return counts.map((c) => ({ id: String(c), label: String(c) }));
 }
 
@@ -530,8 +532,8 @@ export function clearFilters() {
  */
 export function getFilteredStats() {
 	const results = getFilteredResults();
-	const uniqueOrgs = new Set(results.map((r) => r.organization)).size;
-	const uniqueAccelerators = new Set(results.map((r) => r.accelerator)).size;
+	const uniqueOrgs = new SvelteSet(results.map((r) => r.organization)).size;
+	const uniqueAccelerators = new SvelteSet(results.map((r) => r.accelerator)).size;
 	const performances = results.map((r) => r.performance);
 	const maxPerformance = performances.length > 0 ? Math.max(...performances) : 0;
 	const avgPerformance =
@@ -547,7 +549,10 @@ export function getFilteredStats() {
 }
 
 // Initialize with first available model
-const initialModels = getAvailableModels();
-if (initialModels.length > 0 && !selectedModel) {
-	selectedModel = initialModels[0].id;
-}
+// Note: This runs once at module initialization
+(() => {
+	const initialModels = getAvailableModels();
+	if (initialModels.length > 0 && selectedModel === '') {
+		selectedModel = initialModels[0].id;
+	}
+})();

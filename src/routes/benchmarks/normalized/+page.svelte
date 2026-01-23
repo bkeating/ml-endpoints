@@ -1,8 +1,5 @@
 <script>
-	import {
-		getSelectedModel,
-		getFilteredResults
-	} from '$lib/stores/benchmarkFilters.svelte.js';
+	import { getSelectedModel, getFilteredResults } from '$lib/stores/benchmarkFilters.svelte.js';
 	import { getOrgColor } from '$lib/constants/colors.js';
 
 	let currentModel = $derived(getSelectedModel());
@@ -71,36 +68,40 @@
 
 <div class="space-y-6">
 	<!-- Info Banner -->
-	<div class="bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 rounded-lg p-4">
+	<div
+		class="rounded-lg border border-sky-200 bg-sky-50 p-4 dark:border-sky-800 dark:bg-sky-900/20"
+	>
 		<p class="text-sm text-sky-800 dark:text-sky-200">
-			<strong>Note:</strong> These calculations assume linear scaling, which is an approximation.
-			When upscaling (e.g., 1 → 8 accelerators), results tend to over-estimate actual performance.
-			When downscaling (e.g., 16 → 8 accelerators), results tend to under-estimate.
+			<strong>Note:</strong> These calculations assume linear scaling, which is an approximation. When
+			upscaling (e.g., 1 → 8 accelerators), results tend to over-estimate actual performance. When downscaling
+			(e.g., 16 → 8 accelerators), results tend to under-estimate.
 		</p>
 	</div>
 
 	{#if normalizedWithBenefit.length === 0}
 		<div
-			class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6 text-center"
+			class="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-900/20"
 		>
-			<p class="text-amber-800 dark:text-amber-200 font-medium">No results match your filters</p>
+			<p class="font-medium text-amber-800 dark:text-amber-200">No results match your filters</p>
 		</div>
 	{:else}
 		{#each Object.entries(normalizedByScenario) as [scenario, results] (scenario)}
 			{@const minPerf = Math.min(...results.map((r) => r.normalizedPerformance))}
 			{@const baselineSystem = results.find((r) => r.normalizedPerformance === minPerf)}
 			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden"
+				class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
 			>
-				<div class="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
-					<h3 class="text-lg font-semibold text-slate-900 dark:text-white font-instrument-sans-600">
+				<div
+					class="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+				>
+					<h3 class="font-instrument-sans-600 text-lg font-semibold text-slate-900 dark:text-white">
 						{currentModel} - {scenario} (Normalized per Accelerator)
 					</h3>
-					<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+					<p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
 						Performance per Accelerator (Tokens/s/Accelerator) - Higher is Better
 					</p>
 					{#if baselineSystem}
-						<p class="text-xs text-slate-400 dark:text-slate-500 mt-1">
+						<p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
 							Baseline: {baselineSystem.systemName} ({formatPerformance(minPerf)} tokens/s/acc)
 						</p>
 					{/if}
@@ -111,31 +112,33 @@
 						{#each results as result (result.id)}
 							{@const barWidth = (result.normalizedPerformance / maxNormalizedPerformance) * 100}
 							<div class="group">
-								<div class="flex items-center justify-between mb-1">
+								<div class="mb-1 flex items-center justify-between">
 									<span
-										class="text-sm text-slate-700 dark:text-slate-300 truncate max-w-md"
+										class="max-w-md truncate text-sm text-slate-700 dark:text-slate-300"
 										title={result.systemName}
 									>
 										{result.systemName}
 										<span class="text-slate-400 dark:text-slate-500">({result.organization})</span>
-										<span class="text-amber-600 dark:text-amber-400 text-xs ml-1">†</span>
+										<span class="ml-1 text-xs text-amber-600 dark:text-amber-400">†</span>
 									</span>
 									<div class="flex items-center gap-3">
 										<span class="text-xs text-emerald-600 dark:text-emerald-400">
 											+{formatPercent(result.performanceBenefit)}
 										</span>
-										<span class="text-sm font-mono font-medium text-slate-900 dark:text-white">
+										<span class="font-mono text-sm font-medium text-slate-900 dark:text-white">
 											{formatPerformance(result.normalizedPerformance)}
 										</span>
 									</div>
 								</div>
-								<div class="h-8 bg-slate-100 dark:bg-slate-700 rounded overflow-hidden">
+								<div class="h-8 overflow-hidden rounded bg-slate-100 dark:bg-slate-700">
 									<div
-										class="h-full rounded transition-all duration-300 ease-out flex items-center px-2"
-										style="width: {barWidth}%; background-color: {getOrgColor(result.organization)};"
+										class="flex h-full items-center rounded px-2 transition-all duration-300 ease-out"
+										style="width: {barWidth}%; background-color: {getOrgColor(
+											result.organization
+										)};"
 									>
 										{#if barWidth > 20}
-											<span class="text-xs font-medium text-white truncate">
+											<span class="truncate text-xs font-medium text-white">
 												{result.accelerator} (÷{result.acceleratorCount})
 											</span>
 										{/if}
@@ -148,7 +151,7 @@
 			</div>
 		{/each}
 
-		<p class="text-xs text-slate-500 dark:text-slate-400 italic">
+		<p class="text-xs text-slate-500 italic dark:text-slate-400">
 			† Result not verified by MLCommons Association. Normalized scores are derived calculations.
 		</p>
 	{/if}

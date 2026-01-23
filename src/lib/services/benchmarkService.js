@@ -155,4 +155,3 @@ export function buildEndpointUrl(filters) {
 
 	return `/api/benchmarks?${params.toString()}`;
 }
-

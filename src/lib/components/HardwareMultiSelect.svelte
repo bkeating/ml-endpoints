@@ -65,7 +65,10 @@
 </script>
 
 <div class="flex min-w-36 flex-col gap-1" bind:this={dropdownRef}>
-	<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono" id={labelId}>
+	<span
+		class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+		id={labelId}
+	>
 		{label}
 	</span>
 	<div class="relative">
@@ -77,9 +80,12 @@
 			aria-haspopup="listbox"
 			aria-labelledby={labelId}
 		>
-			<span class="flex items-center gap-2 truncate dm-mono">
+			<span class="dm-mono flex items-center gap-2 truncate">
 				{#if selectedColors.length > 0}
-					<span class="relative flex items-center" style="width: {12 + (selectedColors.length - 1) * 6}px; height: 12px;">
+					<span
+						class="relative flex items-center"
+						style="width: {12 + (selectedColors.length - 1) * 6}px; height: 12px;"
+					>
 						{#each selectedColors as color, i (color + i)}
 							<span
 								class="absolute h-3 w-3 rounded-full"
@@ -92,13 +98,15 @@
 			</span>
 			<Icon
 				name="ChevronDown"
-				class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 {isOpen ? 'rotate-180' : ''}"
+				class="h-4 w-4 shrink-0 text-slate-500 transition-transform duration-200 {isOpen
+					? 'rotate-180'
+					: ''}"
 			/>
 		</button>
 
 		{#if isOpen}
 			<div
-				class="absolute left-0 top-full z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-200 bg-slate-50 shadow-lg dark:border-slate-600 dark:bg-slate-800"
+				class="absolute top-full left-0 z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-200 bg-slate-50 shadow-lg dark:border-slate-600 dark:bg-slate-800"
 				role="listbox"
 				aria-multiselectable="true"
 			>
@@ -109,14 +117,22 @@
 						role="option"
 						aria-selected={selected}
 						onclick={() => onToggle(option.id)}
-						class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 {selected ? 'rounded-sm' : ''}"
+						class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 {selected
+							? 'rounded-sm'
+							: ''}"
 						style={selected ? `background-color: ${option.color}20;` : ''}
 					>
 						<span
 							class="h-3 w-3 shrink-0 rounded-full border-2 transition-colors"
-							style="background-color: {selected ? option.color : 'transparent'}; border-color: {option.color};"
+							style="background-color: {selected
+								? option.color
+								: 'transparent'}; border-color: {option.color};"
 						></span>
-						<span class="truncate {selected ? 'font-medium text-slate-900 dark:text-slate-100' : 'text-slate-700 dark:text-slate-300'}">
+						<span
+							class="truncate {selected
+								? 'font-medium text-slate-900 dark:text-slate-100'
+								: 'text-slate-700 dark:text-slate-300'}"
+						>
 							{option.name}
 						</span>
 						{#if selected}

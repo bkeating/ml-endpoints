@@ -17,6 +17,7 @@
 	 */
 	import * as d3 from 'd3';
 	import Icon from '$lib/components/Icon.svelte';
+	import { resolve } from '$app/paths';
 
 	/**
 	 * @typedef {Object} DataPoint
@@ -125,30 +126,26 @@
 	let innerHeight = $derived(height - margin.top - margin.bottom);
 
 	// Compute domains from data with automatic zoom-to-fit
-	let xExtent = $derived(
-		d3.extent(data.flatMap((s) => s.points.map((p) => p.x)))
-	);
-	
+	let xExtent = $derived(d3.extent(data.flatMap((s) => s.points.map((p) => p.x))));
+
 	// Calculate Y-axis extent from actual data (min and max)
-	let yExtent = $derived(
-		d3.extent(data.flatMap((s) => s.points.map((p) => p.y)))
-	);
-	
+	let yExtent = $derived(d3.extent(data.flatMap((s) => s.points.map((p) => p.y))));
+
 	// Auto-calculate Y domain with minimal padding (2% top/bottom padding)
 	// Only use custom domain if explicitly provided
 	let yDomain = $derived.by(() => {
 		if (customYDomain) return customYDomain;
-		
+
 		const yMin = yExtent[0] ?? 0;
 		const yMax = yExtent[1] ?? 0;
-		
+
 		// If data range is very small or zero, ensure minimum range
 		if (yMax - yMin < 0.01 * yMax) {
 			const center = (yMin + yMax) / 2;
 			const minRange = Math.max(yMax * 0.1, 1); // At least 10% of max or 1 unit
 			return [Math.max(0, center - minRange / 2), center + minRange / 2];
 		}
-		
+
 		// Add minimal padding (2% on each side)
 		const padding = (yMax - yMin) * 0.02;
 		return [Math.max(0, yMin - padding), yMax + padding];
@@ -158,17 +155,14 @@
 	let xDomain = $derived.by(() => {
 		const xMin = Math.max(1, xExtent[0] ?? 1);
 		const xMax = xExtent[1] ?? 4096;
-		
+
 		// For log scale, ensure we don't expand beyond data
 		// Add minimal padding (1% on each side for log scale)
 		if (useLogScale) {
 			const logMin = Math.log10(xMin);
 			const logMax = Math.log10(xMax);
 			const logPadding = (logMax - logMin) * 0.01;
-			return [
-				Math.pow(10, logMin - logPadding),
-				Math.pow(10, logMax + logPadding)
-			];
+			return [Math.pow(10, logMin - logPadding), Math.pow(10, logMax + logPadding)];
 		} else {
 			// Linear scale: minimal padding
 			const padding = (xMax - xMin) * 0.01;
@@ -183,21 +177,22 @@
 			: d3.scaleLinear().domain(xDomain).range([0, innerWidth])
 	);
 
-	let yScale = $derived(
-		d3.scaleLinear().domain(yDomain).range([innerHeight, 0])
-	);
+	let yScale = $derived(d3.scaleLinear().domain(yDomain).range([innerHeight, 0]));
 
 	// Axis ticks
 	let xTicks = $derived(
 		useLogScale
-			? [1, 8, 32, 128, 512, 2048, 4096].filter((t) => t >= (xExtent[0] ?? 1) && t <= (xExtent[1] ?? 4096))
+			? [1, 8, 32, 128, 512, 2048, 4096].filter(
+					(t) => t >= (xExtent[0] ?? 1) && t <= (xExtent[1] ?? 4096)
+				)
 			: xScale.ticks(8)
 	);
 	let yTicks = $derived(yScale.ticks(8));
 
 	// Step function line generator
 	let stepLineGenerator = $derived(
-		d3.line()
+		d3
+			.line()
 			.x((d) => xScale(d.x))
 			.y((d) => yScale(d.y))
 			.curve(stepDirection === 'after' ? d3.curveStepAfter : d3.curveStepBefore)
@@ -205,7 +200,8 @@
 
 	// Smooth interpolation line generator
 	let smoothLineGenerator = $derived(
-		d3.line()
+		d3
+			.line()
 			.x((d) => xScale(d.x))
 			.y((d) => yScale(d.y))
 			.curve(d3.curveMonotoneX)
@@ -239,7 +235,8 @@
 
 	// Line generator for ideal line (smooth curve)
 	let idealLineGenerator = $derived(
-		d3.line()
+		d3
+			.line()
 			.x((d) => xScale(d.x))
 			.y((d) => yScale(d.y))
 			.curve(d3.curveLinear)
@@ -283,12 +280,18 @@
 </script>
 
 <div class="pareto-chart-container relative w-full">
-	<svg {width} {height} class="overflow-visible font-instrument-sans w-full h-auto max-w-full">
+	<svg {width} {height} class="font-instrument-sans h-auto w-full max-w-full overflow-visible">
 		<defs>
 			<!-- Chart background gradient -->
 			<linearGradient id="paretoBg" x1="0%" y1="0%" x2="0%" y2="100%">
-				<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
-				<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
+				<stop
+					offset="0%"
+					class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]"
+				/>
+				<stop
+					offset="100%"
+					class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]"
+				/>
 			</linearGradient>
 			<!-- Clip path for data area -->
 			<clipPath id={clipId}>
@@ -386,7 +389,11 @@
 							fill={series.color}
 							stroke={point.isCompliancePoint ? '#fff' : series.color}
 							stroke-width={point.isCompliancePoint ? 2.5 : 1.5}
-							class="cursor-pointer transition-all duration-150 hover:r-[8px]"
+							class="hover:r-[8px] cursor-pointer transition-all duration-150"
+							role="img"
+							aria-label="{series.label} data point at {point.x} clients{point.isCompliancePoint
+								? ' (compliance point)'
+								: ''}"
 							onmouseenter={(e) => handlePointHover(e, point, series)}
 							onmouseleave={handlePointLeave}
 						/>
@@ -409,7 +416,14 @@
 
 			<!-- Y-axis -->
 			<g class="y-axis">
-				<line x1="0" x2="0" y1="0" y2={innerHeight} class="stroke-slate-400 dark:stroke-slate-500" stroke-width="1" />
+				<line
+					x1="0"
+					x2="0"
+					y1="0"
+					y2={innerHeight}
+					class="stroke-slate-400 dark:stroke-slate-500"
+					stroke-width="1"
+				/>
 				{#each yTicks as tick (tick)}
 					<g transform="translate(0, {yScale(tick)})">
 						<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
@@ -437,7 +451,14 @@
 
 			<!-- X-axis -->
 			<g class="x-axis" transform="translate(0, {innerHeight})">
-				<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" stroke-width="1" />
+				<line
+					x1="0"
+					x2={innerWidth}
+					y1="0"
+					y2="0"
+					class="stroke-slate-400 dark:stroke-slate-500"
+					stroke-width="1"
+				/>
 				{#each xTicks as tick (tick)}
 					<g transform="translate({xScale(tick)}, 0)">
 						<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
@@ -478,7 +499,8 @@
 					<line
 						x1={targetX}
 						y1={targetY}
-						x2={labelX + (ann.anchor === 'end' ? -boxWidth / 2 : ann.anchor === 'start' ? boxWidth / 2 : 0)}
+						x2={labelX +
+							(ann.anchor === 'end' ? -boxWidth / 2 : ann.anchor === 'start' ? boxWidth / 2 : 0)}
 						y2={labelY + boxHeight / 2}
 						class="stroke-slate-600 dark:stroke-slate-400"
 						stroke-width="1.5"
@@ -496,7 +518,8 @@
 
 					<!-- Callout box -->
 					<rect
-						x={labelX - (ann.anchor === 'end' ? boxWidth : ann.anchor === 'middle' ? boxWidth / 2 : 0)}
+						x={labelX -
+							(ann.anchor === 'end' ? boxWidth : ann.anchor === 'middle' ? boxWidth / 2 : 0)}
 						y={labelY}
 						width={boxWidth}
 						height={boxHeight}
@@ -508,7 +531,12 @@
 					<!-- Text lines -->
 					{#each textLines as line, i (i)}
 						<text
-							x={labelX - (ann.anchor === 'end' ? boxWidth - boxPadding : ann.anchor === 'middle' ? boxWidth / 2 - boxPadding : -boxPadding)}
+							x={labelX -
+								(ann.anchor === 'end'
+									? boxWidth - boxPadding
+									: ann.anchor === 'middle'
+										? boxWidth / 2 - boxPadding
+										: -boxPadding)}
 							y={labelY + boxPadding + (i + 0.75) * lineHeight}
 							text-anchor="start"
 							class="fill-slate-100 text-xs font-medium dark:fill-slate-200"
@@ -528,11 +556,15 @@
 					height={displayLegendSeries.length * 48 + 40}
 				>
 					<div xmlns="http://www.w3.org/1999/xhtml" class="legend-container">
-						<div class="flex items-center justify-between mb-1 px-1">
-							<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+						<div class="mb-1 flex items-center justify-between px-1">
+							<span
+								class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+							>
 								Hardware
 							</span>
-							<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+							<span
+								class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+							>
 								{normalizationLabel}
 							</span>
 						</div>
@@ -545,25 +577,31 @@
 								<button
 									type="button"
 									onclick={() => onToggleSeries(series.id)}
-									class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+									class="group flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded px-1.5 py-1 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
 									aria-pressed={visible}
 									aria-label="Toggle {series.label} visibility"
 								>
 									<span
-										class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
+										class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
 										style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
 									></span>
-									<span class="flex flex-col min-w-0">
+									<span class="flex min-w-0 flex-col">
 										<span
-											class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
+											class="truncate text-sm leading-tight font-medium transition-opacity duration-200 {visible
 												? 'text-slate-700 dark:text-slate-300'
 												: 'text-slate-400 line-through dark:text-slate-500'}"
 											title={series.label}
 										>
-											{series.label.length > maxLabelLength ? series.label.slice(0, maxLabelLength) + '...' : series.label}
+											{series.label.length > maxLabelLength
+												? series.label.slice(0, maxLabelLength) + '...'
+												: series.label}
 										</span>
 										{#if series.vendor}
-											<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+											<span
+												class="text-xs text-slate-500 transition-opacity duration-200 dark:text-slate-400 {visible
+													? ''
+													: 'opacity-50'}"
+											>
 												{series.vendor}
 											</span>
 										{/if}
@@ -579,9 +617,9 @@
 										const val = parseFloat(e.currentTarget.value);
 										onNormalizationChange(series.id, isNaN(val) ? 1 : val);
 									}}
-									class="w-14 shrink-0 px-1.5 py-1 text-sm text-right rounded border transition-colors {hasActiveWeight
+									class="w-14 shrink-0 rounded border px-1.5 py-1 text-right text-sm transition-colors {hasActiveWeight
 										? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
-										: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
+										: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:placeholder-slate-500 dark:focus:border-emerald-400"
 									aria-label="{normalizationLabel} for {series.label}"
 								/>
 							</div>
@@ -597,14 +635,17 @@
 						width={legendWidth}
 						height="150"
 					>
-						<div xmlns="http://www.w3.org/1999/xhtml" class="border-t border-slate-200 pt-3 dark:border-slate-700">
+						<div
+							xmlns="http://www.w3.org/1999/xhtml"
+							class="border-t border-slate-200 pt-3 dark:border-slate-700"
+						>
 							<ul class="space-y-3">
 								{#each links as link (link.label)}
 									<li>
 										<a
-											href={link.href ?? '#'}
+											href={resolve(link.href ?? '#')}
 											onclick={link.onclick}
-											class="flex items-center gap-2 text-sm text-slate-300 hover:underline dark:text-surface-400"
+											class="dark:text-surface-400 flex items-center gap-2 text-sm text-slate-300 hover:underline"
 										>
 											{#if link.icon}
 												<Icon name={link.icon} class="h-5 w-5" />
@@ -624,11 +665,15 @@
 	<!-- Mobile Legend (below chart) -->
 	{#if isMobileLayout}
 		<div class="mt-4">
-			<div class="flex items-center justify-between mb-2">
-				<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+			<div class="mb-2 flex items-center justify-between">
+				<span
+					class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+				>
 					Hardware
 				</span>
-				<span class="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+				<span
+					class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
+				>
 					{normalizationLabel}
 				</span>
 			</div>
@@ -638,21 +683,25 @@
 					{@const normValue = normalizationValues[series.id]}
 					{@const hasActiveWeight = normValue !== undefined && normValue !== 1}
 					{@const isEven = index % 2 === 0}
-					<div class="flex items-center gap-2 {isEven ? 'bg-slate-100/70 dark:bg-slate-700/70' : 'bg-slate-50/70 dark:bg-slate-800/70'} rounded px-2 py-0.5">
+					<div
+						class="flex items-center gap-2 {isEven
+							? 'bg-slate-100/70 dark:bg-slate-700/70'
+							: 'bg-slate-50/70 dark:bg-slate-800/70'} rounded px-2 py-0.5"
+					>
 						<button
 							type="button"
 							onclick={() => onToggleSeries(series.id)}
-							class="group flex flex-1 min-w-0 cursor-pointer items-center gap-2 rounded px-1 py-1.5 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
+							class="group flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded px-1 py-1.5 text-left transition-all duration-200 hover:bg-slate-100 dark:hover:bg-slate-700/50"
 							aria-pressed={visible}
 							aria-label="Toggle {series.label} visibility"
 						>
 							<span
-								class="h-3 w-3 rounded-full shrink-0 transition-opacity duration-200"
+								class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
 								style="background-color: {series.color}; opacity: {visible ? 1 : 0.3};"
 							></span>
-							<span class="flex flex-col min-w-0">
+							<span class="flex min-w-0 flex-col">
 								<span
-									class="text-sm font-medium leading-tight transition-opacity duration-200 truncate {visible
+									class="truncate text-sm leading-tight font-medium transition-opacity duration-200 {visible
 										? 'text-slate-700 dark:text-slate-300'
 										: 'text-slate-400 line-through dark:text-slate-500'}"
 									title={series.label}
@@ -660,7 +709,11 @@
 									{series.label}
 								</span>
 								{#if series.vendor}
-									<span class="text-xs text-slate-500 dark:text-slate-400 transition-opacity duration-200 {visible ? '' : 'opacity-50'}">
+									<span
+										class="text-xs text-slate-500 transition-opacity duration-200 dark:text-slate-400 {visible
+											? ''
+											: 'opacity-50'}"
+									>
 										{series.vendor}
 									</span>
 								{/if}
@@ -676,9 +729,9 @@
 								const val = parseFloat(e.currentTarget.value);
 								onNormalizationChange(series.id, isNaN(val) ? 1 : val);
 							}}
-							class="w-16 shrink-0 px-1 py-1.5 text-sm text-right rounded border transition-colors {hasActiveWeight
+							class="w-16 shrink-0 rounded border px-1 py-1.5 text-right text-sm transition-colors {hasActiveWeight
 								? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-400 dark:bg-emerald-900/30 dark:text-emerald-300'
-								: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:placeholder-slate-500 dark:focus:border-emerald-400"
+								: 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'} placeholder-slate-400 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:placeholder-slate-500 dark:focus:border-emerald-400"
 							aria-label="{normalizationLabel} for {series.label}"
 						/>
 					</div>
@@ -687,11 +740,11 @@
 
 			<!-- Mobile Links -->
 			{#if links.length > 0}
-				<div class="mt-4 px-2 pt-3 border-t border-slate-200 dark:border-slate-700">
-					<div class="flex justify-between w-full">
+				<div class="mt-4 border-t border-slate-200 px-2 pt-3 dark:border-slate-700">
+					<div class="flex w-full justify-between">
 						{#each links as link (link.label)}
 							<a
-								href={link.href ?? '#'}
+								href={resolve(link.href ?? '#')}
 								onclick={link.onclick}
 								class="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 hover:underline dark:text-slate-400 dark:hover:text-slate-300"
 							>
@@ -714,9 +767,7 @@
 			style="left: {tooltipPosition.x}px; top: {tooltipPosition.y}px;"
 		>
 			<div class="mb-1 flex items-center gap-2">
-				<span
-					class="h-2.5 w-2.5 rounded-full"
-					style="background-color: {tooltipData.series.color}"
+				<span class="h-2.5 w-2.5 rounded-full" style="background-color: {tooltipData.series.color}"
 				></span>
 				<span class="text-sm font-medium text-slate-800 dark:text-slate-200">
 					{tooltipData.series.label}
@@ -725,22 +776,30 @@
 			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
 				<div><strong>Concurrent Clients:</strong> {tooltipData.point.x.toLocaleString()}</div>
 				{#if tooltipData.point.original}
-					<div><strong>Throughput:</strong> {formatY(tooltipData.point.original.total_tput)} tok/s</div>
-					<div><strong>Interactivity:</strong> {formatY(tooltipData.point.original.tps_usr)} tok/s/user</div>
+					<div>
+						<strong>Throughput:</strong>
+						{formatY(tooltipData.point.original.total_tput)} tok/s
+					</div>
+					<div>
+						<strong>Interactivity:</strong>
+						{formatY(tooltipData.point.original.tps_usr)} tok/s/user
+					</div>
 					<div><strong>Utilization:</strong> {tooltipData.point.original.util.toFixed(1)}%</div>
 				{:else}
 					<div><strong>Value:</strong> {formatY(tooltipData.point.y)}</div>
 				{/if}
 				{#if tooltipData.point.appliedWeight && tooltipData.point.appliedWeight !== 1}
-					<div class="mt-1 pt-1 border-t border-slate-200 dark:border-slate-600">
+					<div class="mt-1 border-t border-slate-200 pt-1 dark:border-slate-600">
 						<div class="text-amber-600 dark:text-amber-400">
 							<strong>Weight Applied:</strong> ×{tooltipData.point.appliedWeight.toFixed(2)}
 						</div>
 						<div class="text-slate-500 dark:text-slate-400">
-							<strong>Weighted Value:</strong> {formatY(tooltipData.point.y)}
+							<strong>Weighted Value:</strong>
+							{formatY(tooltipData.point.y)}
 						</div>
 						<div class="text-slate-500 dark:text-slate-400">
-							<strong>Original:</strong> {formatY(tooltipData.point.originalY)}
+							<strong>Original:</strong>
+							{formatY(tooltipData.point.originalY)}
 						</div>
 					</div>
 				{/if}

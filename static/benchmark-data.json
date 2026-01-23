@@ -1,0 +1,118 @@
+{
+  "systems": [
+    {
+      "id": "system1",
+      "name": "System 1",
+      "chips": 4,
+      "normalizingFactor": 1,
+      "dataPoints": [
+        {
+          "concurrentUsers": { "min": 1, "max": 1.99 },
+          "ttft": 210,
+          "systemThroughput": 200,
+          "interactivity": 200,
+          "normalizedThroughput": 50
+        },
+        {
+          "concurrentUsers": { "min": 2, "max": 3.99 },
+          "ttft": 230,
+          "systemThroughput": 390,
+          "interactivity": 195,
+          "normalizedThroughput": 98
+        },
+        {
+          "concurrentUsers": { "min": 4, "max": 7.99 },
+          "ttft": 260,
+          "systemThroughput": 760,
+          "interactivity": 190,
+          "normalizedThroughput": 190
+        },
+        {
+          "concurrentUsers": { "min": 8, "max": 15.99 },
+          "ttft": 320,
+          "systemThroughput": 1480,
+          "interactivity": 185,
+          "normalizedThroughput": 370
+        },
+        {
+          "concurrentUsers": { "min": 16, "max": 31.99 },
+          "ttft": 380,
+          "systemThroughput": 2900,
+          "interactivity": 181,
+          "normalizedThroughput": 725
+        },
+        {
+          "concurrentUsers": { "min": 32, "max": 63.99 },
+          "ttft": 440,
+          "systemThroughput": 5500,
+          "interactivity": 172,
+          "normalizedThroughput": 1375
+        },
+        {
+          "concurrentUsers": { "min": 64, "max": 64 },
+          "ttft": 560,
+          "systemThroughput": 10000,
+          "interactivity": 156,
+          "normalizedThroughput": 2500
+        }
+      ]
+    },
+    {
+      "id": "system2",
+      "name": "System 2",
+      "chips": 8,
+      "normalizingFactor": 0.4,
+      "dataPoints": [
+        {
+          "concurrentUsers": { "min": 1, "max": 1.99 },
+          "ttft": 320,
+          "systemThroughput": 180,
+          "interactivity": 180,
+          "normalizedThroughput": 56
+        },
+        {
+          "concurrentUsers": { "min": 2, "max": 3.99 },
+          "ttft": 355,
+          "systemThroughput": 351,
+          "interactivity": 176,
+          "normalizedThroughput": 110
+        },
+        {
+          "concurrentUsers": { "min": 4, "max": 7.99 },
+          "ttft": 410,
+          "systemThroughput": 684,
+          "interactivity": 171,
+          "normalizedThroughput": 214
+        },
+        {
+          "concurrentUsers": { "min": 8, "max": 15.99 },
+          "ttft": 535,
+          "systemThroughput": 1332,
+          "interactivity": 167,
+          "normalizedThroughput": 416
+        },
+        {
+          "concurrentUsers": { "min": 16, "max": 31.99 },
+          "ttft": 650,
+          "systemThroughput": 2610,
+          "interactivity": 163,
+          "normalizedThroughput": 816
+        },
+        {
+          "concurrentUsers": { "min": 32, "max": 63.99 },
+          "ttft": 765,
+          "systemThroughput": 4950,
+          "interactivity": 155,
+          "normalizedThroughput": 1547
+        },
+        {
+          "concurrentUsers": { "min": 64, "max": 64 },
+          "ttft": 1000,
+          "systemThroughput": 9000,
+          "interactivity": 141,
+          "normalizedThroughput": 2813
+        }
+      ]
+    }
+  ]
+}

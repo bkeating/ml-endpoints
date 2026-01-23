@@ -5,7 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script>
 			// Prevent theme flash by applying dark class before any rendering
-			(function() {
+			(function () {
 				const cookie = document.cookie.match(/(?:^|; )theme=([^;]*)/);
 				const theme = cookie ? cookie[1] : null;
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -17,13 +17,20 @@
 		</script>
 		<style>
 			/* Prevent flash by setting background before CSS loads */
-			html { background-color: #fff; }
-			html.dark { background-color: #0f172a; }
+			html {
+				background-color: #fff;
+			}
+			html.dark {
+				background-color: #0f172a;
+			}
 		</style>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="icon" href="/favicon.webp" sizes="any">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link rel="icon" href="/favicon.webp" sizes="any" />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap"
+			rel="stylesheet"
+		/>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">

@@ -41,10 +41,7 @@
 		getHideLabels,
 		toggleLabels
 	} from '$lib/stores/chartSettings.svelte.js';
-	import {
-		getMobileFiltersOpen,
-		closeMobileFilters
-	} from '$lib/stores/pageSettings.svelte.js';
+	import { getMobileFiltersOpen, closeMobileFilters } from '$lib/stores/pageSettings.svelte.js';
 	import { allGpuConfigs, gpuNames, gpuColors } from '$lib/data/placeholders.js';
 
 	// Reactive getters - these automatically update when store values change
@@ -97,7 +94,7 @@
 <!-- Mobile Filters Overlay -->
 {#if mobileFiltersOpen}
 	<div
-		class="fixed inset-0 bg-black/50 z-[44] md:hidden"
+		class="fixed inset-0 z-[44] bg-black/50 md:hidden"
 		onclick={closeMobileFilters}
 		onkeydown={(e) => e.key === 'Escape' && closeMobileFilters()}
 		role="button"
@@ -108,14 +105,18 @@
 
 <!-- Mobile Filters Sidebar -->
 <div
-	class="fixed top-0 left-0 h-full w-80 max-w-[85vw] bg-white dark:bg-[#1a1d23] z-[45] transform transition-transform duration-300 ease-out md:hidden shadow-2xl overflow-y-auto {mobileFiltersOpen ? 'translate-x-0' : '-translate-x-full'}"
+	class="fixed top-0 left-0 z-[45] h-full w-80 max-w-[85vw] transform overflow-y-auto bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden dark:bg-[#1a1d23] {mobileFiltersOpen
+		? 'translate-x-0'
+		: '-translate-x-full'}"
 >
 	<!-- Sidebar Header -->
-	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-10 bg-white dark:bg-[#1a1d23]">
+	<div
+		class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-[#1a1d23]"
+	>
 		<span class="font-semibold text-slate-900 dark:text-white">Chart Filters</span>
 		<button
 			onclick={closeMobileFilters}
-			class="h-10 w-10 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+			class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
 			aria-label="Close filters"
 		>
 			<Icon name="Close" class="h-6 w-6" />
@@ -123,7 +124,7 @@
 	</div>
 
 	<!-- Sidebar Content -->
-	<div class="p-4 flex flex-col gap-6">
+	<div class="flex flex-col gap-6 p-4">
 		<!-- Hardware Selection -->
 		<HardwareMultiSelect
 			options={hardwareModels}
@@ -177,7 +178,7 @@
 
 		<!-- Display Options -->
 		<div class="flex flex-col gap-3">
-			<span class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">
+			<span class="text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400">
 				Display Options
 			</span>
 			<label class="flex cursor-pointer items-center gap-3">
@@ -202,28 +203,23 @@
 
 		<!-- Timeline Range Slider -->
 		<div>
-			<TimelineRange
-				height={60}
-				label="Interactivity Range (s)"
-				minBound={0}
-				maxBound={350}
-			/>
+			<TimelineRange height={60} label="Interactivity Range (s)" minBound={0} maxBound={350} />
 		</div>
 
 		<!-- API Explorer Collapsible -->
-		<div class="border-t border-slate-200 dark:border-slate-700 pt-4">
+		<div class="border-t border-slate-200 pt-4 dark:border-slate-700">
 			<button
 				type="button"
 				onclick={() => (apiExplorerOpen = !apiExplorerOpen)}
 				class="flex w-full items-center justify-between py-2 text-left"
 				aria-expanded={apiExplorerOpen}
 			>
-				<span class="text-sm font-medium text-slate-700 dark:text-slate-300">
-					API Explorer
-				</span>
+				<span class="text-sm font-medium text-slate-700 dark:text-slate-300"> API Explorer </span>
 				<Icon
 					name="ChevronDown"
-					class="h-5 w-5 text-slate-500 transition-transform duration-200 {apiExplorerOpen ? 'rotate-180' : ''}"
+					class="h-5 w-5 text-slate-500 transition-transform duration-200 {apiExplorerOpen
+						? 'rotate-180'
+						: ''}"
 				/>
 			</button>
 
@@ -237,165 +233,171 @@
 </div>
 
 <!-- Desktop: Sentinel element for sticky detection -->
-<div bind:this={sentinelEl} class="h-0 w-full hidden md:block" aria-hidden="true"></div>
+<div bind:this={sentinelEl} class="hidden h-0 w-full md:block" aria-hidden="true"></div>
 
 <!-- Desktop: Outer wrapper for full-width sticky background when stuck -->
 <div
-	class="hidden md:block sticky top-[80px] z-50 mt-6 mb-12 transition-all duration-300 ease-out {isSticky
-		? 'bg-slate-800/90 dark:bg-slate-800/95 shadow-lg shadow-slate-900/10 dark:shadow-slate-900/50 border-b border-slate-200 dark:border-slate-700 backdrop-blur-md'
+	class="sticky top-[80px] z-50 mt-6 mb-12 hidden transition-all duration-300 ease-out md:block {isSticky
+		? 'border-b border-slate-200 bg-slate-800/90 shadow-lg shadow-slate-900/10 backdrop-blur-md dark:border-slate-700 dark:bg-slate-800/95 dark:shadow-slate-900/50'
 		: ''}"
 >
 	<!-- Inner container that maintains max-width and styling -->
 	<div
 		class="transition-colors duration-300 ease-out {isSticky
-			? 'max-w-none mx-0 rounded-none border-x-0 bg-transparent'
-			: 'max-w-7xl mx-auto rounded-lg border border-slate-200 bg-slate-800/90 dark:border-slate-700 dark:bg-slate-800/75 shadow-xl backdrop-blur'}"
+			? 'mx-0 max-w-none rounded-none border-x-0 bg-transparent'
+			: 'mx-auto max-w-7xl rounded-lg border border-slate-200 bg-slate-800/90 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-800/75'}"
 		role="group"
 		aria-label="Chart filters and settings"
 	>
-	<!-- Filters Row - All on one line -->
-	<div class="{isSticky ? 'max-w-7xl mx-auto' : ''} p-4">
-		<div class="flex items-start gap-3">
-			<div class="flex flex-1 flex-wrap items-start gap-3">
-				<HardwareMultiSelect
-					options={hardwareModels}
-					isSelected={isModelVisible}
-					onToggle={toggleModel}
-					label="Hardware"
-				/>
-
-				<FilterSelect
-					id="model-select"
-					label="Model"
-					value={currentModel}
-					options={modelOptions}
-					onchange={(v) => setModel(/** @type {any} */ (v))}
-					minWidth=""
-				/>
-
-				<FilterSelect
-					id="isl-osl-select"
-					label="ISL/OSL"
-					value={currentIslOsl}
-					options={islOslOptions}
-					onchange={(v) => setIslOsl(/** @type {any} */ (v))}
-					minWidth=""
-				/>
-
-				<FilterRadioGroup
-					name="precision"
-					legend="Precision"
-					value={currentPrecision}
-					options={precisionOptions}
-					onchange={(v) => setPrecision(/** @type {any} */ (v))}
-					ariaLabel="Floating point precision"
-				/>
-
-				<FilterSelect
-					id="y-axis-select"
-					label="Y-Axis Metric"
-					value={currentYAxisMetric}
-					options={yAxisMetricOptions}
-					onchange={(v) => setYAxisMetric(/** @type {any} */ (v))}
-					minWidth=""
-				/>
-			</div>
-
-			<div class="shrink-0 flex flex-col gap-1">
-				<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono">
-					Advanced
-				</span>
-				<button
-					type="button"
-					onclick={() => (settingsOpen = !settingsOpen)}
-					class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {settingsOpen ? 'border-yellow-500 bg-yellow-500 hover:bg-yellow-600 dark:border-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600' : 'border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600'}"
-					aria-expanded={settingsOpen}
-					aria-controls="settings-panel"
-					aria-label="Toggle advanced chart settings"
-					title="Advanced Settings"
-				>
-					<Icon
-						name="AdjustmentsCog"
-						class="h-5 w-5 transition-colors {settingsOpen ? 'text-white' : 'text-slate-600 dark:text-slate-300'}"
+		<!-- Filters Row - All on one line -->
+		<div class="{isSticky ? 'mx-auto max-w-7xl' : ''} p-4">
+			<div class="flex items-start gap-3">
+				<div class="flex flex-1 flex-wrap items-start gap-3">
+					<HardwareMultiSelect
+						options={hardwareModels}
+						isSelected={isModelVisible}
+						onToggle={toggleModel}
+						label="Hardware"
 					/>
-				</button>
-			</div>
-		</div>
-	</div>
 
-	<!-- Collapsible Settings Panel -->
-	{#if settingsOpen}
-		<div
-			id="settings-panel"
-			transition:slide={{ duration: 250 }}
-			class="border-t border-slate-200 dark:border-slate-700"
-		>
-			<div class={isSticky ? 'max-w-7xl mx-auto' : ''}>
-				<!-- Display Options & Timeline Range Row -->
-				<div class="flex flex-wrap items-start gap-6 p-4 border-b border-slate-200 dark:border-slate-700">
-					<!-- Checkboxes -->
-					<div class="flex flex-wrap items-center gap-4">
-						<label class="flex cursor-pointer items-center gap-2">
-							<input
-								type="checkbox"
-								checked={hideNonOptimal}
-								onchange={toggleNonOptimal}
-								class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
-							/>
-							<span class="text-sm text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
-						</label>
-						<label class="flex cursor-pointer items-center gap-2">
-							<input
-								type="checkbox"
-								checked={hideLabels}
-								onchange={toggleLabels}
-								class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
-							/>
-							<span class="text-sm text-slate-700 dark:text-slate-300">Hide Labels</span>
-						</label>
-					</div>
+					<FilterSelect
+						id="model-select"
+						label="Model"
+						value={currentModel}
+						options={modelOptions}
+						onchange={(v) => setModel(/** @type {any} */ (v))}
+						minWidth=""
+					/>
 
-					<!-- Timeline Range Slider -->
-					<div class="flex-1 min-w-64">
-						<TimelineRange
-							height={60}
-							label="Interactivity Range (s)"
-							minBound={0}
-							maxBound={350}
-						/>
-					</div>
+					<FilterSelect
+						id="isl-osl-select"
+						label="ISL/OSL"
+						value={currentIslOsl}
+						options={islOslOptions}
+						onchange={(v) => setIslOsl(/** @type {any} */ (v))}
+						minWidth=""
+					/>
+
+					<FilterRadioGroup
+						name="precision"
+						legend="Precision"
+						value={currentPrecision}
+						options={precisionOptions}
+						onchange={(v) => setPrecision(/** @type {any} */ (v))}
+						ariaLabel="Floating point precision"
+					/>
+
+					<FilterSelect
+						id="y-axis-select"
+						label="Y-Axis Metric"
+						value={currentYAxisMetric}
+						options={yAxisMetricOptions}
+						onchange={(v) => setYAxisMetric(/** @type {any} */ (v))}
+						minWidth=""
+					/>
 				</div>
 
-				<!-- API Explorer Collapsible Section (nested) -->
-				<div>
+				<div class="flex shrink-0 flex-col gap-1">
+					<span
+						class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+					>
+						Advanced
+					</span>
 					<button
 						type="button"
-						onclick={() => (apiExplorerOpen = !apiExplorerOpen)}
-						class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50"
-						aria-expanded={apiExplorerOpen}
-						aria-controls="api-explorer-panel"
+						onclick={() => (settingsOpen = !settingsOpen)}
+						class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {settingsOpen
+							? 'border-yellow-500 bg-yellow-500 hover:bg-yellow-600 dark:border-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600'
+							: 'border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600'}"
+						aria-expanded={settingsOpen}
+						aria-controls="settings-panel"
+						aria-label="Toggle advanced chart settings"
+						title="Advanced Settings"
 					>
-						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">
-							API Explorer
-						</span>
 						<Icon
-							name="ChevronDown"
-							class="h-5 w-5 text-slate-500 transition-transform duration-200 {apiExplorerOpen ? 'rotate-180' : ''}"
+							name="AdjustmentsCog"
+							class="h-5 w-5 transition-colors {settingsOpen
+								? 'text-white'
+								: 'text-slate-600 dark:text-slate-300'}"
 						/>
 					</button>
-
-				{#if apiExplorerOpen}
-					<div
-						id="api-explorer-panel"
-						transition:slide={{ duration: 200 }}
-						class="px-4 pb-4"
-					>
-						<ApiExplorer />
-					</div>
-				{/if}
+				</div>
 			</div>
 		</div>
-	</div>
-{/if}
+
+		<!-- Collapsible Settings Panel -->
+		{#if settingsOpen}
+			<div
+				id="settings-panel"
+				transition:slide={{ duration: 250 }}
+				class="border-t border-slate-200 dark:border-slate-700"
+			>
+				<div class={isSticky ? 'mx-auto max-w-7xl' : ''}>
+					<!-- Display Options & Timeline Range Row -->
+					<div
+						class="flex flex-wrap items-start gap-6 border-b border-slate-200 p-4 dark:border-slate-700"
+					>
+						<!-- Checkboxes -->
+						<div class="flex flex-wrap items-center gap-4">
+							<label class="flex cursor-pointer items-center gap-2">
+								<input
+									type="checkbox"
+									checked={hideNonOptimal}
+									onchange={toggleNonOptimal}
+									class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
+								/>
+								<span class="text-sm text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
+							</label>
+							<label class="flex cursor-pointer items-center gap-2">
+								<input
+									type="checkbox"
+									checked={hideLabels}
+									onchange={toggleLabels}
+									class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
+								/>
+								<span class="text-sm text-slate-700 dark:text-slate-300">Hide Labels</span>
+							</label>
+						</div>
+
+						<!-- Timeline Range Slider -->
+						<div class="min-w-64 flex-1">
+							<TimelineRange
+								height={60}
+								label="Interactivity Range (s)"
+								minBound={0}
+								maxBound={350}
+							/>
+						</div>
+					</div>
+
+					<!-- API Explorer Collapsible Section (nested) -->
+					<div>
+						<button
+							type="button"
+							onclick={() => (apiExplorerOpen = !apiExplorerOpen)}
+							class="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-slate-100 dark:hover:bg-slate-700/50"
+							aria-expanded={apiExplorerOpen}
+							aria-controls="api-explorer-panel"
+						>
+							<span class="text-sm font-medium text-slate-700 dark:text-slate-300">
+								API Explorer
+							</span>
+							<Icon
+								name="ChevronDown"
+								class="h-5 w-5 text-slate-500 transition-transform duration-200 {apiExplorerOpen
+									? 'rotate-180'
+									: ''}"
+							/>
+						</button>
+
+						{#if apiExplorerOpen}
+							<div id="api-explorer-panel" transition:slide={{ duration: 200 }} class="px-4 pb-4">
+								<ApiExplorer />
+							</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
 </div>

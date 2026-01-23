@@ -4,4 +4,3 @@ export function load({ locals }) {
 		theme: locals.theme
 	};
 }
-

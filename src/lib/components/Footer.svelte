@@ -3,32 +3,34 @@
 	let email = $state('');
 </script>
 
-<footer class="bg-slate-900 dark:bg-slate-950 mt-12 font-instrument-sans">
+<footer class="font-instrument-sans mt-12 bg-slate-900 dark:bg-slate-950">
 	<!-- Main Footer Content -->
-	<div class="max-w-7xl mx-auto px-3 py-12 md:py-16">
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8">
+	<div class="mx-auto max-w-7xl px-3 py-12 md:py-16">
+		<div class="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 			<!-- Logo & Newsletter Section -->
 			<div class="lg:col-span-2">
-				<img src="/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="h-10 mb-6" />
-				<p class="text-slate-400 text-sm leading-relaxed mb-6 max-w-md">
-					MLCommons is an open engineering consortium with a mission to make machine learning better for everyone.
-					We provide industry-standard benchmarks, datasets, and best practices.
+				<img src="/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="mb-6 h-10" />
+				<p class="mb-6 max-w-md text-sm leading-relaxed text-slate-400">
+					MLCommons is an open engineering consortium with a mission to make machine learning better
+					for everyone. We provide industry-standard benchmarks, datasets, and best practices.
 				</p>
 
 				<!-- Newsletter Subscription -->
 				<div class="mb-6">
-					<h3 class="text-white text-sm font-semibold uppercase tracking-wider mb-3">Stay Updated</h3>
-					<form class="flex flex-col sm:flex-row gap-3" onsubmit={(e) => e.preventDefault()}>
+					<h3 class="mb-3 text-sm font-semibold tracking-wider text-white uppercase">
+						Stay Updated
+					</h3>
+					<form class="flex flex-col gap-3 sm:flex-row" onsubmit={(e) => e.preventDefault()}>
 						<input
 							type="email"
 							bind:value={email}
 							placeholder="Enter your email"
-							class="flex-1 h-12 px-4 rounded-lg bg-slate-800 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+							class="h-12 flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 text-white transition-all duration-200 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 							aria-label="Email address for newsletter"
 						/>
 						<button
 							type="submit"
-							class="h-12 px-6 rounded-lg bg-[#CCEBD4] text-slate-900 font-medium hover:bg-emerald-300 transition-colors duration-200 whitespace-nowrap"
+							class="h-12 rounded-lg bg-[#CCEBD4] px-6 font-medium whitespace-nowrap text-slate-900 transition-colors duration-200 hover:bg-emerald-300"
 						>
 							Subscribe
 						</button>
@@ -38,25 +40,41 @@
 
 			<!-- Resources Links -->
 			<div>
-				<h3 class="text-white text-sm font-semibold uppercase tracking-wider mb-4">Resources</h3>
+				<h3 class="mb-4 text-sm font-semibold tracking-wider text-white uppercase">Resources</h3>
 				<ul class="space-y-3">
 					<li>
-						<a href="https://mlcommons.org/benchmarks/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/benchmarks/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Benchmarks
 						</a>
 					</li>
 					<li>
-						<a href="https://mlcommons.org/datasets/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/datasets/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Datasets
 						</a>
 					</li>
 					<li>
-						<a href="https://mlcommons.org/best-practices/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/best-practices/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Best Practices
 						</a>
 					</li>
 					<li>
-						<a href="https://github.com/mlcommons" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://github.com/mlcommons"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							GitHub
 						</a>
 					</li>
@@ -65,25 +83,41 @@
 
 			<!-- Community Links -->
 			<div>
-				<h3 class="text-white text-sm font-semibold uppercase tracking-wider mb-4">Community</h3>
+				<h3 class="mb-4 text-sm font-semibold tracking-wider text-white uppercase">Community</h3>
 				<ul class="space-y-3">
 					<li>
-						<a href="https://mlcommons.org/get-involved/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/get-involved/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Get Involved
 						</a>
 					</li>
 					<li>
-						<a href="https://mlcommons.org/membership/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/membership/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Membership
 						</a>
 					</li>
 					<li>
-						<a href="https://mlcommons.org/events/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/events/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							Events
 						</a>
 					</li>
 					<li>
-						<a href="https://mlcommons.org/news/" target="_blank" class="text-slate-400 hover:text-white text-sm transition-colors duration-200">
+						<a
+							href="https://mlcommons.org/news/"
+							target="_blank"
+							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+						>
 							News
 						</a>
 					</li>
@@ -94,22 +128,31 @@
 
 	<!-- Bottom Bar -->
 	<div class="border-t border-slate-800">
-		<div class="max-w-7xl mx-auto px-3 py-6">
-			<div class="flex flex-col md:flex-row items-center justify-between gap-4">
+		<div class="mx-auto max-w-7xl px-3 py-6">
+			<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
 				<!-- Copyright & Trademark -->
 				<div class="text-center md:text-left">
-					<p class="text-xs text-slate-500 leading-relaxed">
-						&copy; 2026 MLCommons. MLCommons, MLPerf and MLCube are registered trademarks of MLCommons Association.
+					<p class="text-xs leading-relaxed text-slate-500">
+						&copy; 2026 MLCommons. MLCommons, MLPerf and MLCube are registered trademarks of
+						MLCommons Association.
 					</p>
 				</div>
 
 				<!-- Legal Links -->
 				<div class="flex items-center gap-4 text-xs">
-					<a href="https://mlcommons.org/privacy/" target="_blank" class="text-slate-500 hover:text-slate-300 transition-colors duration-200">
+					<a
+						href="https://mlcommons.org/privacy/"
+						target="_blank"
+						class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
+					>
 						Privacy Policy
 					</a>
 					<span class="text-slate-700">|</span>
-					<a href="https://mlcommons.org/policies/" target="_blank" class="text-slate-500 hover:text-slate-300 transition-colors duration-200">
+					<a
+						href="https://mlcommons.org/policies/"
+						target="_blank"
+						class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
+					>
 						Policies
 					</a>
 				</div>

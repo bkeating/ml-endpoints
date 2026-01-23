@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import TabNavigation from '$lib/components/TabNavigation.svelte';
 
+	let { children } = $props();
+
 	/** Tab configuration */
 	const tabs = [
 		{ id: 'crm', label: 'CRM', icon: 'FileAnalytics' },
@@ -16,8 +18,8 @@
 
 <TabNavigation {tabs} basePath="/admin-tools" {currentPath} ariaLabel="Admin tools navigation" />
 
-<div class="bg-slate-50 dark:bg-slate-900 min-h-[60vh]">
-	<div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
-		<slot />
+<div class="min-h-[60vh] bg-slate-50 dark:bg-slate-900">
+	<div class="mx-auto max-w-7xl px-4 py-8 md:py-12">
+		{@render children()}
 	</div>
 </div>

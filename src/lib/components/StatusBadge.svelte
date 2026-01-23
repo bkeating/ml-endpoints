@@ -15,6 +15,6 @@
 	let badgeClass = $derived(colorMap[status] || statusColors.inactive);
 </script>
 
-<span class="px-2 py-1 rounded-full text-xs font-medium {badgeClass}">
+<span class="rounded-full px-2 py-1 text-xs font-medium {badgeClass}">
 	{status}
 </span>

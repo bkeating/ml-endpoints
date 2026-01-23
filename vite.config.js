@@ -7,18 +7,18 @@ import path from 'path';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 
-  resolve: {
-    alias: {
-      '@app-css': path.resolve('./src/routes/app.css'),
-    },
-  },
-  css: {
-    preprocessorOptions: {
-      css: {
-        importLoaders: 1,
-      },
-    },
-  },
+	resolve: {
+		alias: {
+			'@app-css': path.resolve('./src/routes/app.css')
+		}
+	},
+	css: {
+		preprocessorOptions: {
+			css: {
+				importLoaders: 1
+			}
+		}
+	},
 
 	test: {
 		expect: { requireAssertions: true },

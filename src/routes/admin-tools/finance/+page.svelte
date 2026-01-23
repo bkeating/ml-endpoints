@@ -4,32 +4,67 @@
 
 	/** Placeholder invoices */
 	const invoices = [
-		{ id: 'INV-2026-001', company: 'NVIDIA', amount: 250000, dueDate: 'Feb 15, 2026', status: 'pending', tier: 'Premier' },
-		{ id: 'INV-2026-002', company: 'Google', amount: 250000, dueDate: 'Feb 15, 2026', status: 'paid', tier: 'Premier' },
-		{ id: 'INV-2026-003', company: 'Startup AI', amount: 15000, dueDate: 'Jan 30, 2026', status: 'overdue', tier: 'Associate' },
-		{ id: 'INV-2026-004', company: 'Meta', amount: 250000, dueDate: 'Mar 1, 2026', status: 'draft', tier: 'Premier' },
-		{ id: 'INV-2025-089', company: 'AMD', amount: 100000, dueDate: 'Dec 15, 2025', status: 'paid', tier: 'General' }
+		{
+			id: 'INV-2026-001',
+			company: 'NVIDIA',
+			amount: 250000,
+			dueDate: 'Feb 15, 2026',
+			status: 'pending',
+			tier: 'Premier'
+		},
+		{
+			id: 'INV-2026-002',
+			company: 'Google',
+			amount: 250000,
+			dueDate: 'Feb 15, 2026',
+			status: 'paid',
+			tier: 'Premier'
+		},
+		{
+			id: 'INV-2026-003',
+			company: 'Startup AI',
+			amount: 15000,
+			dueDate: 'Jan 30, 2026',
+			status: 'overdue',
+			tier: 'Associate'
+		},
+		{
+			id: 'INV-2026-004',
+			company: 'Meta',
+			amount: 250000,
+			dueDate: 'Mar 1, 2026',
+			status: 'draft',
+			tier: 'Premier'
+		},
+		{
+			id: 'INV-2025-089',
+			company: 'AMD',
+			amount: 100000,
+			dueDate: 'Dec 15, 2025',
+			status: 'paid',
+			tier: 'General'
+		}
 	];
 </script>
 
 <div class="space-y-6">
-	<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+	<div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 		<div>
 			<h2 class="text-2xl font-bold text-slate-900 dark:text-white">Finance & Invoicing</h2>
-			<p class="text-slate-600 dark:text-slate-400 mt-1">
+			<p class="mt-1 text-slate-600 dark:text-slate-400">
 				Manage membership dues, invoices, and payment tracking
 			</p>
 		</div>
 		<div class="flex gap-2">
 			<button
 				disabled
-				class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium cursor-not-allowed opacity-60"
+				class="cursor-not-allowed rounded-lg border border-slate-200 px-4 py-2 font-medium text-slate-700 opacity-60 dark:border-slate-700 dark:text-slate-300"
 			>
 				Export Report
 			</button>
 			<button
 				disabled
-				class="px-4 py-2 rounded-lg bg-[#CCEBD4] dark:bg-emerald-600 text-slate-900 dark:text-white font-medium cursor-not-allowed opacity-60"
+				class="cursor-not-allowed rounded-lg bg-[#CCEBD4] px-4 py-2 font-medium text-slate-900 opacity-60 dark:bg-emerald-600 dark:text-white"
 			>
 				Create Invoice
 			</button>
@@ -37,49 +72,69 @@
 	</div>
 
 	<!-- Revenue Summary -->
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-		<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-			<div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Total Revenue YTD</div>
+	<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+		<div
+			class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
+		>
+			<div class="mb-1 text-sm text-slate-500 dark:text-slate-400">Total Revenue YTD</div>
 			<div class="text-3xl font-bold text-slate-900 dark:text-white">$2,450,000</div>
-			<div class="text-sm text-emerald-600 dark:text-emerald-400 mt-1">+12% from last year</div>
+			<div class="mt-1 text-sm text-emerald-600 dark:text-emerald-400">+12% from last year</div>
 		</div>
-		<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-			<div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Outstanding</div>
+		<div
+			class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
+		>
+			<div class="mb-1 text-sm text-slate-500 dark:text-slate-400">Outstanding</div>
 			<div class="text-3xl font-bold text-amber-600 dark:text-amber-400">$515,000</div>
-			<div class="text-sm text-slate-500 dark:text-slate-400 mt-1">8 pending invoices</div>
+			<div class="mt-1 text-sm text-slate-500 dark:text-slate-400">8 pending invoices</div>
 		</div>
-		<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6">
-			<div class="text-sm text-slate-500 dark:text-slate-400 mb-1">Overdue</div>
+		<div
+			class="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800"
+		>
+			<div class="mb-1 text-sm text-slate-500 dark:text-slate-400">Overdue</div>
 			<div class="text-3xl font-bold text-red-600 dark:text-red-400">$15,000</div>
-			<div class="text-sm text-slate-500 dark:text-slate-400 mt-1">1 invoice overdue</div>
+			<div class="mt-1 text-sm text-slate-500 dark:text-slate-400">1 invoice overdue</div>
 		</div>
 	</div>
 
 	<!-- Invoice Table -->
-	<div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
-		<div class="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+	<div
+		class="overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+	>
+		<div class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
 			<h3 class="font-semibold text-slate-900 dark:text-white">Recent Invoices</h3>
 		</div>
 		<div class="overflow-x-auto">
 			<table class="w-full">
 				<thead class="bg-slate-50 dark:bg-slate-700/50">
 					<tr>
-						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Invoice
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Company
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Tier
 						</th>
-						<th class="px-6 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-right text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Amount
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Due Date
 						</th>
-						<th class="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
+						<th
+							class="px-6 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300"
+						>
 							Status
 						</th>
 					</tr>

@@ -1,14 +1,15 @@
 <script>
 	/**
 	 * Chart Preview Component
-	 * 
+	 *
 	 * Real-time D3-powered chart preview supporting:
 	 * - Bar charts with multiple layers (grouped)
 	 * - Line charts with multiple layers (overlaid)
-	 * 
+	 *
 	 * Uses the same D3+Svelte hybrid pattern as existing charts.
 	 */
 	import * as d3 from 'd3';
+	import { SvelteSet } from 'svelte/reactivity';
 
 	/**
 	 * @typedef {Object} LayerData
@@ -30,15 +31,7 @@
 	 */
 
 	/** @type {Props} */
-	let {
-		chartType,
-		layers,
-		title,
-		xAxisLabel,
-		yAxisLabel,
-		width = 600,
-		height = 400
-	} = $props();
+	let { chartType, layers, title, xAxisLabel, yAxisLabel, width = 600, height = 400 } = $props();
 
 	const margin = { top: 40, right: 30, bottom: 60, left: 70 };
 
@@ -51,7 +44,7 @@
 
 	// Get all unique x values across layers
 	let allXValues = $derived.by(() => {
-		const values = new Set();
+		const values = new SvelteSet();
 		layers.forEach((layer) => {
 			layer.data.forEach((d) => values.add(String(d.x)));
 		});
@@ -72,28 +65,19 @@
 	// D3 Scales
 	let xScale = $derived(
 		chartType === 'bar'
-			? d3.scaleBand()
-				.domain(allXValues)
-				.range([0, innerWidth])
-				.padding(0.2)
-			: d3.scalePoint()
-				.domain(allXValues)
-				.range([0, innerWidth])
-				.padding(0.5)
+			? d3.scaleBand().domain(allXValues).range([0, innerWidth]).padding(0.2)
+			: d3.scalePoint().domain(allXValues).range([0, innerWidth]).padding(0.5)
 	);
 
-	let yScale = $derived(
-		d3.scaleLinear()
-			.domain([0, yMax])
-			.range([innerHeight, 0])
-	);
+	let yScale = $derived(d3.scaleLinear().domain([0, yMax]).range([innerHeight, 0]));
 
 	// Axis ticks
 	let yTicks = $derived(yScale.ticks(6));
 
 	// Line generator for line charts
 	let lineGenerator = $derived(
-		d3.line()
+		d3
+			.line()
 			.x((d) => xScale(String(d.x)) ?? 0)
 			.y((d) => yScale(d.y))
 			.curve(d3.curveMonotoneX)
@@ -114,14 +98,22 @@
 	const clipId = `chart-preview-clip-${Math.random().toString(36).slice(2, 9)}`;
 </script>
 
-<div class="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 overflow-hidden">
+<div
+	class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
+>
 	<!-- Header -->
-	<div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-between">
-		<h3 class="text-sm font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wide dm-mono">
+	<div
+		class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+	>
+		<h3
+			class="dm-mono text-sm font-semibold tracking-wide text-slate-700 uppercase dark:text-slate-300"
+		>
 			Preview
 		</h3>
 		{#if hasData}
-			<span class="text-xs px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400">
+			<span
+				class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs text-emerald-700 dark:bg-emerald-900/50 dark:text-emerald-400"
+			>
 				{layers.reduce((sum, l) => sum + l.data.length, 0)} data points
 			</span>
 		{/if}
@@ -129,21 +121,37 @@
 
 	<div class="p-4">
 		{#if !hasData}
-			<div class="flex items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+			<div class="flex h-64 items-center justify-center text-slate-500 dark:text-slate-400">
 				<div class="text-center">
-					<svg class="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+					<svg
+						class="mx-auto mb-3 h-12 w-12 text-slate-300 dark:text-slate-600"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="1.5"
+							d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+						/>
 					</svg>
 					<p class="text-sm">Configure a data layer to see the preview</p>
 				</div>
 			</div>
 		{:else}
-			<svg {width} {height} class="overflow-visible font-instrument-sans">
+			<svg {width} {height} class="font-instrument-sans overflow-visible">
 				<defs>
 					<!-- Gradient for chart background -->
 					<linearGradient id="chartPreviewBg" x1="0%" y1="0%" x2="0%" y2="100%">
-						<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
-						<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
+						<stop
+							offset="0%"
+							class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]"
+						/>
+						<stop
+							offset="100%"
+							class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]"
+						/>
 					</linearGradient>
 
 					<!-- Clip path -->
@@ -167,7 +175,7 @@
 					x={margin.left + innerWidth / 2}
 					y="24"
 					text-anchor="middle"
-					class="fill-slate-800 dark:fill-slate-200 text-sm font-semibold"
+					class="fill-slate-800 text-sm font-semibold dark:fill-slate-200"
 				>
 					{title}
 				</text>
@@ -189,7 +197,14 @@
 
 					<!-- Y-axis -->
 					<g class="y-axis">
-						<line x1="0" x2="0" y1="0" y2={innerHeight} class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
+						<line
+							x1="0"
+							x2="0"
+							y1="0"
+							y2={innerHeight}
+							class="stroke-slate-300 dark:stroke-slate-600"
+							stroke-width="1"
+						/>
 						{#each yTicks as tick (tick)}
 							<g transform="translate(0, {yScale(tick)})">
 								<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
@@ -217,11 +232,19 @@
 
 					<!-- X-axis -->
 					<g class="x-axis" transform="translate(0, {innerHeight})">
-						<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
-						{#each allXValues as xVal, i (xVal)}
-							{@const xPos = chartType === 'bar' 
-								? (xScale(xVal) ?? 0) + (xScale.bandwidth?.() ?? 0) / 2 
-								: xScale(xVal) ?? 0}
+						<line
+							x1="0"
+							x2={innerWidth}
+							y1="0"
+							y2="0"
+							class="stroke-slate-300 dark:stroke-slate-600"
+							stroke-width="1"
+						/>
+						{#each allXValues as xVal (xVal)}
+							{@const xPos =
+								chartType === 'bar'
+									? (xScale(xVal) ?? 0) + (xScale.bandwidth?.() ?? 0) / 2
+									: (xScale(xVal) ?? 0)}
 							<g transform="translate({xPos}, 0)">
 								<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
 								<text
@@ -249,7 +272,7 @@
 					<g clip-path="url(#{clipId})">
 						{#if chartType === 'bar'}
 							<!-- Bar chart -->
-							{#each allXValues as xVal, xIndex (xVal)}
+							{#each allXValues as xVal (xVal)}
 								{@const groupX = xScale(xVal) ?? 0}
 								{#each layers as layer, layerIndex (layer.layerId)}
 									{@const dataPoint = layer.data.find((d) => String(d.x) === xVal)}
@@ -290,13 +313,7 @@
 								{#each layer.data as point, i (i)}
 									{@const cx = xScale(String(point.x)) ?? 0}
 									{@const cy = yScale(point.y)}
-									<circle
-										{cx}
-										{cy}
-										r="4"
-										fill={layer.color}
-										class="transition-all duration-200"
-									>
+									<circle {cx} {cy} r="4" fill={layer.color} class="transition-all duration-200">
 										<title>{layer.layerName}: {point.label} = {point.y}</title>
 									</circle>
 								{/each}
@@ -313,7 +330,9 @@
 							<g transform="translate({offset}, 0)">
 								<rect x="0" y="-6" width="12" height="12" rx="2" fill={layer.color} />
 								<text x="16" y="4" class="fill-slate-600 text-[10px] dark:fill-slate-400">
-									{layer.layerName.length > 10 ? layer.layerName.slice(0, 10) + '...' : layer.layerName}
+									{layer.layerName.length > 10
+										? layer.layerName.slice(0, 10) + '...'
+										: layer.layerName}
 								</text>
 							</g>
 						{/each}

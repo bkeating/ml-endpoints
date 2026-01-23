@@ -16,6 +16,7 @@
 	 */
 
 	import Icon from './Icon.svelte';
+	import { resolve } from '$app/paths';
 
 	/** @type {Props} */
 	let { tabs, basePath, currentPath, ariaLabel = 'Section navigation' } = $props();
@@ -31,17 +32,17 @@
 </script>
 
 <div
-	class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 sticky top-[80px] z-30"
+	class="sticky top-[80px] z-30 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
 >
-	<div class="max-w-7xl mx-auto px-4">
-		<nav class="flex gap-1 overflow-x-auto scrollbar-hide -mb-px" aria-label={ariaLabel}>
+	<div class="mx-auto max-w-7xl px-4">
+		<nav class="scrollbar-hide -mb-px flex gap-1 overflow-x-auto" aria-label={ariaLabel}>
 			{#each tabs as tab (tab.id)}
 				<a
-					href="{basePath}/{tab.id}"
-					class="flex items-center gap-2 px-4 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors duration-200
+					href={resolve(`${basePath}/${tab.id}`)}
+					class="flex items-center gap-2 border-b-2 px-4 py-4 text-sm font-medium whitespace-nowrap transition-colors duration-200
 						{isActive(tab.id)
-						? 'border-[#CCEBD4] dark:border-emerald-500 text-slate-900 dark:text-white'
-						: 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'}"
+						? 'border-[#CCEBD4] text-slate-900 dark:border-emerald-500 dark:text-white'
+						: 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-slate-300'}"
 					aria-current={isActive(tab.id) ? 'page' : undefined}
 				>
 					{#if tab.icon}

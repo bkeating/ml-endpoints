@@ -1,8 +1,5 @@
 <script>
-	import {
-		getSelectedModel,
-		getFilteredResults
-	} from '$lib/stores/benchmarkFilters.svelte.js';
+	import { getSelectedModel, getFilteredResults } from '$lib/stores/benchmarkFilters.svelte.js';
 	import { getOrgColor } from '$lib/constants/colors.js';
 
 	let currentModel = $derived(getSelectedModel());
@@ -43,24 +40,26 @@
 <div class="space-y-6">
 	{#if filteredResults.length === 0}
 		<div
-			class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6 text-center"
+			class="rounded-lg border border-amber-200 bg-amber-50 p-6 text-center dark:border-amber-800 dark:bg-amber-900/20"
 		>
-			<p class="text-amber-800 dark:text-amber-200 font-medium">No results match your filters</p>
-			<p class="text-amber-600 dark:text-amber-400 text-sm mt-1">
+			<p class="font-medium text-amber-800 dark:text-amber-200">No results match your filters</p>
+			<p class="mt-1 text-sm text-amber-600 dark:text-amber-400">
 				Try adjusting your filter selections to see benchmark data
 			</p>
 		</div>
 	{:else}
 		{#each Object.entries(resultsByScenario) as [scenario, results] (scenario)}
 			<div
-				class="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden"
+				class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800"
 			>
 				<!-- Scenario Header -->
-				<div class="px-4 py-3 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700">
-					<h3 class="text-lg font-semibold text-slate-900 dark:text-white font-instrument-sans-600">
+				<div
+					class="border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50"
+				>
+					<h3 class="font-instrument-sans-600 text-lg font-semibold text-slate-900 dark:text-white">
 						{currentModel} - {scenario}
 					</h3>
-					<p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+					<p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
 						Performance (Tokens/s) - Higher is Better
 					</p>
 				</div>
@@ -72,33 +71,35 @@
 							{@const barWidth = (result.performance / maxPerformance) * 100}
 							<div class="group">
 								<!-- System Name -->
-								<div class="flex items-center justify-between mb-1">
+								<div class="mb-1 flex items-center justify-between">
 									<span
-										class="text-sm text-slate-700 dark:text-slate-300 truncate max-w-md"
+										class="max-w-md truncate text-sm text-slate-700 dark:text-slate-300"
 										title={result.systemName}
 									>
 										{result.systemName}
 										<span class="text-slate-400 dark:text-slate-500">({result.organization})</span>
 									</span>
-									<span class="text-sm font-mono font-medium text-slate-900 dark:text-white">
+									<span class="font-mono text-sm font-medium text-slate-900 dark:text-white">
 										{formatPerformance(result.performance)}
 									</span>
 								</div>
 								<!-- Bar -->
-								<div class="h-8 bg-slate-100 dark:bg-slate-700 rounded overflow-hidden">
+								<div class="h-8 overflow-hidden rounded bg-slate-100 dark:bg-slate-700">
 									<div
-										class="h-full rounded transition-all duration-300 ease-out flex items-center px-2"
-										style="width: {barWidth}%; background-color: {getOrgColor(result.organization)};"
+										class="flex h-full items-center rounded px-2 transition-all duration-300 ease-out"
+										style="width: {barWidth}%; background-color: {getOrgColor(
+											result.organization
+										)};"
 									>
 										{#if barWidth > 15}
-											<span class="text-xs font-medium text-white truncate">
+											<span class="truncate text-xs font-medium text-white">
 												{result.accelerator} × {result.acceleratorCount}
 											</span>
 										{/if}
 									</div>
 								</div>
 								{#if barWidth <= 15}
-									<span class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 block">
+									<span class="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
 										{result.accelerator} × {result.acceleratorCount}
 									</span>
 								{/if}

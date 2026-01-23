@@ -135,7 +135,11 @@ const yAxisMetricTransforms = {
 	'input-token-throughput-per-gpu': { baseMultiplier: 1.15, isInverted: false, noiseLevel: 0.08 },
 	'output-token-throughput-per-gpu': { baseMultiplier: 0.9, isInverted: false, noiseLevel: 0.06 },
 	'token-throughput-per-mw': { baseMultiplier: 0.012, isInverted: false, noiseLevel: 0.1 }, // Much smaller scale
-	'cost-per-million-owning-hyperscaler': { baseMultiplier: 0.015, isInverted: true, noiseLevel: 0.12 },
+	'cost-per-million-owning-hyperscaler': {
+		baseMultiplier: 0.015,
+		isInverted: true,
+		noiseLevel: 0.12
+	},
 	'cost-per-million-owning-neocloud': { baseMultiplier: 0.012, isInverted: true, noiseLevel: 0.1 },
 	'cost-per-million-3yr-rental': { baseMultiplier: 0.018, isInverted: true, noiseLevel: 0.15 },
 	'cost-per-million-customer-values': { baseMultiplier: 0.022, isInverted: true, noiseLevel: 0.08 }
@@ -235,7 +239,8 @@ function generateLatencyPoints(gpuId, filters) {
 	];
 
 	// Combined multiplier from all filters
-	const combinedMult = gpuMult * modelMult * islOslConfig.scale * precMult * metricTransform.baseMultiplier;
+	const combinedMult =
+		gpuMult * modelMult * islOslConfig.scale * precMult * metricTransform.baseMultiplier;
 
 	return basePoints.map((p, i) => {
 		// Apply curve shape modification from ISL/OSL
@@ -300,7 +305,11 @@ function generateInteractivityPoints(gpuId, filters) {
 
 	// Combined multiplier (slightly different weighting for interactivity)
 	const combinedMult =
-		gpuMult * modelMult * Math.pow(islOslConfig.scale, 0.8) * precMult * metricTransform.baseMultiplier;
+		gpuMult *
+		modelMult *
+		Math.pow(islOslConfig.scale, 0.8) *
+		precMult *
+		metricTransform.baseMultiplier;
 
 	return basePoints.map((p, i) => {
 		// Different curve shape for interactivity
@@ -450,21 +459,6 @@ export function generateChartData(filters) {
 // ============================================================================
 
 /**
- * Sparkline color palette for benchmark rows
- * @type {string[]}
- */
-const sparklineColors = [
-	'#f97316', // orange-500
-	'#22c55e', // green-500
-	'#3b82f6', // blue-500
-	'#a855f7', // purple-500
-	'#ec4899', // pink-500
-	'#14b8a6', // teal-500
-	'#f59e0b', // amber-500
-	'#8b5cf6'  // violet-500
-];
-
-/**
  * GPU inference benchmark data for sparkline table
  * Each row represents a GPU configuration with performance metrics over time
  * @type {Array<{id: string, name: string, metrics: Record<string, string>, sparklineData: number[], color: string}>}
@@ -555,4 +549,3 @@ export const gpuBenchmarkColumns = [
 	{ key: 'sparkline', label: 'Performance Trend', type: 'sparkline' },
 	{ key: 'action', label: 'Run Demo', type: 'action' }
 ];
-

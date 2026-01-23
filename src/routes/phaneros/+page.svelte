@@ -1,7 +1,7 @@
 <script>
 	/**
 	 * Phaneros Chart Builder Page
-	 * 
+	 *
 	 * Main admin panel page for creating charts from API data.
 	 * Features:
 	 * - API endpoint fetching
@@ -16,17 +16,19 @@
 	let sidebarOpen = $state(false);
 </script>
 
-<div class="h-full flex">
+<div class="flex h-full">
 	<!-- Sidebar -->
-	<AdminSidebar isOpen={sidebarOpen} onClose={() => sidebarOpen = false} />
+	<AdminSidebar isOpen={sidebarOpen} onClose={() => (sidebarOpen = false)} />
 
 	<!-- Main Content -->
-	<div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+	<div class="flex min-w-0 flex-1 flex-col overflow-hidden">
 		<!-- Mobile Header Bar -->
-		<div class="h-12 shrink-0 flex items-center gap-3 px-4 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 lg:hidden">
+		<div
+			class="flex h-12 shrink-0 items-center gap-3 border-b border-slate-200 bg-white px-4 lg:hidden dark:border-slate-700 dark:bg-slate-800"
+		>
 			<button
-				onclick={() => sidebarOpen = true}
-				class="h-8 w-8 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+				onclick={() => (sidebarOpen = true)}
+				class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-700"
 				aria-label="Open sidebar"
 			>
 				<Icon name="Menu" class="h-5 w-5" />

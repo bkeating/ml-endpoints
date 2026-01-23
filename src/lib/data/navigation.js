@@ -26,4 +26,3 @@ export const isNavItemActive = (item, pathname) => {
 	const match = item.match ?? 'startsWith';
 	return match === 'exact' ? pathname === item.href : pathname.startsWith(item.href);
 };
-

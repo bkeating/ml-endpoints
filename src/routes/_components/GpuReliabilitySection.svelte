@@ -29,10 +29,14 @@
 	let showThresholds = $derived(getShowThresholds());
 </script>
 
-<div class="w-full py-12 bg-linear-to-b from-slate-100 to-slate-500/20 dark:from-slate-100/10 dark:to-slate-500/10">
+<div
+	class="w-full bg-linear-to-b from-slate-100 to-slate-500/20 py-12 dark:from-slate-100/10 dark:to-slate-500/10"
+>
 	<div class="mx-auto max-w-7xl px-3">
 		<section class="mb-6">
-			<h2 class="mb-1 text-2xl md:text-3xl font-semibold text-slate-800 dark:text-slate-200 font-instrument-sans">
+			<h2
+				class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-3xl dark:text-slate-200"
+			>
 				{chart.title}
 			</h2>
 			<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">

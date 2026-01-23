@@ -1,12 +1,10 @@
 <script>
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import Icon from '$lib/components/Icon.svelte';
 	import { navItems, isNavItemActive } from '$lib/data/navigation.js';
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
-	import {
-		getMobileFiltersOpen,
-		toggleMobileFilters
-	} from '$lib/stores/pageSettings.svelte.js';
+	import { getMobileFiltersOpen, toggleMobileFilters } from '$lib/stores/pageSettings.svelte.js';
 
 	/** Mobile drawer open state */
 	let isDrawerOpen = $state(false);
@@ -34,12 +32,14 @@
 </script>
 
 <header
-	class="sticky top-0 z-40 bg-white dark:bg-slate-900 border-b border-[#ECEEF5] dark:border-slate-700 h-[80px] font-instrument-sans transition-colors duration-200"
+	class="font-instrument-sans sticky top-0 z-40 h-[80px] border-b border-[#ECEEF5] bg-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900"
 >
-	<div class="w-full h-full max-w-7xl mx-auto px-3 flex md:grid md:grid-cols-[1fr_auto_1fr] items-center justify-between">
+	<div
+		class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3 md:grid md:grid-cols-[1fr_auto_1fr]"
+	>
 		<!-- Left: Logo -->
 		<div class="justify-self-start">
-			<a href="/" class="block">
+			<a href={resolve('/')} class="block">
 				<img
 					src={getTheme() === 'dark' ? '/ML-Commons-Logo-Dark.svg' : '/ML-Commons-Logo.svg'}
 					alt="ML Commons"
@@ -49,13 +49,13 @@
 		</div>
 
 		<!-- Center: Navigation (hidden on mobile) -->
-		<nav class="hidden md:flex gap-6 items-center h-full" aria-label="Main navigation">
+		<nav class="hidden h-full items-center gap-6 md:flex" aria-label="Main navigation">
 			{#each computedNavItems as item (item.label)}
 				<a
-					href={item.href}
+					href={resolve(item.href)}
 					class="px-2 py-1 {item.isActive
-						? 'border-b-2 border-[#CCEBD4] flex items-center justify-center h-full dark:border-yellow-600 text-slate-900 dark:text-white'
-						: 'text-slate-900 dark:text-slate-300 hover:text-slate-600 dark:hover:text-white'}"
+						? 'flex h-full items-center justify-center border-b-2 border-[#CCEBD4] text-slate-900 dark:border-yellow-600 dark:text-white'
+						: 'text-slate-900 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white'}"
 				>
 					{item.label}
 				</a>
@@ -63,23 +63,23 @@
 		</nav>
 
 		<!-- Right: Action buttons (hidden on mobile) -->
-		<div class="hidden md:flex justify-self-end items-center gap-2">
+		<div class="hidden items-center gap-2 justify-self-end md:flex">
 			<a
 				href="https://mlcommons.org/get-involved/"
 				target="_blank"
-				class="bg-[#CCEBD4] dark:bg-yellow-600 px-6 flex items-center justify-center h-10 rounded-full text-[#10141F] dark:text-white transition-colors duration-200"
+				class="flex h-10 items-center justify-center rounded-full bg-[#CCEBD4] px-6 text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white"
 			>
 				Get Involved
 			</a>
 			<button
-				class="bg-[#10141F] dark:bg-slate-700 text-white rounded-full h-8 w-8 flex items-center justify-center transition-colors duration-200"
+				class="flex h-8 w-8 items-center justify-center rounded-full bg-[#10141F] text-white transition-colors duration-200 dark:bg-slate-700"
 				aria-label="Search"
 			>
 				<Icon name="Search" class="h-[18px] w-[18px]" />
 			</button>
 			<button
 				onclick={toggleTheme}
-				class="text-slate-900 dark:text-white hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+				class="text-slate-900 transition-colors duration-200 hover:text-slate-600 dark:text-white dark:hover:text-slate-300"
 				aria-label="Toggle dark mode"
 			>
 				{#if getTheme() === 'dark'}
@@ -91,11 +91,11 @@
 		</div>
 
 		<!-- Mobile: Filters and Hamburger menu buttons -->
-		<div class="md:hidden flex items-center gap-1">
+		<div class="flex items-center gap-1 md:hidden">
 			<button
-				class="flex items-center justify-center h-10 w-10 rounded-lg transition-colors duration-200 {mobileFiltersOpen
+				class="flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-200 {mobileFiltersOpen
 					? 'bg-yellow-500 text-white'
-					: 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800'}"
+					: 'text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800'}"
 				onclick={toggleMobileFilters}
 				aria-label="Toggle chart filters"
 				aria-expanded={mobileFiltersOpen}
@@ -103,7 +103,7 @@
 				<Icon name="AdjustmentsCog" class="h-6 w-6" />
 			</button>
 			<button
-				class="flex items-center justify-center h-10 w-10 rounded-lg text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+				class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800"
 				onclick={toggleDrawer}
 				aria-label="Open menu"
 				aria-expanded={isDrawerOpen}
@@ -117,7 +117,7 @@
 <!-- Mobile Drawer Overlay -->
 {#if isDrawerOpen}
 	<div
-		class="fixed inset-0 bg-black/50 z-40 md:hidden"
+		class="fixed inset-0 z-40 bg-black/50 md:hidden"
 		onclick={closeDrawer}
 		onkeydown={(e) => e.key === 'Escape' && closeDrawer()}
 		role="button"
@@ -128,14 +128,18 @@
 
 <!-- Mobile Drawer -->
 <div
-	class="fixed top-0 right-0 h-full w-72 bg-white dark:bg-slate-900 z-50 transform transition-transform duration-300 ease-out md:hidden shadow-2xl {isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}"
+	class="fixed top-0 right-0 z-50 h-full w-72 transform bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden dark:bg-slate-900 {isDrawerOpen
+		? 'translate-x-0'
+		: 'translate-x-full'}"
 >
 	<!-- Drawer Header -->
-	<div class="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700">
+	<div
+		class="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700"
+	>
 		<span class="text-lg font-semibold text-slate-900 dark:text-white">Menu</span>
 		<button
 			onclick={closeDrawer}
-			class="h-10 w-10 flex items-center justify-center rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+			class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
 			aria-label="Close menu"
 		>
 			<Icon name="Close" class="h-6 w-6" />
@@ -147,10 +151,11 @@
 		<!-- Navigation Links -->
 		{#each computedNavItems as item (item.label)}
 			<a
-				href={item.href}
-				target="_blank"
+				href={resolve(item.href)}
 				onclick={closeDrawer}
-				class="py-3 px-4 rounded-lg text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 {item.isActive ? 'bg-[#CCEBD4]/20 dark:bg-yellow-600/20 border-l-4 border-[#CCEBD4] dark:border-yellow-600' : ''}"
+				class="rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 {item.isActive
+					? 'border-l-4 border-[#CCEBD4] bg-[#CCEBD4]/20 dark:border-yellow-600 dark:bg-yellow-600/20'
+					: ''}"
 			>
 				{item.label}
 			</a>
@@ -161,7 +166,7 @@
 
 		<!-- Search Button -->
 		<button
-			class="flex items-center gap-3 py-3 px-4 rounded-lg text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+			class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
 			aria-label="Search"
 		>
 			<Icon name="Search" class="h-5 w-5" />
@@ -170,8 +175,10 @@
 
 		<!-- Theme Toggle -->
 		<button
-			onclick={() => { toggleTheme(); }}
-			class="flex items-center gap-3 py-3 px-4 rounded-lg text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+			onclick={() => {
+				toggleTheme();
+			}}
+			class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
 		>
 			{#if getTheme() === 'dark'}
 				<Icon name="MoonFilled" class="h-5 w-5" />
@@ -187,7 +194,7 @@
 			href="https://mlcommons.org/get-involved/"
 			target="_blank"
 			onclick={closeDrawer}
-			class="mt-4 bg-[#CCEBD4] dark:bg-yellow-600 py-3 px-6 flex items-center justify-center rounded-full text-[#10141F] dark:text-white font-medium transition-colors duration-200"
+			class="mt-4 flex items-center justify-center rounded-full bg-[#CCEBD4] px-6 py-3 font-medium text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white"
 		>
 			Get Involved
 		</a>

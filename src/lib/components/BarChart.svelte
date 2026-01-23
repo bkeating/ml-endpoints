@@ -63,12 +63,18 @@
 	const formatY = (/** @type {number} */ value) => `${value}%`;
 </script>
 
-<svg {width} {height} class="overflow-visible font-instrument-sans">
+<svg {width} {height} class="font-instrument-sans overflow-visible">
 	<defs>
 		<!-- Gradient for chart background -->
 		<linearGradient id="barChartBg" x1="0%" y1="0%" x2="0%" y2="100%">
-			<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
-			<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
+			<stop
+				offset="0%"
+				class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]"
+			/>
+			<stop
+				offset="100%"
+				class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]"
+			/>
 		</linearGradient>
 		<!-- Clip path to constrain data to chart area -->
 		<clipPath id={clipId}>
@@ -104,7 +110,14 @@
 
 		<!-- Y-axis -->
 		<g class="y-axis">
-			<line x1="0" x2="0" y1="0" y2={innerHeight} class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
+			<line
+				x1="0"
+				x2="0"
+				y1="0"
+				y2={innerHeight}
+				class="stroke-slate-300 dark:stroke-slate-600"
+				stroke-width="1"
+			/>
 			{#each yTicks as tick (tick)}
 				<g transform="translate(0, {yScale(tick)})">
 					<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
@@ -133,9 +146,16 @@
 
 		<!-- X-axis -->
 		<g class="x-axis" transform="translate(0, {innerHeight})">
-			<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
+			<line
+				x1="0"
+				x2={innerWidth}
+				y1="0"
+				y2="0"
+				class="stroke-slate-300 dark:stroke-slate-600"
+				stroke-width="1"
+			/>
 			{#each visibleData as item (item.id)}
-				<g transform="translate({(xScale(item.id) ?? 0) + (xScale.bandwidth() / 2)}, 0)">
+				<g transform="translate({(xScale(item.id) ?? 0) + xScale.bandwidth() / 2}, 0)">
 					<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
 					<text
 						x="0"
@@ -191,4 +211,3 @@
 		</g>
 	</g>
 </svg>
-

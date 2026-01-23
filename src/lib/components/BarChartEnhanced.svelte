@@ -87,7 +87,7 @@
 	let trendLineData = $derived.by(() => {
 		return sortedData.map((d, i) => ({
 			...d,
-			trendValue: Math.max(2, 14 - d.value + (Math.sin(i * 0.8) * 2)) // Inverse correlation with some variation
+			trendValue: Math.max(2, 14 - d.value + Math.sin(i * 0.8) * 2) // Inverse correlation with some variation
 		}));
 	});
 
@@ -107,12 +107,18 @@
 	};
 </script>
 
-<svg {width} {height} class="overflow-visible font-instrument-sans">
+<svg {width} {height} class="font-instrument-sans overflow-visible">
 	<defs>
 		<!-- Gradient for chart background -->
 		<linearGradient id="barChartEnhancedBg" x1="0%" y1="0%" x2="0%" y2="100%">
-			<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
-			<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
+			<stop
+				offset="0%"
+				class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]"
+			/>
+			<stop
+				offset="100%"
+				class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]"
+			/>
 		</linearGradient>
 
 		<!-- Gradient for line overlay -->
@@ -229,7 +235,14 @@
 
 		<!-- Y-axis -->
 		<g class="y-axis">
-			<line x1="0" x2="0" y1="0" y2={innerHeight} class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
+			<line
+				x1="0"
+				x2="0"
+				y1="0"
+				y2={innerHeight}
+				class="stroke-slate-300 dark:stroke-slate-600"
+				stroke-width="1"
+			/>
 			{#each yTicks as tick (tick)}
 				<g transform="translate(0, {yScale(tick)})">
 					<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
@@ -258,13 +271,17 @@
 
 		<!-- X-axis -->
 		<g class="x-axis" transform="translate(0, {innerHeight})">
-			<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
+			<line
+				x1="0"
+				x2={innerWidth}
+				y1="0"
+				y2="0"
+				class="stroke-slate-300 dark:stroke-slate-600"
+				stroke-width="1"
+			/>
 			{#each sortedData as item (item.id)}
 				{@const xPos = (xScale(item.id) ?? 0) + xScale.bandwidth() / 2}
-				<g
-					transform="translate({xPos}, 0)"
-					class="transition-transform duration-700 ease-out"
-				>
+				<g transform="translate({xPos}, 0)" class="transition-transform duration-700 ease-out">
 					<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
 					<text
 						x="0"
@@ -293,10 +310,7 @@
 				{@const barX = xScale(item.id) ?? 0}
 				{@const barHeight = innerHeight - yScale(item.value)}
 				{@const barY = yScale(item.value)}
-				<g
-					class="bar-group"
-					style="--delay: {i * 30}ms"
-				>
+				<g class="bar-group" style="--delay: {i * 30}ms">
 					<!-- Bar with animated position -->
 					<rect
 						x={barX}
@@ -330,7 +344,7 @@
 							x={barX + xScale.bandwidth() / 2}
 							y={barY - 8}
 							text-anchor="middle"
-							class="fill-slate-600 text-xs font-semibold dark:fill-slate-400 transition-all duration-700 ease-out"
+							class="fill-slate-600 text-xs font-semibold transition-all duration-700 ease-out dark:fill-slate-400"
 							style="transition-delay: var(--delay);"
 						>
 							{item.value.toFixed(1)}%
@@ -369,10 +383,7 @@
 				{#each trendLineData as point, i (point.id)}
 					{@const cx = (xScale(point.id) ?? 0) + xScale.bandwidth() / 2}
 					{@const cy = yScale(point.trendValue)}
-					<g
-						class="transition-all duration-700 ease-out"
-						style="transition-delay: {i * 30}ms;"
-					>
+					<g class="transition-all duration-700 ease-out" style="transition-delay: {i * 30}ms;">
 						<!-- Outer ring -->
 						<circle
 							{cx}
@@ -426,12 +437,15 @@
 					stroke-width="3"
 					stroke-linecap="round"
 				/>
-				<circle cx="12" cy="0" r="4" class="fill-white dark:fill-slate-900" stroke="url(#trendLineGradient)" stroke-width="2" />
-				<text
-					x="32"
-					y="4"
-					class="fill-slate-600 text-xs dark:fill-slate-400"
-				>
+				<circle
+					cx="12"
+					cy="0"
+					r="4"
+					class="fill-white dark:fill-slate-900"
+					stroke="url(#trendLineGradient)"
+					stroke-width="2"
+				/>
+				<text x="32" y="4" class="fill-slate-600 text-xs dark:fill-slate-400">
 					Efficiency Score
 				</text>
 			</g>
@@ -463,4 +477,3 @@
 		transform: translateY(-2px);
 	}
 </style>
-

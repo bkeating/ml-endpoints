@@ -20,12 +20,7 @@
 	 */
 
 	/** @type {Props} */
-	let {
-		height = 50,
-		label = 'Latency Range (s)',
-		minBound,
-		maxBound
-	} = $props();
+	let { height = 50, label = 'Latency Range (s)', minBound, maxBound } = $props();
 
 	// Fluid width - measured from container
 	let containerWidth = $state(0);
@@ -54,9 +49,6 @@
 	// D3 scale for mapping values to pixels
 	let xScale = $derived(d3.scaleLinear().domain([min, max]).range([0, innerWidth]));
 
-	// Inverse scale for mapping pixels to values
-	let xScaleInverse = $derived(d3.scaleLinear().domain([0, innerWidth]).range([min, max]));
-
 	// Tick marks
 	let ticks = $derived(xScale.ticks(8));
 
@@ -83,9 +75,10 @@
 	function getRelativeX(event) {
 		if (!svgElement) return 0;
 		const rect = svgElement.getBoundingClientRect();
-		const clientX = 'touches' in event
-			? event.touches[0]?.clientX ?? event.changedTouches[0]?.clientX ?? 0
-			: event.clientX;
+		const clientX =
+			'touches' in event
+				? (event.touches[0]?.clientX ?? event.changedTouches[0]?.clientX ?? 0)
+				: event.clientX;
 		return clientX - rect.left - padding.left;
 	}
 
@@ -169,9 +162,7 @@
 
 		// Get current position relative to timeline SVG
 		const rect = svgElement.getBoundingClientRect();
-		const clientX = 'touches' in event
-			? event.touches[0]?.clientX ?? 0
-			: event.clientX;
+		const clientX = 'touches' in event ? (event.touches[0]?.clientX ?? 0) : event.clientX;
 		const relativeX = clientX - rect.left - padding.left;
 
 		// Calculate the scale fresh to avoid stale closure issues
@@ -250,7 +241,6 @@
 	 */
 	function onBodyKeydown(event) {
 		const step = event.shiftKey ? 10 : 1;
-		const rangeWidth = end - start;
 
 		if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
 			event.preventDefault();
@@ -264,126 +254,161 @@
 
 <div class="timeline-range w-full" bind:clientWidth={containerWidth}>
 	{#if label}
-		<span class=" block text-xs uppercase font-medium text-slate-600 dark:text-slate-400">
+		<span class=" block text-xs font-medium text-slate-600 uppercase dark:text-slate-400">
 			{label}
 		</span>
 	{/if}
 
 	{#if containerWidth > 0}
-	<svg bind:this={svgElement} width={containerWidth} {height} class="select-none w-full touch-none">
-		<g transform="translate({padding.left}, 0)">
-			<!-- Track background (clickable) -->
-			<rect
-				x="0"
-				y={trackY}
-				width={innerWidth}
-				height={trackHeight}
-				rx="4"
-				class="cursor-pointer fill-slate-200 dark:fill-slate-700"
-				onclick={onTrackClick}
-				ontouchend={onTrackClick}
-				onkeydown={onBodyKeydown}
-				role="slider"
-				aria-label="Timeline track"
-				aria-valuemin={min}
-				aria-valuemax={max}
-				aria-valuenow={start}
-				tabindex="-1"
-			/>
-
-			<!-- Selection highlight -->
-			<rect
-				x={selectionLeft}
-				y={trackY}
-				width={Math.max(0, selectionWidth)}
-				height={trackHeight}
-				rx="4"
-				class="cursor-grab fill-emerald-500 dark:fill-emerald-600 {dragging === 'body' ? 'cursor-grabbing' : ''}"
-				onmousedown={onBodyDown}
-				ontouchstart={onBodyDown}
-				onkeydown={onBodyKeydown}
-				role="slider"
-				aria-label="Selection range"
-				aria-valuemin={min}
-				aria-valuemax={max}
-				aria-valuenow={(start + end) / 2}
-				tabindex="0"
-			/>
-
-			<!-- Left handle -->
-			<g
-				bind:this={leftHandleEl}
-				transform="translate({selectionLeft - handleWidth / 2}, {trackY - 4})"
-				class="cursor-ew-resize"
-				onmousedown={onLeftHandleDown}
-				ontouchstart={onLeftHandleDown}
-				onkeydown={(e) => onHandleKeydown(e, 'start')}
-				role="slider"
-				aria-label="Start handle"
-				aria-valuemin={min}
-				aria-valuemax={end}
-				aria-valuenow={start}
-				tabindex="0"
-			>
+		<svg
+			bind:this={svgElement}
+			width={containerWidth}
+			{height}
+			class="w-full touch-none select-none"
+		>
+			<g transform="translate({padding.left}, 0)">
+				<!-- Track background (clickable) -->
 				<rect
 					x="0"
-					y="0"
-					width={handleWidth}
-					height={trackHeight + 8}
-					rx="3"
-					class="fill-white stroke-emerald-600 dark:fill-slate-800 dark:stroke-emerald-500"
-					stroke-width="2"
+					y={trackY}
+					width={innerWidth}
+					height={trackHeight}
+					rx="4"
+					class="cursor-pointer fill-slate-200 dark:fill-slate-700"
+					onclick={onTrackClick}
+					ontouchend={onTrackClick}
+					onkeydown={onBodyKeydown}
+					role="slider"
+					aria-label="Timeline track"
+					aria-valuemin={min}
+					aria-valuemax={max}
+					aria-valuenow={start}
+					tabindex="-1"
 				/>
-				<!-- Grip lines -->
-				<line x1="4" y1="4" x2="4" y2={trackHeight + 4} class="stroke-slate-400" stroke-width="1" />
-				<line x1="8" y1="4" x2="8" y2={trackHeight + 4} class="stroke-slate-400" stroke-width="1" />
-			</g>
 
-			<!-- Right handle -->
-			<g
-				bind:this={rightHandleEl}
-				transform="translate({selectionRight - handleWidth / 2}, {trackY - 4})"
-				class="cursor-ew-resize"
-				onmousedown={onRightHandleDown}
-				ontouchstart={onRightHandleDown}
-				onkeydown={(e) => onHandleKeydown(e, 'end')}
-				role="slider"
-				aria-label="End handle"
-				aria-valuemin={start}
-				aria-valuemax={max}
-				aria-valuenow={end}
-				tabindex="0"
-			>
+				<!-- Selection highlight -->
 				<rect
-					x="0"
-					y="0"
-					width={handleWidth}
-					height={trackHeight + 8}
-					rx="3"
-					class="fill-white stroke-emerald-600 dark:fill-slate-800 dark:stroke-emerald-500"
-					stroke-width="2"
+					x={selectionLeft}
+					y={trackY}
+					width={Math.max(0, selectionWidth)}
+					height={trackHeight}
+					rx="4"
+					class="cursor-grab fill-emerald-500 dark:fill-emerald-600 {dragging === 'body'
+						? 'cursor-grabbing'
+						: ''}"
+					onmousedown={onBodyDown}
+					ontouchstart={onBodyDown}
+					onkeydown={onBodyKeydown}
+					role="slider"
+					aria-label="Selection range"
+					aria-valuemin={min}
+					aria-valuemax={max}
+					aria-valuenow={(start + end) / 2}
+					tabindex="0"
 				/>
-				<!-- Grip lines -->
-				<line x1="4" y1="4" x2="4" y2={trackHeight + 4} class="stroke-slate-400" stroke-width="1" />
-				<line x1="8" y1="4" x2="8" y2={trackHeight + 4} class="stroke-slate-400" stroke-width="1" />
-			</g>
 
-			<!-- Tick marks -->
-			{#each ticks as tick (tick)}
-				<g transform="translate({xScale(tick)}, {trackY + trackHeight + 6})">
-					<text
+				<!-- Left handle -->
+				<g
+					bind:this={leftHandleEl}
+					transform="translate({selectionLeft - handleWidth / 2}, {trackY - 4})"
+					class="cursor-ew-resize"
+					onmousedown={onLeftHandleDown}
+					ontouchstart={onLeftHandleDown}
+					onkeydown={(e) => onHandleKeydown(e, 'start')}
+					role="slider"
+					aria-label="Start handle"
+					aria-valuemin={min}
+					aria-valuemax={end}
+					aria-valuenow={start}
+					tabindex="0"
+				>
+					<rect
 						x="0"
 						y="0"
-						dy="0.7em"
-						text-anchor="middle"
-						class="fill-slate-500 text-[10px] dark:fill-slate-400"
-					>
-						{tick}
-					</text>
+						width={handleWidth}
+						height={trackHeight + 8}
+						rx="3"
+						class="fill-white stroke-emerald-600 dark:fill-slate-800 dark:stroke-emerald-500"
+						stroke-width="2"
+					/>
+					<!-- Grip lines -->
+					<line
+						x1="4"
+						y1="4"
+						x2="4"
+						y2={trackHeight + 4}
+						class="stroke-slate-400"
+						stroke-width="1"
+					/>
+					<line
+						x1="8"
+						y1="4"
+						x2="8"
+						y2={trackHeight + 4}
+						class="stroke-slate-400"
+						stroke-width="1"
+					/>
 				</g>
-			{/each}
-		</g>
-	</svg>
+
+				<!-- Right handle -->
+				<g
+					bind:this={rightHandleEl}
+					transform="translate({selectionRight - handleWidth / 2}, {trackY - 4})"
+					class="cursor-ew-resize"
+					onmousedown={onRightHandleDown}
+					ontouchstart={onRightHandleDown}
+					onkeydown={(e) => onHandleKeydown(e, 'end')}
+					role="slider"
+					aria-label="End handle"
+					aria-valuemin={start}
+					aria-valuemax={max}
+					aria-valuenow={end}
+					tabindex="0"
+				>
+					<rect
+						x="0"
+						y="0"
+						width={handleWidth}
+						height={trackHeight + 8}
+						rx="3"
+						class="fill-white stroke-emerald-600 dark:fill-slate-800 dark:stroke-emerald-500"
+						stroke-width="2"
+					/>
+					<!-- Grip lines -->
+					<line
+						x1="4"
+						y1="4"
+						x2="4"
+						y2={trackHeight + 4}
+						class="stroke-slate-400"
+						stroke-width="1"
+					/>
+					<line
+						x1="8"
+						y1="4"
+						x2="8"
+						y2={trackHeight + 4}
+						class="stroke-slate-400"
+						stroke-width="1"
+					/>
+				</g>
+
+				<!-- Tick marks -->
+				{#each ticks as tick (tick)}
+					<g transform="translate({xScale(tick)}, {trackY + trackHeight + 6})">
+						<text
+							x="0"
+							y="0"
+							dy="0.7em"
+							text-anchor="middle"
+							class="fill-slate-500 text-[10px] dark:fill-slate-400"
+						>
+							{tick}
+						</text>
+					</g>
+				{/each}
+			</g>
+		</svg>
 	{/if}
 
 	<!-- Range indicator -->

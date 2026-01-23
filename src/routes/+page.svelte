@@ -43,21 +43,17 @@
 	<ChartLoadingState />
 {:then chartData}
 	<!-- Charts rendered from API data -->
-  <ChartFilters />
+	<ChartFilters />
 
-  <div class="relative bg-pattern-container w-full md:py-6">
-		<div class="relative z-10 flex flex-col gap-6 mx-auto max-w-7xl px-3">
-      <ChartSection
-				chart={chartData.latencyChart}
-				layout="side-by-side"
-				useTimelineRange={true}
-			/>
+	<div class="bg-pattern-container relative w-full md:py-6">
+		<div class="relative z-10 mx-auto flex max-w-7xl flex-col gap-6 px-3">
+			<ChartSection chart={chartData.latencyChart} layout="side-by-side" useTimelineRange={true} />
 		</div>
 	</div>
 
-  <div class="bg-slate-950">
-    <ParetoChartSection />
-  </div>
+	<div class="bg-slate-950">
+		<ParetoChartSection />
+	</div>
 
 	<GpuReliabilitySection chart={chartData.gpuReliabilityChart} />
 
@@ -65,16 +61,13 @@
 		<SubmissionRequirements />
 
 		<!-- Interactivity Chart with Settings Sidebar -->
-		<div class="flex flex-col lg:flex-row gap-6">
-			<div class="flex-1 min-w-0">
-				<ChartSection
-					chart={chartData.interactivityChart}
-					useTimelineRange={true}
-				/>
+		<div class="flex flex-col gap-6 lg:flex-row">
+			<div class="min-w-0 flex-1">
+				<ChartSection chart={chartData.interactivityChart} useTimelineRange={true} />
 			</div>
 
 			<!-- Quick Settings Sidebar (hidden on mobile) -->
-			<div class="hidden lg:block w-56 shrink-0 sticky top-4">
+			<div class="sticky top-4 hidden w-56 shrink-0 lg:block">
 				<ChartSettingsSidebar />
 			</div>
 		</div>

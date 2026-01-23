@@ -75,9 +75,7 @@
 	let filteredModels = $derived(
 		visibleModels.map((model) => ({
 			...model,
-			points: model.points.filter(
-				(p) => p.x >= xDomain[0] - 10 && p.x <= xDomain[1] + 10
-			)
+			points: model.points.filter((p) => p.x >= xDomain[0] - 10 && p.x <= xDomain[1] + 10)
 		}))
 	);
 
@@ -90,15 +88,15 @@
 	// Only use custom domain if explicitly provided
 	let yDomain = $derived.by(() => {
 		if (customYDomain) return customYDomain;
-		
+
 		const yMin = yExtent[0] ?? 0;
 		const yMax = yExtent[1] ?? 0;
-		
+
 		// If no data or range is very small, use default range
 		if (yMax === 0 || yMax - yMin < 0.01 * yMax) {
 			return [0, Math.max(1000, yMax * 1.1)];
 		}
-		
+
 		// Add minimal padding (2% on each side)
 		const padding = (yMax - yMin) * 0.02;
 		return [Math.max(0, yMin - padding), yMax + padding];
@@ -161,153 +159,173 @@
 </script>
 
 <div class="benchmark-chart-container relative">
-	<svg {width} {height} class="overflow-visible font-instrument-sans">
-	<defs>
-		<!-- Gradient for chart background -->
-		<linearGradient id="chartBg" x1="0%" y1="0%" x2="0%" y2="100%">
-			<stop offset="0%" class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]" />
-			<stop offset="100%" class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]" />
-		</linearGradient>
-		<!-- Clip path constrains data to chart area (prevents overflow) -->
-		<clipPath id={clipId}>
-			<rect x="0" y="0" width={innerWidth} height={innerHeight} />
-		</clipPath>
-	</defs>
+	<svg {width} {height} class="font-instrument-sans overflow-visible">
+		<defs>
+			<!-- Gradient for chart background -->
+			<linearGradient id="chartBg" x1="0%" y1="0%" x2="0%" y2="100%">
+				<stop
+					offset="0%"
+					class="[stop-color:var(--color-slate-50)] dark:[stop-color:var(--color-slate-900)]"
+				/>
+				<stop
+					offset="100%"
+					class="[stop-color:var(--color-slate-100)] dark:[stop-color:var(--color-slate-800)]"
+				/>
+			</linearGradient>
+			<!-- Clip path constrains data to chart area (prevents overflow) -->
+			<clipPath id={clipId}>
+				<rect x="0" y="0" width={innerWidth} height={innerHeight} />
+			</clipPath>
+		</defs>
 
-	<!-- Chart background -->
-	<rect
-		x={margin.left}
-		y={margin.top}
-		width={innerWidth}
-		height={innerHeight}
-		fill="url(#chartBg)"
-		rx="4"
-	/>
+		<!-- Chart background -->
+		<rect
+			x={margin.left}
+			y={margin.top}
+			width={innerWidth}
+			height={innerHeight}
+			fill="url(#chartBg)"
+			rx="4"
+		/>
 
-	<g transform="translate({margin.left}, {margin.top})">
-		<!-- Grid lines -->
-		<g class="grid">
-			{#each yTicks as tick (tick)}
+		<g transform="translate({margin.left}, {margin.top})">
+			<!-- Grid lines -->
+			<g class="grid">
+				{#each yTicks as tick (tick)}
+					<line
+						x1="0"
+						x2={innerWidth}
+						y1={yScale(tick)}
+						y2={yScale(tick)}
+						class="stroke-slate-200 dark:stroke-slate-700"
+						stroke-dasharray="4,4"
+					/>
+				{/each}
+				{#each xTicks as tick (tick)}
+					<line
+						x1={xScale(tick)}
+						x2={xScale(tick)}
+						y1="0"
+						y2={innerHeight}
+						class="stroke-slate-200 dark:stroke-slate-700"
+						stroke-dasharray="4,4"
+					/>
+				{/each}
+			</g>
+
+			<!-- Y-axis -->
+			<g class="y-axis">
+				<line
+					x1="0"
+					x2="0"
+					y1="0"
+					y2={innerHeight}
+					class="stroke-slate-300 dark:stroke-slate-600"
+					stroke-width="1"
+				/>
+				{#each yTicks as tick (tick)}
+					<g transform="translate(0, {yScale(tick)})">
+						<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
+						<text
+							x="-10"
+							y="0"
+							dy="0.35em"
+							text-anchor="end"
+							class="fill-slate-600 text-xs dark:fill-slate-400"
+						>
+							{formatY(tick)}
+						</text>
+					</g>
+				{/each}
+				<text
+					transform="rotate(-90)"
+					x={-innerHeight / 2}
+					y="-50"
+					text-anchor="middle"
+					class="fill-slate-700 text-sm font-medium dark:fill-slate-300"
+				>
+					{yAxisLabel}
+				</text>
+			</g>
+
+			<!-- X-axis -->
+			<g class="x-axis" transform="translate(0, {innerHeight})">
 				<line
 					x1="0"
 					x2={innerWidth}
-					y1={yScale(tick)}
-					y2={yScale(tick)}
-					class="stroke-slate-200 dark:stroke-slate-700"
-					stroke-dasharray="4,4"
-				/>
-			{/each}
-			{#each xTicks as tick (tick)}
-				<line
-					x1={xScale(tick)}
-					x2={xScale(tick)}
 					y1="0"
-					y2={innerHeight}
-					class="stroke-slate-200 dark:stroke-slate-700"
-					stroke-dasharray="4,4"
+					y2="0"
+					class="stroke-slate-300 dark:stroke-slate-600"
+					stroke-width="1"
 				/>
-			{/each}
-		</g>
+				{#each xTicks as tick (tick)}
+					<g transform="translate({xScale(tick)}, 0)">
+						<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
+						<text
+							x="0"
+							y="20"
+							text-anchor="middle"
+							class="fill-slate-600 text-xs dark:fill-slate-400"
+						>
+							{tick}
+						</text>
+					</g>
+				{/each}
+				<text
+					x={innerWidth / 2}
+					y="40"
+					text-anchor="middle"
+					class="fill-slate-700 text-sm font-medium dark:fill-slate-300"
+				>
+					{xAxisLabel}
+				</text>
+			</g>
 
-		<!-- Y-axis -->
-		<g class="y-axis">
-			<line x1="0" x2="0" y1="0" y2={innerHeight} class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
-			{#each yTicks as tick (tick)}
-				<g transform="translate(0, {yScale(tick)})">
-					<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
-					<text
-						x="-10"
-						y="0"
-						dy="0.35em"
-						text-anchor="end"
-						class="fill-slate-600 text-xs dark:fill-slate-400"
-					>
-						{formatY(tick)}
-					</text>
-				</g>
-			{/each}
-			<text
-				transform="rotate(-90)"
-				x={-innerHeight / 2}
-				y="-50"
-				text-anchor="middle"
-				class="fill-slate-700 text-sm font-medium dark:fill-slate-300"
-			>
-				{yAxisLabel}
-			</text>
-		</g>
-
-		<!-- X-axis -->
-		<g class="x-axis" transform="translate(0, {innerHeight})">
-			<line x1="0" x2={innerWidth} y1="0" y2="0" class="stroke-slate-300 dark:stroke-slate-600" stroke-width="1" />
-			{#each xTicks as tick (tick)}
-				<g transform="translate({xScale(tick)}, 0)">
-					<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
-					<text
-						x="0"
-						y="20"
-						text-anchor="middle"
-						class="fill-slate-600 text-xs dark:fill-slate-400"
-					>
-						{tick}
-					</text>
-				</g>
-			{/each}
-			<text
-				x={innerWidth / 2}
-				y="40"
-				text-anchor="middle"
-				class="fill-slate-700 text-sm font-medium dark:fill-slate-300"
-			>
-				{xAxisLabel}
-			</text>
-		</g>
-
-		<!-- Data lines (clipped to chart area) -->
-		<g clip-path="url(#{clipId})">
-			{#each filteredModels as model (model.id)}
-				<g class="model-line" style="--model-color: {model.color}">
-					<!-- Line path generated by D3's line generator -->
-					<path
-						d={lineGenerator(model.points)}
-						fill="none"
-						stroke={model.color}
-						stroke-width="2.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						class="transition-opacity duration-300"
-					/>
-					<!-- Data points -->
-					{#each model.points as point, i (i)}
-						{#if point.x >= xDomain[0] && point.x <= xDomain[1]}
-							<circle
-								cx={xScale(point.x)}
-								cy={yScale(point.y)}
-								r="4"
-								fill={model.color}
-								class="cursor-pointer transition-all duration-200 hover:r-[6px]"
-								role="img"
-								aria-label="{model.name}: {point.x}s latency, {formatY(point.y)} throughput"
-								onmouseenter={(e) => handlePointHover(e, point, model)}
-								onmouseleave={handlePointLeave}
-							/>
-							{#if !hideLabels}
-								<text
-									x={xScale(point.x)}
-									y={yScale(point.y) - 10}
-									text-anchor="middle"
-									class="fill-slate-600 text-[10px] dark:fill-slate-400"
-								>
-									{formatY(point.y)}
-								</text>
+			<!-- Data lines (clipped to chart area) -->
+			<g clip-path="url(#{clipId})">
+				{#each filteredModels as model (model.id)}
+					<g class="model-line" style="--model-color: {model.color}">
+						<!-- Line path generated by D3's line generator -->
+						<path
+							d={lineGenerator(model.points)}
+							fill="none"
+							stroke={model.color}
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							class="transition-opacity duration-300"
+						/>
+						<!-- Data points -->
+						{#each model.points as point, i (i)}
+							{#if point.x >= xDomain[0] && point.x <= xDomain[1]}
+								<circle
+									cx={xScale(point.x)}
+									cy={yScale(point.y)}
+									r="4"
+									fill={model.color}
+									class="hover:r-[6px] cursor-pointer transition-all duration-200"
+									role="img"
+									aria-label="{model.name}: {point.x}s latency, {formatY(point.y)} throughput"
+									onmouseenter={(e) => handlePointHover(e, point, model)}
+									onmouseleave={handlePointLeave}
+								/>
+								{#if !hideLabels}
+									<text
+										x={xScale(point.x)}
+										y={yScale(point.y) - 10}
+										text-anchor="middle"
+										class="fill-slate-600 text-[10px] dark:fill-slate-400"
+									>
+										{formatY(point.y)}
+									</text>
+								{/if}
 							{/if}
-						{/if}
-					{/each}
-				</g>
-			{/each}
+						{/each}
+					</g>
+				{/each}
+			</g>
 		</g>
-	</g>
-</svg>
+	</svg>
 
 	<!-- Tooltip -->
 	{#if tooltipData}
@@ -316,9 +334,7 @@
 			style="left: {tooltipPosition.x}px; top: {tooltipPosition.y}px;"
 		>
 			<div class="mb-1 flex items-center gap-2">
-				<span
-					class="h-2.5 w-2.5 rounded-full"
-					style="background-color: {tooltipData.model.color}"
+				<span class="h-2.5 w-2.5 rounded-full" style="background-color: {tooltipData.model.color}"
 				></span>
 				<span class="text-sm font-medium text-slate-800 dark:text-slate-200">
 					{tooltipData.model.name}

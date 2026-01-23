@@ -71,7 +71,7 @@ export function setEnd(value) {
  */
 export function setRange(newStart, newEnd) {
 	const rangeWidth = newEnd - newStart;
-	
+
 	// Clamp to bounds while preserving range width
 	if (newStart < min) {
 		start = min;
@@ -138,4 +138,3 @@ export function getMin() {
 export function getMax() {
 	return max;
 }
-

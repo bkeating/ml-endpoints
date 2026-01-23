@@ -1,6 +1,8 @@
 <script>
 	import { page } from '$app/stores';
 	import TabNavigation from '$lib/components/TabNavigation.svelte';
+
+	let { children } = $props();
 	import FilterSelect from '$lib/components/FilterSelect.svelte';
 	import StatCard from '$lib/components/StatCard.svelte';
 	import {
@@ -76,14 +78,14 @@
 
 <TabNavigation {tabs} basePath="/benchmarks" {currentPath} ariaLabel="Benchmark navigation" />
 
-<div class="bg-slate-50 dark:bg-slate-900 min-h-[60vh]">
-	<div class="max-w-7xl mx-auto px-4 py-8 md:py-12">
+<div class="min-h-[60vh] bg-slate-50 dark:bg-slate-900">
+	<div class="mx-auto max-w-7xl px-4 py-8 md:py-12">
 		<!-- Section Header -->
 		<div class="mb-6">
 			<h2 class="text-2xl font-bold text-slate-900 dark:text-white">
 				MLPerf Inference - Datacenter
 			</h2>
-			<p class="text-slate-600 dark:text-slate-400 mt-1">
+			<p class="mt-1 text-slate-600 dark:text-slate-400">
 				MLPerf Inference Datacenter benchmark measures how fast systems can process inputs and
 				produce results using trained models.
 			</p>
@@ -91,7 +93,7 @@
 
 		<!-- Filter Panel - Compact Style -->
 		<div
-			class="rounded-lg border border-slate-200 bg-slate-800/90 dark:border-slate-700 dark:bg-slate-800/75 shadow-lg backdrop-blur mb-6"
+			class="mb-6 rounded-lg border border-slate-200 bg-slate-800/90 shadow-lg backdrop-blur dark:border-slate-700 dark:bg-slate-800/75"
 			role="group"
 			aria-label="Benchmark filters"
 		>
@@ -118,7 +120,9 @@
 
 					<!-- Scenarios -->
 					<div>
-						<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono block mb-1">
+						<span
+							class="dm-mono mb-1 block text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+						>
 							Scenario
 						</span>
 						<div class="flex flex-wrap gap-1">
@@ -127,8 +131,8 @@
 								<button
 									type="button"
 									onclick={() => toggleScenario(scenario.id)}
-									class="px-2 py-1 text-xs font-medium rounded border transition-colors {isSelected
-										? 'bg-emerald-600 border-emerald-600 text-white'
+									class="rounded border px-2 py-1 text-xs font-medium transition-colors {isSelected
+										? 'border-emerald-600 bg-emerald-600 text-white'
 										: 'border-slate-500 text-slate-300 hover:bg-slate-700'}"
 								>
 									{scenario.label}
@@ -139,7 +143,9 @@
 
 					<!-- Organizations -->
 					<div>
-						<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono block mb-1">
+						<span
+							class="dm-mono mb-1 block text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+						>
 							Organization
 						</span>
 						<div class="flex flex-wrap gap-1">
@@ -148,10 +154,12 @@
 								<button
 									type="button"
 									onclick={() => toggleOrganization(org.id)}
-									class="px-2 py-1 text-xs font-medium rounded border transition-colors {isSelected
+									class="rounded border px-2 py-1 text-xs font-medium transition-colors {isSelected
 										? 'text-white'
 										: 'border-slate-500 text-slate-300 hover:bg-slate-700'}"
-									style={isSelected ? `background-color: ${getOrgColor(org.id)}; border-color: ${getOrgColor(org.id)};` : ''}
+									style={isSelected
+										? `background-color: ${getOrgColor(org.id)}; border-color: ${getOrgColor(org.id)};`
+										: ''}
 								>
 									{org.label}
 								</button>
@@ -161,7 +169,9 @@
 
 					<!-- Accelerators -->
 					<div>
-						<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono block mb-1">
+						<span
+							class="dm-mono mb-1 block text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+						>
 							Accelerator
 						</span>
 						<div class="flex flex-wrap gap-1">
@@ -170,8 +180,8 @@
 								<button
 									type="button"
 									onclick={() => toggleAccelerator(acc.id)}
-									class="px-2 py-1 text-xs font-medium rounded border transition-colors {isSelected
-										? 'bg-sky-600 border-sky-600 text-white'
+									class="rounded border px-2 py-1 text-xs font-medium transition-colors {isSelected
+										? 'border-sky-600 bg-sky-600 text-white'
 										: 'border-slate-500 text-slate-300 hover:bg-slate-700'}"
 								>
 									{acc.label}
@@ -182,7 +192,9 @@
 
 					<!-- Accelerator Count -->
 					<div>
-						<span class="text-xs font-medium uppercase tracking-wide text-slate-300 dark:text-slate-400 dm-mono block mb-1">
+						<span
+							class="dm-mono mb-1 block text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+						>
 							# Accel
 						</span>
 						<div class="flex flex-wrap gap-1">
@@ -191,8 +203,8 @@
 								<button
 									type="button"
 									onclick={() => toggleAcceleratorCount(count.id)}
-									class="px-2 py-1 text-xs font-medium rounded border transition-colors {isSelected
-										? 'bg-violet-600 border-violet-600 text-white'
+									class="rounded border px-2 py-1 text-xs font-medium transition-colors {isSelected
+										? 'border-violet-600 bg-violet-600 text-white'
 										: 'border-slate-500 text-slate-300 hover:bg-slate-700'}"
 								>
 									{count.label}
@@ -206,7 +218,7 @@
 						<button
 							type="button"
 							onclick={selectAllOrganizations}
-							class="px-2 py-1 text-xs font-medium rounded border border-slate-500 text-slate-300 hover:bg-slate-700 transition-colors"
+							class="rounded border border-slate-500 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700"
 							title="Select all organizations"
 						>
 							All Orgs
@@ -214,7 +226,7 @@
 						<button
 							type="button"
 							onclick={resetFilters}
-							class="px-2 py-1 text-xs font-medium rounded border border-slate-500 text-slate-300 hover:bg-slate-700 transition-colors"
+							class="rounded border border-slate-500 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700"
 							title="Reset to defaults"
 						>
 							Reset
@@ -222,7 +234,7 @@
 						<button
 							type="button"
 							onclick={clearFilters}
-							class="px-2 py-1 text-xs font-medium rounded border border-slate-500 text-slate-300 hover:bg-slate-700 transition-colors"
+							class="rounded border border-slate-500 px-2 py-1 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-700"
 							title="Clear all filters"
 						>
 							Clear
@@ -233,29 +245,29 @@
 		</div>
 
 		<!-- KPI Cards -->
-		<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-			<StatCard 
+		<div class="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
+			<StatCard
 				value={stats.totalSubmissions}
 				label="Total Submissions"
 				subtitle="matching filters"
 				valueColor="text-emerald-600 dark:text-emerald-400"
 				borderColor="border-l-emerald-500"
 			/>
-			<StatCard 
+			<StatCard
 				value={stats.uniqueOrgs}
 				label="Organizations"
 				subtitle="unique submitters"
 				valueColor="text-sky-600 dark:text-sky-400"
 				borderColor="border-l-sky-500"
 			/>
-			<StatCard 
+			<StatCard
 				value={stats.uniqueAccelerators}
 				label="Accelerators"
 				subtitle="hardware types"
 				valueColor="text-violet-600 dark:text-violet-400"
 				borderColor="border-l-violet-500"
 			/>
-			<StatCard 
+			<StatCard
 				value={formatPerformance(stats.maxPerformance)}
 				label="Peak Performance"
 				subtitle="tokens/s"
@@ -272,8 +284,8 @@
 			</p>
 		</div>
 
-		<!-- Tab Content Slot -->
-		<slot />
+		<!-- Tab Content -->
+		{@render children()}
 
 		<!-- Footer Note -->
 		<div class="mt-12 text-center text-xs text-slate-500 dark:text-slate-400">
@@ -283,7 +295,7 @@
 					href="https://mlcommons.org/benchmarks/inference-datacenter/"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="text-emerald-600 dark:text-emerald-400 hover:underline"
+					class="text-emerald-600 hover:underline dark:text-emerald-400"
 				>
 					Learn more about MLPerf
 				</a>
