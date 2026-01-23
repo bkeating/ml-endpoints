@@ -40,4 +40,21 @@ jobs:
             echo "Restarting the Node.js service..."
             sudo systemctl restart ml-endpoint
 
+            echo "Updating nginx configuration..."
+            sudo cp /var/www/ml-endpoints/nginx.conf /etc/nginx/sites-available/mlendpoints.bulletpages.com
+
+            echo "Ensuring sites-enabled symlink exists..."
+            if [ ! -L /etc/nginx/sites-enabled/mlendpoints.bulletpages.com ]; then
+              sudo ln -sf /etc/nginx/sites-available/mlendpoints.bulletpages.com /etc/nginx/sites-enabled/
+              echo "Created symlink in sites-enabled"
+            else
+              echo "Symlink already exists"
+            fi
+
+            echo "Testing nginx configuration..."
+            sudo nginx -t
+
+            echo "Reloading nginx..."
+            sudo systemctl reload nginx
+
             echo "Deployment completed successfully"
