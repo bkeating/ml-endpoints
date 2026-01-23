@@ -1,0 +1,43 @@
+name: Deploy to Lightsail
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Lightsail via SSH
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          port: ${{ secrets.LIGHTSAIL_PORT }}
+          script: |
+            set -e
+            echo "Starting deployment process..."
+
+            # Source the profile to load environment variables and PATH
+            source ~/.bashrc
+
+            echo "Changing to project directory..."
+            cd /var/www/ml-endpoints
+            echo "Current directory: $(pwd)"
+
+            echo "Pulling latest changes..."
+            git pull origin main
+
+            echo "Installing dependencies..."
+            /home/ubuntu/.bun/bin/bun install --production
+
+            echo "Building the project..."
+            /home/ubuntu/.bun/bin/bun run build
+
+            echo "Restarting the Node.js service..."
+            sudo systemctl restart ml-endpoint
+
+            echo "Deployment completed successfully"
