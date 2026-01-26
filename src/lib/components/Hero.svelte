@@ -43,13 +43,13 @@
 				<Icon name="ExternalLink" class="h-5 w-5" />
 			</a>
 			<a
-				href={resolve('/phaneros')}
+				href={resolve('/gtc')}
 				target="_blank"
 				rel="noopener noreferrer"
 				class="mb-16 flex h-12 w-fit items-center justify-center gap-2 rounded-full border border-[#CCEBD4] px-8 text-yellow-100 transition-colors md:mb-0 dark:border-yellow-500 dark:text-yellow-100"
 			>
 				<Icon name="Artboard" class="h-5 w-5" />
-				<span>Preview Design System</span>
+				<span>GTC Visualizer</span>
 			</a>
 		</div>
 	</div>

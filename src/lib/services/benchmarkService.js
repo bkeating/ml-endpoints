@@ -70,7 +70,7 @@ export function validateFilters(filters) {
  * ```
  *
  * @param {{ model: string, islOsl: string, precision: string, yAxisMetric: string }} filters
- * @returns {Promise<{ latencyChart: object, interactivityChart: object, gpuReliabilityChart: object }>}
+ * @returns {Promise<{ latencyChart: object, interactivityChart: object, gpuReliabilityChart: object, ttftVsUsersChart: object, throughputVsInteractivityChart: object, normalizedThroughputVsUsersChart: object, normalizedThroughputVsTTFTChart: object }>}
  * @throws {Error} If filter validation fails
  */
 export async function getBenchmarkData(filters) {

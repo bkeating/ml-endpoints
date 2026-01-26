@@ -5,15 +5,15 @@
 
 /**
  * @typedef {'exact' | 'startsWith'} MatchType
- * @typedef {{ label: string; href: string; match?: MatchType }} NavItem
+ * @typedef {{ label: string; href: string; match?: MatchType; disabled?: boolean }} NavItem
  */
 
 /** @type {NavItem[]} */
 export const navItems = [
 	{ label: 'Home', href: '/', match: 'exact' },
-	{ label: 'Test Manager', href: '/test-manager', match: 'startsWith' },
-	{ label: 'Benchmarks', href: '/benchmarks', match: 'startsWith' },
-	{ label: 'Admin Tools', href: '/admin-tools', match: 'startsWith' }
+	{ label: 'Test Manager', href: '/test-manager', match: 'startsWith', disabled: true },
+	{ label: 'Benchmarks', href: '/benchmarks', match: 'startsWith', disabled: true },
+	{ label: 'Admin Tools', href: '/admin-tools', match: 'startsWith', disabled: true }
 ];
 
 /**

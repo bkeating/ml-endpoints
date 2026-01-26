@@ -9,7 +9,8 @@ export default defineConfig({
 
 	resolve: {
 		alias: {
-			'@app-css': path.resolve('./src/routes/app.css')
+			'@app-css': path.resolve('./src/routes/app.css'),
+			svedit: path.resolve('./src/lib/svedit-main/src/lib')
 		}
 	},
 	css: {

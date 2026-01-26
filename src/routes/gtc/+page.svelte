@@ -1,20 +1,21 @@
 <script>
 	/**
-	 * Main page for the LLM Inference Benchmark dashboard.
+	 * GTC Page - LLM Inference Benchmark dashboard with sidebar layout.
 	 *
 	 * This page demonstrates:
+	 * - Two-column layout with sticky sidebar for chart filters
 	 * - Reactive data fetching with $derived() that auto-refetches when filters change
 	 * - Async/await pattern with {#await} blocks for loading states
 	 * - Component composition for maintainable, skinny page files
 	 */
 	import { onMount } from 'svelte';
-  import Hero from '$lib/components/Hero.svelte';
-  import ChartFilters from '$lib/components/ChartFilters.svelte';
 	import ChartSection from '$lib/components/ChartSection.svelte';
-	import ChartSettingsSidebar from '$lib/components/ChartSettingsSidebar.svelte';
 	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
+	import GtcChartSection from './_components/GtcChartSection.svelte';
+	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
 	import { getChartData } from '$lib/remotes/chartData.js';
 	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
+	import { isModelVisible } from '$lib/stores/chartSettings.svelte.js';
 
 	// Axis selector store
 	import {
@@ -36,15 +37,16 @@
 	} from '$lib/stores/axisSelector.svelte.js';
 
 	// Data transform for loading
-	import { parseSystemData } from './pareto-charts/_components/dataTransform.js';
+	import { parseSystemData } from '../pareto-charts/_components/dataTransform.js';
 
 	// Route-local components
-	import ChartLoadingState from './_components/ChartLoadingState.svelte';
-	import ParetoChartSection from './_components/ParetoChartSection.svelte';
-	import GpuReliabilitySection from './_components/GpuReliabilitySection.svelte';
-	import SubmissionRequirements from './_components/SubmissionRequirements.svelte';
-	import RoleBasedViewport from './_components/RoleBasedViewport.svelte';
-	import SystemBladesSection from './_components/SystemBladesSection.svelte';
+	import ChartLoadingState from '../_components/ChartLoadingState.svelte';
+	import ParetoChartSection from '../_components/ParetoChartSection.svelte';
+	import GpuReliabilitySection from '../_components/GpuReliabilitySection.svelte';
+	import SubmissionRequirements from '../_components/SubmissionRequirements.svelte';
+	import RoleBasedViewport from '../_components/RoleBasedViewport.svelte';
+	import SystemBladesSection from '../_components/SystemBladesSection.svelte';
+
 
 	// $derived() creates a reactive value that automatically updates when getFilters() changes
 	let filters = $derived(getFilters());
@@ -137,89 +139,54 @@
 	}
 </script>
 
-<Hero />
-
 {#await chartDataQuery}
 	<ChartLoadingState />
 {:then chartData}
-	<!-- Charts rendered from API data -->
-	<ChartFilters />
+	{@const filteredTTFTChart = {
+		...chartData.ttftVsUsersChart,
+		models: chartData.ttftVsUsersChart.models.filter((m) => isModelVisible(m.id))
+	}}
+	{@const filteredThroughputChart = {
+		...chartData.throughputVsInteractivityChart,
+		models: chartData.throughputVsInteractivityChart.models.filter((m) => isModelVisible(m.id))
+	}}
+	{@const filteredNormalizedUsersChart = {
+		...chartData.normalizedThroughputVsUsersChart,
+		models: chartData.normalizedThroughputVsUsersChart.models.filter((m) => isModelVisible(m.id))
+	}}
+	{@const filteredNormalizedTTFTChart = {
+		...chartData.normalizedThroughputVsTTFTChart,
+		models: chartData.normalizedThroughputVsTTFTChart.models.filter((m) => isModelVisible(m.id))
+	}}
 
-	<div class="bg-pattern-container relative w-full md:pt-6 pb-12">
-		<div class="relative z-10 mx-auto flex max-w-7xl flex-col gap-6 px-3">
-			<ChartSection chart={chartData.latencyChart} layout="side-by-side" useTimelineRange={true} />
-		</div>
-	</div>
 
-	<div class="bg-slate-950">
-		<ParetoChartSection />
-	</div>
-
-	<!-- Role-Based Benchmark Section -->
-	<div class="w-full bg-slate-50 py-8 sm:py-12 dark:bg-slate-900/50">
-		<div class="mx-auto max-w-7xl px-3">
-			<!-- User Role Selector -->
-			<div class="flex items-center gap-3 mx-auto w-full text-center justify-center mb-12">
-				<label
-					for="user-role-select"
-					class="font-medium text-slate-700 dark:text-slate-300 text-xl"
-				>
-					From the viewpoint of:
-				</label>
-				<select
-					id="user-role-select"
-					bind:value={selectedUserRole}
-					class="h-9 max-w-xs flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-				>
-					{#each userRoleOptions as option (option.id)}
-						<option value={option.id}>{option.label}</option>
-					{/each}
-				</select>
-			</div>
-
-			<!-- Dynamic Role-Based Content -->
-			<RoleBasedViewport
-				selectedRole={selectedUserRole}
-				roleOptions={userRoleOptions}
-				{axisChartWidth}
-				{axisChartHeight}
-				{axisSelectorLoading}
-				{systemsData}
-				{axisChartData}
-				{chartTitle}
-				{xAxisOption}
-				{yAxisOption}
-				{logScaleX}
-				{logScaleY}
-				onXAxisChange={handleXAxisChange}
-				onYAxisChange={handleYAxisChange}
-				{selectedXAxis}
-				{selectedYAxis}
-				{axisOptions}
-			/>
-		</div>
-	</div>
-
-	<!-- <GpuReliabilitySection chart={chartData.gpuReliabilityChart} /> -->
-
-	<div class="mx-auto max-w-7xl px-3 pt-12">
-		<SubmissionRequirements />
-
-		<!-- Interactivity Chart with Settings Sidebar -->
+	<!-- Side-by-side layout with filters sidebar and charts -->
+	<div class="mx-auto max-w-7xl px-3 pb-3 pt-9">
 		<div class="flex flex-col gap-6 lg:flex-row">
+			<!-- Charts area -->
 			<div class="min-w-0 flex-1">
-				<ChartSection chart={chartData.interactivityChart} useTimelineRange={true} />
+				<!-- Main content area - custom layout: 1 full, 2&3 side-by-side, 4 full -->
+				<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+					<!-- Chart 1: TTFT vs #Users (Step Chart) - Full width -->
+					<div class="md:col-span-2">
+						<GtcChartSection chart={filteredTTFTChart} lineType="step" />
+					</div>
+
+					<!-- Chart 2: System throughput vs Interactivity (Line Chart) -->
+					<GtcChartSection chart={filteredThroughputChart} lineType="line" />
+
+					<!-- Chart 3: Normalized throughput vs #Users (Step Chart) -->
+					<GtcChartSection chart={filteredNormalizedUsersChart} lineType="step" />
+
+					<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) - Full width -->
+					<div class="md:col-span-2">
+						<GtcChartSection chart={filteredNormalizedTTFTChart} lineType="line" />
+					</div>
+				</div>
 			</div>
 
-			<!-- Quick Settings Sidebar (hidden on mobile) -->
-			<div class="sticky top-4 hidden w-56 shrink-0 lg:block">
-				<ChartSettingsSidebar />
-			</div>
-		</div>
-
-		<!-- System Blades Grid -->
-		<div class="mt-12 pb-12">
-			<SystemBladesSection />
+			<!-- Chart Filters Sidebar (hidden on mobile) -->
+			<GtcChartFiltersSidebar />
 		</div>
 	</div>
 {:catch error}

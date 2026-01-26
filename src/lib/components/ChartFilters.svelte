@@ -228,14 +228,12 @@
 <!-- Desktop: Outer wrapper for full-width sticky background when stuck -->
 <div
 	class="sticky top-[80px] z-50 mt-6 mb-12 hidden transition-all duration-300 ease-out md:block {isSticky
-		? 'border-b border-slate-200 bg-slate-800/90 shadow-lg shadow-slate-900/10 backdrop-blur-md dark:border-slate-700 dark:bg-slate-800/95 dark:shadow-slate-900/50'
+		? ''
 		: ''}"
 >
 	<!-- Inner container that maintains max-width and styling -->
 	<div
-		class="transition-colors duration-300 ease-out {isSticky
-			? 'mx-0 max-w-none rounded-none border-x-0 bg-transparent'
-			: 'mx-auto max-w-7xl rounded-lg border border-slate-200 bg-slate-800/90 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-800/75'}"
+		class="transition-colors duration-300 ease-out mx-auto max-w-7xl rounded-lg border border-slate-200 bg-slate-800/90 shadow-xl backdrop-blur dark:border-slate-700 dark:bg-slate-800/75"
 		role="group"
 		aria-label="Chart filters and settings"
 	>

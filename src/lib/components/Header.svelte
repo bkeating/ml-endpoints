@@ -6,13 +6,8 @@
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
 	import { getMobileFiltersOpen, toggleMobileFilters } from '$lib/stores/pageSettings.svelte.js';
 
-	/** Mobile drawer open state */
 	let isDrawerOpen = $state(false);
-
-	/** Reactive getter for mobile filters panel state */
 	let mobileFiltersOpen = $derived(getMobileFiltersOpen());
-
-	/** Reactively compute active state for each nav item based on current pathname */
 	let computedNavItems = $derived(
 		navItems.map((item) => ({
 			...item,
@@ -20,15 +15,28 @@
 		}))
 	);
 
-	/** Toggle mobile drawer */
-	const toggleDrawer = () => {
-		isDrawerOpen = !isDrawerOpen;
-	};
+	const drawerMenuItems = $derived([
+		{ type: 'button', id: 'search', label: 'Search', icon: 'Search', ariaLabel: 'Search' },
+		{
+			type: 'button',
+			id: 'theme',
+			label: getTheme() === 'dark' ? 'Dark Mode' : 'Light Mode',
+			icon: getTheme() === 'dark' ? 'MoonFilled' : 'Moon',
+			action: toggleTheme,
+			ariaLabel: 'Toggle theme'
+		},
+		{
+			type: 'link',
+			id: 'get-involved',
+			label: 'Get Involved',
+			href: 'https://mlcommons.org/get-involved/',
+			external: true,
+			cta: true
+		}
+	]);
 
-	/** Close drawer when clicking overlay */
-	const closeDrawer = () => {
-		isDrawerOpen = false;
-	};
+	const toggleDrawer = () => (isDrawerOpen = !isDrawerOpen);
+	const closeDrawer = () => (isDrawerOpen = false);
 </script>
 
 <header
@@ -37,7 +45,6 @@
 	<div
 		class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3 md:grid md:grid-cols-[1fr_auto_1fr]"
 	>
-		<!-- Left: Logo -->
 		<div class="justify-self-start">
 			<a href={resolve('/')} class="block">
 				<img
@@ -48,21 +55,30 @@
 			</a>
 		</div>
 
-		<!-- Center: Navigation (hidden on mobile) -->
 		<nav class="hidden h-full items-center gap-6 md:flex" aria-label="Main navigation">
 			{#each computedNavItems as item (item.label)}
-				<a
-					href={resolve(item.href)}
-					class="px-2 py-1 {item.isActive
-						? 'flex h-full items-center justify-center border-b-2 border-[#CCEBD4] text-slate-900 dark:border-yellow-600 dark:text-white'
-						: 'text-slate-900 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white'}"
-				>
-					{item.label}
-				</a>
+				{#if item.disabled}
+					<span
+						class="flex h-full cursor-not-allowed items-center justify-center px-2 py-1 opacity-60 {item.isActive
+							? 'border-b-2 border-[#CCEBD4] text-slate-900 dark:border-yellow-600 dark:text-white'
+							: 'text-slate-900 dark:text-slate-300'}"
+						aria-disabled="true"
+					>
+						{item.label}
+					</span>
+				{:else}
+					<a
+						href={resolve(item.href)}
+						class="px-2 py-1 {item.isActive
+							? 'flex h-full items-center justify-center border-b-2 border-[#CCEBD4] text-slate-900 dark:border-yellow-600 dark:text-white'
+							: 'text-slate-900 hover:text-slate-600 dark:text-slate-300 dark:hover:text-white'}"
+					>
+						{item.label}
+					</a>
+				{/if}
 			{/each}
 		</nav>
 
-		<!-- Right: Action buttons (hidden on mobile) -->
 		<div class="hidden items-center gap-2 justify-self-end md:flex">
 			<a
 				href="https://mlcommons.org/get-involved/"
@@ -90,12 +106,11 @@
 			</button>
 		</div>
 
-		<!-- Mobile: Filters and Hamburger menu buttons -->
 		<div class="flex items-center gap-1 md:hidden">
 			<button
 				class="flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-200 {mobileFiltersOpen
 					? 'bg-yellow-500 text-white'
-					: 'text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800'}"
+					: 'text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800'}"
 				onclick={toggleMobileFilters}
 				aria-label="Toggle chart filters"
 				aria-expanded={mobileFiltersOpen}
@@ -103,7 +118,7 @@
 				<Icon name="AdjustmentsCog" class="h-6 w-6" />
 			</button>
 			<button
-				class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800"
+				class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800"
 				onclick={toggleDrawer}
 				aria-label="Open menu"
 				aria-expanded={isDrawerOpen}
@@ -114,7 +129,6 @@
 	</div>
 </header>
 
-<!-- Mobile Drawer Overlay -->
 {#if isDrawerOpen}
 	<div
 		class="fixed inset-0 z-40 bg-black/50 md:hidden"
@@ -126,77 +140,72 @@
 	></div>
 {/if}
 
-<!-- Mobile Drawer -->
 <div
 	class="fixed top-0 right-0 z-50 h-full w-72 transform bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden dark:bg-slate-900 {isDrawerOpen
 		? 'translate-x-0'
 		: 'translate-x-full'}"
 >
-	<!-- Drawer Header -->
 	<div
 		class="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700"
 	>
 		<span class="text-lg font-semibold text-slate-900 dark:text-white">Menu</span>
 		<button
 			onclick={closeDrawer}
-			class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+			class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-800"
 			aria-label="Close menu"
 		>
 			<Icon name="Close" class="h-6 w-6" />
 		</button>
 	</div>
 
-	<!-- Drawer Content -->
 	<nav class="flex flex-col p-4" aria-label="Mobile navigation">
-		<!-- Navigation Links -->
 		{#each computedNavItems as item (item.label)}
-			<a
-				href={resolve(item.href)}
-				onclick={closeDrawer}
-				class="rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 {item.isActive
-					? 'border-l-4 border-[#CCEBD4] bg-[#CCEBD4]/20 dark:border-yellow-600 dark:bg-yellow-600/20'
-					: ''}"
-			>
-				{item.label}
-			</a>
+			{#if item.disabled}
+				<span
+					class="cursor-not-allowed rounded-lg px-4 py-3 opacity-60 {item.isActive
+						? 'border-l-4 border-[#CCEBD4] bg-[#CCEBD4]/20 dark:border-yellow-600 dark:bg-yellow-600/20'
+						: ''} text-slate-900 dark:text-slate-200"
+					aria-disabled="true"
+				>
+					{item.label}
+				</span>
+			{:else}
+				<a
+					href={resolve(item.href)}
+					onclick={closeDrawer}
+					class="rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800 {item.isActive
+						? 'border-l-4 border-[#CCEBD4] bg-[#CCEBD4]/20 dark:border-yellow-600 dark:bg-yellow-600/20'
+						: ''}"
+				>
+					{item.label}
+				</a>
+			{/if}
 		{/each}
 
-		<!-- Divider -->
 		<hr class="my-4 border-slate-200 dark:border-slate-700" />
 
-		<!-- Search Button -->
-		<button
-			class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-			aria-label="Search"
-		>
-			<Icon name="Search" class="h-5 w-5" />
-			<span>Search</span>
-		</button>
-
-		<!-- Theme Toggle -->
-		<button
-			onclick={() => {
-				toggleTheme();
-			}}
-			class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-		>
-			{#if getTheme() === 'dark'}
-				<Icon name="MoonFilled" class="h-5 w-5" />
-				<span>Dark Mode</span>
+		{#each drawerMenuItems as item (item.id)}
+			{#if item.type === 'link'}
+				<a
+					href={item.href}
+					target={item.external ? '_blank' : undefined}
+					rel={item.external ? 'noopener noreferrer' : undefined}
+					onclick={closeDrawer}
+					class="mt-4 flex items-center justify-center rounded-full bg-[#CCEBD4] px-6 py-3 font-medium text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white"
+				>
+					{item.label}
+				</a>
 			{:else}
-				<Icon name="Moon" class="h-5 w-5" />
-				<span>Light Mode</span>
+				<button
+					type="button"
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800"
+					aria-label={item.ariaLabel}
+					onclick={() => item.action?.()}
+				>
+					<Icon name={item.icon} class="h-5 w-5" />
+					<span>{item.label}</span>
+				</button>
 			{/if}
-		</button>
-
-		<!-- Get Involved CTA -->
-		<a
-			href="https://mlcommons.org/get-involved/"
-			target="_blank"
-			onclick={closeDrawer}
-			class="mt-4 flex items-center justify-center rounded-full bg-[#CCEBD4] px-6 py-3 font-medium text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white"
-		>
-			Get Involved
-		</a>
+		{/each}
 	</nav>
 </div>
