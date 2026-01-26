@@ -46,6 +46,76 @@
 
 	// Bind container width for responsive chart
 	let chartContainerWidth = $state(0);
+
+	// SPEC CPU 2017 Results Table Data
+	const results = [
+		{
+			benchmark: '503.bwaves_r',
+			copies: 64,
+			base: { seconds: 207, ratio: 3110, bold: { seconds: 207, ratio: 3100 } },
+			peak: { copies: 64, seconds: 207, ratio: 3110, bold: { seconds: 207, ratio: 3100 } }
+		},
+		{
+			benchmark: '507.cactuBSSN_r',
+			copies: 64,
+			base: { seconds: 95.2, ratio: 851, bold: { seconds: 95.3, ratio: 850 } },
+			peak: { copies: 64, seconds: 95.2, ratio: 851, bold: { seconds: 95.3, ratio: 850 } }
+		},
+		{
+			benchmark: '508.namd_r',
+			copies: 64,
+			base: { seconds: 152, ratio: 399, bold: { seconds: 152, ratio: 399 } },
+			peak: { copies: 64, seconds: 152, ratio: 400, bold: { seconds: 152, ratio: 400 } }
+		},
+		{
+			benchmark: '510.parest_r',
+			copies: 64,
+			base: { seconds: 274, ratio: 611, bold: { seconds: 275, ratio: 609 } },
+			peak: { copies: 64, seconds: 274, ratio: 611, bold: { seconds: 275, ratio: 609 } }
+		},
+		{
+			benchmark: '511.povray_r',
+			copies: 64,
+			base: { seconds: 262, ratio: 571, bold: { seconds: 262, ratio: 570 } },
+			peak: { copies: 64, seconds: 261, ratio: 572, bold: { seconds: 261, ratio: 572 } }
+		},
+		{
+			benchmark: '519.lbm_r',
+			copies: 64,
+			base: { seconds: 197, ratio: 342, bold: { seconds: 196, ratio: 343 } },
+			peak: { copies: 32, seconds: 86.9, ratio: 388, bold: { seconds: 83.9, ratio: 402 } }
+		},
+		{
+			benchmark: '521.wrf_r',
+			copies: 64,
+			base: { seconds: 218, ratio: 657, bold: { seconds: 218, ratio: 658 } },
+			peak: { copies: 64, seconds: 218, ratio: 657, bold: { seconds: 218, ratio: 658 } }
+		},
+		{
+			benchmark: '526.blender_r',
+			copies: 64,
+			base: { seconds: 163, ratio: 599, bold: { seconds: 163, ratio: 598 } },
+			peak: { copies: 64, seconds: 163, ratio: 599, bold: { seconds: 162, ratio: 600 } }
+		},
+		{
+			benchmark: '527.cam4_r',
+			copies: 64,
+			base: { seconds: 173, ratio: 646, bold: { seconds: 171, ratio: 655 } },
+			peak: { copies: 64, seconds: 172, ratio: 650, bold: { seconds: 170, ratio: 657 } }
+		},
+		{
+			benchmark: '538.imagick_r',
+			copies: 64,
+			base: { seconds: 75.2, ratio: 2120, bold: { seconds: 75.3, ratio: 2110 } },
+			peak: { copies: 64, seconds: 75.2, ratio: 2120, bold: { seconds: 75.3, ratio: 2110 } }
+		},
+		{
+			benchmark: '544.nab_r',
+			copies: 64,
+			base: { seconds: 122, ratio: 882, bold: { seconds: 122, ratio: 883 } },
+			peak: { copies: 64, seconds: 116, ratio: 925, bold: { seconds: 116, ratio: 925 } }
+		}
+	];
 </script>
 
 <div class="flex flex-col gap-6 lg:flex-row">
@@ -419,5 +489,148 @@
 				</div>
 			</div>
 		</section>
+	</div>
+</div>
+
+<!-- Results Table - Full Width Below Columns -->
+<div
+	class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800"
+>
+	<div
+		class="flex items-center justify-between border-b border-slate-200 bg-linear-to-r from-slate-900/80 to-slate-800 px-6 py-4 dark:border-slate-700 dark:from-slate-900/80 dark:to-slate-900/60"
+	>
+		<h2 class="font-semibold text-white">Results Table</h2>
+	</div>
+
+	<div class="overflow-x-auto">
+		<table class="w-full text-sm">
+			<thead>
+				<tr
+					class="border-b border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-700"
+				>
+					<th
+						rowspan="2"
+						class="border-r border-slate-200 px-3 py-2 text-left font-semibold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+					>
+						Benchmark
+					</th>
+					<th
+						colspan="6"
+						class="border-r border-slate-200 px-3 py-2 text-center font-semibold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+					>
+						Base
+					</th>
+					<th
+						colspan="6"
+						class="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200"
+					>
+						Peak
+					</th>
+				</tr>
+				<tr
+					class="border-b border-slate-200 bg-slate-50 text-xs dark:border-slate-700 dark:bg-slate-800"
+				>
+					<!-- Base columns -->
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Copies</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Seconds</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Ratio</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center font-bold text-slate-700 dark:border-slate-600 dark:text-slate-300"
+						>Seconds</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center font-bold text-slate-700 dark:border-slate-600 dark:text-slate-300"
+						>Ratio</th
+					>
+					<th class="border-r border-slate-200 dark:border-slate-600"></th>
+					<!-- Peak columns -->
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Copies</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Seconds</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center text-slate-600 dark:border-slate-600 dark:text-slate-400"
+						>Ratio</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center font-bold text-slate-700 dark:border-slate-600 dark:text-slate-300"
+						>Seconds</th
+					>
+					<th
+						class="border-r border-slate-200 px-2 py-1.5 text-center font-bold text-slate-700 dark:border-slate-600 dark:text-slate-300"
+						>Ratio</th
+					>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+				{#each results as row (row.benchmark)}
+					<tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50">
+						<td
+							class="border-r border-slate-200 px-3 py-2 font-medium text-blue-600 dark:border-slate-600 dark:text-blue-400"
+						>
+							<span class="cursor-pointer hover:underline">{row.benchmark}</span>
+						</td>
+						<!-- Base -->
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.copies}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.base.seconds}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.base.ratio}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center font-semibold text-slate-800 underline decoration-slate-400 dark:border-slate-600 dark:text-slate-100"
+							>{row.base.bold.seconds}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center font-bold text-slate-800 underline decoration-slate-400 dark:border-slate-600 dark:text-slate-100"
+							>{row.base.bold.ratio}</td
+						>
+						<td class="w-4 border-r border-slate-200 dark:border-slate-600"></td>
+						<!-- Peak -->
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.peak.copies}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.peak.seconds}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center text-slate-600 dark:border-slate-600 dark:text-slate-300"
+							>{row.peak.ratio}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center font-semibold text-slate-800 underline decoration-slate-400 dark:border-slate-600 dark:text-slate-100"
+							>{row.peak.bold.seconds}</td
+						>
+						<td
+							class="border-r border-slate-200 px-2 py-2 text-center font-bold text-slate-800 underline decoration-slate-400 dark:border-slate-600 dark:text-slate-100"
+							>{row.peak.bold.ratio}</td
+						>
+						<td class="w-4"></td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 	</div>
 </div>
