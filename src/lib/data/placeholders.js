@@ -11,18 +11,18 @@
 // ============================================================================
 
 /**
- * All GPU configurations
+ * All GPU configurations - IDs match data.json system_id values
  * @type {string[]}
  */
 export const allGpuConfigs = [
-	'h100-vllm',
-	'h200-vllm',
-	'h200-trt',
-	'b200-trt',
-	'b200-vllm',
-	'ml300x-vllm',
-	'ml325x-vllm',
-	'ml355-vllm'
+	'h100_vllm',
+	'h200_trt',
+	'h200_vllm',
+	'b200_trt',
+	'b200_vllm',
+	'mi300x_vllm',
+	'mi325x_vllm',
+	'mi355x_vllm'
 ];
 
 /**
@@ -30,14 +30,14 @@ export const allGpuConfigs = [
  * @type {Record<string, string>}
  */
 export const gpuColors = {
-	'h100-vllm': '#22c55e', // green-500
-	'h200-vllm': '#3b82f6', // blue-500
-	'h200-trt': '#f59e0b', // amber-500
-	'b200-trt': '#ec4899', // pink-500
-	'b200-vllm': '#8b5cf6', // violet-500
-	'ml300x-vllm': '#06b6d4', // cyan-500
-	'ml325x-vllm': '#ef4444', // red-500
-	'ml355-vllm': '#84cc16' // lime-500
+	h100_vllm: '#22c55e', // green-500
+	h200_trt: '#f59e0b', // amber-500
+	h200_vllm: '#3b82f6', // blue-500
+	b200_trt: '#ec4899', // pink-500
+	b200_vllm: '#8b5cf6', // violet-500
+	mi300x_vllm: '#06b6d4', // cyan-500
+	mi325x_vllm: '#ef4444', // red-500
+	mi355x_vllm: '#84cc16' // lime-500
 };
 
 /**
@@ -45,14 +45,14 @@ export const gpuColors = {
  * @type {Record<string, string>}
  */
 export const gpuNames = {
-	'h100-vllm': 'H100 (vLLM)',
-	'h200-vllm': 'H200 (vLLM)',
-	'h200-trt': 'H200 (TRT)',
-	'b200-trt': 'B200 (TRT)',
-	'b200-vllm': 'B200 (vLLM)',
-	'ml300x-vllm': 'ML300X (vLLM)',
-	'ml325x-vllm': 'ML325X (vLLM)',
-	'ml355-vllm': 'ML355 (vLLM)'
+	h100_vllm: 'H100 (vLLM)',
+	h200_trt: 'H200 (TensorRT-LLM)',
+	h200_vllm: 'H200 (vLLM)',
+	b200_trt: 'B200 (TensorRT-LLM)',
+	b200_vllm: 'B200 (vLLM)',
+	mi300x_vllm: 'MI300X (vLLM)',
+	mi325x_vllm: 'MI325X (vLLM)',
+	mi355x_vllm: 'MI355X (vLLM)'
 };
 
 // ============================================================================
@@ -151,14 +151,14 @@ const yAxisMetricTransforms = {
  * @type {Record<string, number>}
  */
 const gpuMultipliers = {
-	'h100-vllm': 1.0,
-	'h200-vllm': 1.3,
-	'h200-trt': 1.45,
-	'b200-trt': 1.7,
-	'b200-vllm': 1.55,
-	'ml300x-vllm': 1.2,
-	'ml325x-vllm': 1.35,
-	'ml355-vllm': 1.5
+	h100_vllm: 1.0,
+	h200_trt: 1.45,
+	h200_vllm: 1.3,
+	b200_trt: 1.7,
+	b200_vllm: 1.55,
+	mi300x_vllm: 1.2,
+	mi325x_vllm: 1.35,
+	mi355x_vllm: 1.5
 };
 
 // ============================================================================
@@ -385,8 +385,8 @@ const realSystemData = {
  * @type {Record<string, string>}
  */
 const gpuToSystemMap = {
-	'b200-trt': 'system1',  // System 1: 4 chips, normalizing factor 1
-	'b200-vllm': 'system2'  // System 2: 8 chips, normalizing factor 0.4
+	b200_trt: 'system1', // System 1: 4 chips, normalizing factor 1
+	b200_vllm: 'system2' // System 2: 8 chips, normalizing factor 0.4
 };
 
 // ============================================================================
@@ -485,14 +485,14 @@ function generateGpuReliabilityData(filters) {
 
 		// Base failure rates vary by GPU type (newer GPUs tend to have lower failure rates)
 		const baseFailureRates = {
-			'h100-vllm': 8.5,
-			'h200-vllm': 6.2,
-			'h200-trt': 5.8,
-			'b200-trt': 3.5,
-			'b200-vllm': 4.2,
-			'ml300x-vllm': 7.1,
-			'ml325x-vllm': 5.5,
-			'ml355-vllm': 4.8
+			h100_vllm: 8.5,
+			h200_trt: 5.8,
+			h200_vllm: 6.2,
+			b200_trt: 3.5,
+			b200_vllm: 4.2,
+			mi300x_vllm: 7.1,
+			mi325x_vllm: 5.5,
+			mi355x_vllm: 4.8
 		};
 
 		const baseRate = baseFailureRates[gpuId] ?? 6.0;
@@ -580,9 +580,9 @@ export function generateChartData(filters) {
 		comprehensivePoints: generateComprehensivePoints(m.id, filters)
 	}));
 
-	// Chart 1: TTFT vs #Users
+	// Chart 1: TTFT vs #Users (end-to-end latency)
 	const ttftVsUsersChart = {
-		title: 'Time to First Token',
+		title: 'End-to-end Latency',
 		subtitle: 'How quickly users receive their first response as concurrent load increases. Lower curves indicate systems that maintain fast initial responses even under heavy load—critical for interactive applications where perceived responsiveness drives user satisfaction.',
 		xLabel: '#Users',
 		yLabel: 'Time to First Token (s)',
@@ -595,9 +595,9 @@ export function generateChartData(filters) {
 		}))
 	};
 
-	// Chart 2: System throughput vs Interactivity
+	// Chart 2: System throughput vs Interactivity (TPOT-related)
 	const throughputVsInteractivityChart = {
-		title: 'Throughput & Responsiveness',
+		title: 'Time Per Output Token (TPOT)',
 		subtitle: 'The trade-off between total system capacity and per-user token delivery speed. Points closer to the upper-right represent superior systems that achieve high aggregate throughput without sacrificing the smooth, real-time token streaming users expect.',
 		xLabel: 'Interactivity (tok/s/user)',
 		yLabel: 'System Throughput (tok/s)',
@@ -627,7 +627,7 @@ export function generateChartData(filters) {
 
 	// Chart 4: Normalized throughput vs TTFT
 	const normalizedThroughputVsTTFTChart = {
-		title: 'Efficiency & Latency',
+		title: 'Time to First Token',
 		subtitle: 'Balancing per-accelerator output against initial response time constraints. The Pareto frontier here highlights configurations that maximize token generation per GPU while still meeting strict latency requirements—ideal for cost-conscious deployments.',
 		xLabel: 'Time to First Token (s)',
 		yLabel: 'Normalized Throughput (tok/s/gpu)',
@@ -662,8 +662,8 @@ export function generateChartData(filters) {
  */
 export const gpuInferenceBenchmarks = [
 	{
-		id: 'b200-trt',
-		name: 'B200 (TensorRT)',
+		id: 'b200_trt',
+		name: 'B200 (TensorRT-LLM)',
 		metrics: {
 			throughput: '11,500 tok/s',
 			latency: '45ms',
@@ -674,8 +674,8 @@ export const gpuInferenceBenchmarks = [
 		color: '#f97316'
 	},
 	{
-		id: 'h200-trt',
-		name: 'H200 (TensorRT)',
+		id: 'h200_trt',
+		name: 'H200 (TensorRT-LLM)',
 		metrics: {
 			throughput: '9,900 tok/s',
 			latency: '52ms',
@@ -686,7 +686,7 @@ export const gpuInferenceBenchmarks = [
 		color: '#22c55e'
 	},
 	{
-		id: 'h200-vllm',
+		id: 'h200_vllm',
 		name: 'H200 (vLLM)',
 		metrics: {
 			throughput: '9,000 tok/s',
@@ -698,7 +698,7 @@ export const gpuInferenceBenchmarks = [
 		color: '#3b82f6'
 	},
 	{
-		id: 'b200-vllm',
+		id: 'b200_vllm',
 		name: 'B200 (vLLM)',
 		metrics: {
 			throughput: '10,200 tok/s',
@@ -710,8 +710,8 @@ export const gpuInferenceBenchmarks = [
 		color: '#a855f7'
 	},
 	{
-		id: 'ml355-vllm',
-		name: 'ML355 (vLLM)',
+		id: 'mi355x_vllm',
+		name: 'MI355X (vLLM)',
 		metrics: {
 			throughput: '8,400 tok/s',
 			latency: '62ms',
@@ -722,7 +722,7 @@ export const gpuInferenceBenchmarks = [
 		color: '#ec4899'
 	},
 	{
-		id: 'h100-vllm',
+		id: 'h100_vllm',
 		name: 'H100 (vLLM)',
 		metrics: {
 			throughput: '6,800 tok/s',

@@ -4,191 +4,179 @@
 	 *
 	 * This page demonstrates:
 	 * - Two-column layout with sticky sidebar for chart filters
-	 * - Reactive data fetching with $derived() that auto-refetches when filters change
-	 * - Async/await pattern with {#await} blocks for loading states
+	 * - Synchronous data loading from local JSON
+	 * - Reactive filtering with $derived() for visibility toggles
 	 * - Component composition for maintainable, skinny page files
 	 */
-	import { onMount } from 'svelte';
-	import ChartSection from '$lib/components/ChartSection.svelte';
-	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
-	import { getChartData } from '$lib/remotes/chartData.js';
-	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
 	import { isModelVisible } from '$lib/stores/chartSettings.svelte.js';
+	import { gpuColors } from '$lib/data/placeholders.js';
 
-	// Axis selector store
-	import {
-		axisOptions,
-		getSelectedXAxis,
-		getSelectedYAxis,
-		setSelectedXAxis,
-		setSelectedYAxis,
-		getSystemsData,
-		setSystemsData,
-		getLoading,
-		setLoading,
-		getChartData as getAxisChartData,
-		getChartTitle,
-		getXAxisOption,
-		getYAxisOption,
-		useLogScaleX,
-		useLogScaleY
-	} from '$lib/stores/axisSelector.svelte.js';
-
-	// Data transform for loading
-	import { parseSystemData } from '../pareto-charts/_components/dataTransform.js';
-
-	// Route-local components
-	import ChartLoadingState from '../_components/ChartLoadingState.svelte';
-	import ParetoChartSection from '../_components/ParetoChartSection.svelte';
-	import GpuReliabilitySection from '../_components/GpuReliabilitySection.svelte';
-	import SubmissionRequirements from '../_components/SubmissionRequirements.svelte';
-	import RoleBasedViewport from '../_components/RoleBasedViewport.svelte';
-	import SystemBladesSection from '../_components/SystemBladesSection.svelte';
-
-
-	// $derived() creates a reactive value that automatically updates when getFilters() changes
-	let filters = $derived(getFilters());
-
-	// This promise automatically re-runs whenever filters change, triggering a new API call
-	let chartDataQuery = $derived(
-		getChartData({
-			model: filters.model,
-			islOsl: filters.islOsl,
-			precision: filters.precision,
-			yAxisMetric: filters.yAxisMetric
-		})
-	);
+	// Import benchmark data from local JSON
+	import gtcData from './data.json';
 
 	// ============================================================================
-	// AXIS SELECTOR CHART - Using Store
+	// DATA TRANSFORMATION
 	// ============================================================================
 
-	// Container width for responsive chart
-	let axisChartWidth = $state(0);
-
-	// Reactive getters from store
-	let selectedXAxis = $derived(getSelectedXAxis());
-	let selectedYAxis = $derived(getSelectedYAxis());
-	let axisSelectorLoading = $derived(getLoading());
-	let systemsData = $derived(getSystemsData());
-
-	// Derived chart data from store
-	let axisChartData = $derived(getAxisChartData());
-	let chartTitle = $derived(getChartTitle());
-	let xAxisOption = $derived(getXAxisOption());
-	let yAxisOption = $derived(getYAxisOption());
-	let logScaleX = $derived(useLogScaleX());
-	let logScaleY = $derived(useLogScaleY());
-
-	// Chart dimensions
-	let axisChartHeight = $derived(Math.max(280, (axisChartWidth || 400) * 0.65));
+	/**
+	 * Transform JSON benchmark data into chart-ready format.
+	 * Each model gets its points array mapped from measurements.
+	 */
+	const baseModels = gtcData.benchmarks.map((benchmark) => {
+		const system = gtcData.systems[benchmark.system_id];
+		return {
+			id: benchmark.system_id,
+			name: system?.system_name ?? benchmark.system_id,
+			color: gpuColors[benchmark.system_id] ?? '#64748b',
+			measurements: benchmark.measurements
+		};
+	});
 
 	// ============================================================================
-	// USER ROLE SELECTOR
+	// CHART DATA STRUCTURES
 	// ============================================================================
 
-	const userRoleOptions = [
-		{ id: 'endpoints-user', label: 'Endpoints User' },
-		{ id: 'enterprise-buyer', label: 'Enterprise & Institutional Buyers' },
-		{ id: 'neo-cloud', label: 'Neo-Cloud & Cloud Service Providers' },
-		{ id: 'infra-engineer', label: 'Infra Engineer' },
-		{ id: 'it-buyer', label: 'IT Buyer' },
-		{ id: 'hardware-mfg', label: 'Hardware Manufacturer' },
-		{ id: 'model-developer', label: 'Model Developer' },
-		{ id: 'baas-user', label: 'BaaS User' },
-		{ id: 'investor', label: 'Investor' },
-		{ id: 'journalist', label: 'Journalist' }
-	];
-
-	let selectedUserRole = $state('endpoints-user');
-
-	// Load system data on mount
-	onMount(async () => {
-		try {
-			const response = await fetch('/db.json');
-			if (response.ok) {
-				const rawData = await response.json();
-				const parsedData = parseSystemData(rawData);
-				setSystemsData(parsedData);
-			}
-		} catch (err) {
-			console.error('Error loading axis selector data:', err);
-		} finally {
-			setLoading(false);
-		}
+	/**
+	 * Chart 1: TTFT vs #Users (End-to-end Latency)
+	 * X = concurrent_users, Y = ttft_ms_p9x (converted to seconds)
+	 */
+	let ttftVsUsersChart = $derived({
+		title: 'End-to-end Latency',
+		subtitle:
+			'How quickly users receive their first response as concurrent load increases. Lower curves indicate systems that maintain fast initial responses even under heavy load.',
+		xLabel: '#Users',
+		yLabel: 'Time to First Token (ms)',
+		models: baseModels
+			.map((m) => ({
+				id: m.id,
+				name: m.name,
+				color: m.color,
+				points: m.measurements.map((p) => ({
+					x: p.concurrent_users,
+					y: p.ttft_ms_p9x
+				}))
+			}))
+			.filter((m) => isModelVisible(m.id))
 	});
 
 	/**
-	 * Handle X-axis selection change
-	 * @param {Event} e
+	 * Chart 2: System Throughput vs Interactivity (TPOT-related)
+	 * X = interactivity_tokens_sec_user, Y = system_throughput_tokens_sec
 	 */
-	function handleXAxisChange(e) {
-		const target = /** @type {HTMLSelectElement} */ (e.target);
-		setSelectedXAxis(/** @type {any} */ (target.value));
-	}
+	let throughputVsInteractivityChart = $derived({
+		title: 'Time Per Output Token (TPOT)',
+		subtitle:
+			'The trade-off between total system capacity and per-user token delivery speed. Points closer to the upper-right represent superior systems.',
+		xLabel: 'Interactivity (tok/s/user)',
+		yLabel: 'System Throughput (tok/s)',
+		models: baseModels
+			.map((m) => ({
+				id: m.id,
+				name: m.name,
+				color: m.color,
+				points: m.measurements.map((p) => ({
+					x: p.interactivity_tokens_sec_user,
+					y: p.system_throughput_tokens_sec
+				}))
+			}))
+			.filter((m) => isModelVisible(m.id))
+	});
 
 	/**
-	 * Handle Y-axis selection change
-	 * @param {Event} e
+	 * Chart 3: Normalized Throughput vs #Users (Per-GPU Efficiency)
+	 * X = concurrent_users, Y = normalized_throughput
 	 */
-	function handleYAxisChange(e) {
-		const target = /** @type {HTMLSelectElement} */ (e.target);
-		setSelectedYAxis(/** @type {any} */ (target.value));
-	}
+	let normalizedThroughputVsUsersChart = $derived({
+		title: 'Per-GPU Efficiency',
+		subtitle:
+			'How effectively each accelerator maintains performance under growing demand. Flatter curves reveal hardware that scales gracefully.',
+		xLabel: '#Users',
+		yLabel: 'Normalized Throughput (tok/s/gpu)',
+		models: baseModels
+			.map((m) => ({
+				id: m.id,
+				name: m.name,
+				color: m.color,
+				points: m.measurements.map((p) => ({
+					x: p.concurrent_users,
+					y: p.normalized_throughput
+				}))
+			}))
+			.filter((m) => isModelVisible(m.id))
+	});
+
+	/**
+	 * Chart 4: Normalized Throughput vs TTFT
+	 * X = ttft_ms_p9x (converted to seconds), Y = normalized_throughput
+	 */
+	let normalizedThroughputVsTTFTChart = $derived({
+		title: 'Time to First Token',
+		subtitle:
+			'Balancing per-accelerator output against initial response time constraints. The Pareto frontier highlights configurations that maximize token generation per GPU.',
+		xLabel: 'Time to First Token (ms)',
+		yLabel: 'Normalized Throughput (tok/s/gpu)',
+		models: baseModels
+			.map((m) => ({
+				id: m.id,
+				name: m.name,
+				color: m.color,
+				points: m.measurements.map((p) => ({
+					x: p.ttft_ms_p9x,
+					y: p.normalized_throughput
+				}))
+			}))
+			.filter((m) => isModelVisible(m.id))
+	});
 </script>
 
-{#await chartDataQuery}
-	<ChartLoadingState />
-{:then chartData}
-	{@const filteredTTFTChart = {
-		...chartData.ttftVsUsersChart,
-		models: chartData.ttftVsUsersChart.models.filter((m) => isModelVisible(m.id))
-	}}
-	{@const filteredThroughputChart = {
-		...chartData.throughputVsInteractivityChart,
-		models: chartData.throughputVsInteractivityChart.models.filter((m) => isModelVisible(m.id))
-	}}
-	{@const filteredNormalizedUsersChart = {
-		...chartData.normalizedThroughputVsUsersChart,
-		models: chartData.normalizedThroughputVsUsersChart.models.filter((m) => isModelVisible(m.id))
-	}}
-	{@const filteredNormalizedTTFTChart = {
-		...chartData.normalizedThroughputVsTTFTChart,
-		models: chartData.normalizedThroughputVsTTFTChart.models.filter((m) => isModelVisible(m.id))
-	}}
+<!-- Side-by-side layout with filters sidebar and charts -->
+<div class="mx-auto max-w-7xl px-3 pb-3 pt-9">
+	<div class="flex flex-col gap-6 lg:flex-row">
+		<!-- Charts area -->
+		<div class="min-w-0 flex-1">
+			<!-- Small page hero -->
+			<header class="mb-8 px-3" aria-label="Page introduction">
+				<p
+					class="font-instrument-sans text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400"
+				>
+					Benchmark dashboard
+				</p>
+				<h1
+					class="font-instrument-sans mt-1 text-2xl font-semibold tracking-tight text-slate-800 md:text-3xl dark:text-slate-100"
+				>
+					MLCommons Endpoints
+				</h1>
+				<p
+					class="font-instrument-sans mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-400"
+				>
+					An easy-to-use dashboard for complex analysis of system configurations. Compare platform
+					performance of models, systems, and services.
+				</p>
+			</header>
 
+			<!-- Main content area - custom layout: 1 full, 2&3 side-by-side, 4 full -->
+			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+				<!-- Chart 1: TTFT vs #Users (Step Chart) - Full width -->
+				<div class="md:col-span-2">
+					<GtcChartSection chart={ttftVsUsersChart} lineType="step" />
+				</div>
 
-	<!-- Side-by-side layout with filters sidebar and charts -->
-	<div class="mx-auto max-w-7xl px-3 pb-3 pt-9">
-		<div class="flex flex-col gap-6 lg:flex-row">
-			<!-- Charts area -->
-			<div class="min-w-0 flex-1">
-				<!-- Main content area - custom layout: 1 full, 2&3 side-by-side, 4 full -->
-				<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-					<!-- Chart 1: TTFT vs #Users (Step Chart) - Full width -->
-					<div class="md:col-span-2">
-						<GtcChartSection chart={filteredTTFTChart} lineType="step" />
-					</div>
+				<!-- Chart 2: System throughput vs Interactivity (Line Chart) -->
+				<GtcChartSection chart={throughputVsInteractivityChart} lineType="line" />
 
-					<!-- Chart 2: System throughput vs Interactivity (Line Chart) -->
-					<GtcChartSection chart={filteredThroughputChart} lineType="line" />
+				<!-- Chart 3: Normalized throughput vs #Users (Step Chart) -->
+				<GtcChartSection chart={normalizedThroughputVsUsersChart} lineType="step" />
 
-					<!-- Chart 3: Normalized throughput vs #Users (Step Chart) -->
-					<GtcChartSection chart={filteredNormalizedUsersChart} lineType="step" />
-
-					<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) - Full width -->
-					<div class="md:col-span-2">
-						<GtcChartSection chart={filteredNormalizedTTFTChart} lineType="line" />
-					</div>
+				<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) - Full width -->
+				<div class="md:col-span-2">
+					<GtcChartSection chart={normalizedThroughputVsTTFTChart} lineType="line" />
 				</div>
 			</div>
-
-			<!-- Chart Filters Sidebar (hidden on mobile) -->
-			<GtcChartFiltersSidebar />
 		</div>
+
+		<!-- Chart Filters Sidebar (hidden on mobile) -->
+		<GtcChartFiltersSidebar />
 	</div>
-{:catch error}
-	<ErrorBanner message={error?.message} />
-{/await}
+</div>

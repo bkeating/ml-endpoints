@@ -1,0 +1,423 @@
+{
+  "metadata": {
+    "benchmark_version": "1.0",
+    "created_date": "2026-01-27",
+    "description": "LLM inference benchmarks across multiple GPU systems and inference frameworks",
+    "model_tested": "Llama 3.1 70B",
+    "test_parameters": {
+      "input_sequence_length": 2048,
+      "output_sequence_length": 512,
+      "precision": "FP8"
+    }
+  },
+  "systems": {
+    "h100_vllm": {
+      "system_name": "NVIDIA DGX H100 (8x H100-SXM5-80GB, vLLM)",
+      "submitter": "NVIDIA",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.6.4",
+      "accelerator": {
+        "model_name": "NVIDIA H100-SXM5-80GB",
+        "count": 8,
+        "memory_capacity": "80 GB",
+        "memory_configuration": "HBM3",
+        "memory_bandwidth": "3.35 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "4th Gen NVLink, 900 GB/s",
+        "tdp": "700W",
+        "fp8_tflops": 3958,
+        "fp16_tflops": 1979
+      },
+      "host": {
+        "processor_model_name": "Intel Xeon Platinum 8480+",
+        "processors_per_node": 2,
+        "processor_core_count": 56,
+        "memory_capacity": "2 TB",
+        "memory_configuration": "32x 64GB DDR5-4800"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Air-cooled",
+        "operating_system": "Ubuntu 22.04"
+      },
+      "software": {
+        "framework": "vLLM 0.6.4, CUDA 12.4",
+        "other_software_stack": "PyTorch 2.3, cuDNN 9.0, Driver 550.54"
+      }
+    },
+    "h200_trt": {
+      "system_name": "NVIDIA HGX H200 (8x H200-SXM-141GB, TensorRT-LLM)",
+      "submitter": "NVIDIA",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "TensorRT-LLM 0.14",
+      "accelerator": {
+        "model_name": "NVIDIA H200-SXM-141GB",
+        "count": 8,
+        "memory_capacity": "141 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "4.8 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "4th Gen NVLink, 900 GB/s",
+        "tdp": "700W",
+        "fp8_tflops": 3958,
+        "fp16_tflops": 1979
+      },
+      "host": {
+        "processor_model_name": "Intel Xeon Platinum 8480+",
+        "processors_per_node": 2,
+        "processor_core_count": 56,
+        "memory_capacity": "2 TB",
+        "memory_configuration": "32x 64GB DDR5-4800"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Air-cooled",
+        "operating_system": "Ubuntu 22.04"
+      },
+      "software": {
+        "framework": "TensorRT-LLM 0.14, CUDA 12.6",
+        "other_software_stack": "TensorRT 10.3, cuDNN 9.2, Driver 555.42"
+      }
+    },
+    "h200_vllm": {
+      "system_name": "NVIDIA HGX H200 (8x H200-SXM-141GB, vLLM)",
+      "submitter": "NVIDIA",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.6.4",
+      "accelerator": {
+        "model_name": "NVIDIA H200-SXM-141GB",
+        "count": 8,
+        "memory_capacity": "141 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "4.8 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "4th Gen NVLink, 900 GB/s",
+        "tdp": "700W",
+        "fp8_tflops": 3958,
+        "fp16_tflops": 1979
+      },
+      "host": {
+        "processor_model_name": "Intel Xeon Platinum 8480+",
+        "processors_per_node": 2,
+        "processor_core_count": 56,
+        "memory_capacity": "2 TB",
+        "memory_configuration": "32x 64GB DDR5-4800"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Air-cooled",
+        "operating_system": "Ubuntu 22.04"
+      },
+      "software": {
+        "framework": "vLLM 0.6.4, CUDA 12.6",
+        "other_software_stack": "PyTorch 2.4, cuDNN 9.2, Driver 555.42"
+      }
+    },
+    "b200_trt": {
+      "system_name": "NVIDIA DGX B200 (8x B200-SXM-180GB, TensorRT-LLM)",
+      "submitter": "NVIDIA",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "TensorRT-LLM 0.16",
+      "accelerator": {
+        "model_name": "NVIDIA B200-SXM-180GB",
+        "count": 8,
+        "memory_capacity": "180 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "8.0 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "5th Gen NVLink, 1.8 TB/s",
+        "tdp": "1000W",
+        "fp8_tflops": 9000,
+        "fp16_tflops": 4500
+      },
+      "host": {
+        "processor_model_name": "Intel Xeon Platinum 8570",
+        "processors_per_node": 2,
+        "processor_core_count": 56,
+        "memory_capacity": "4 TB",
+        "memory_configuration": "32x 128GB DDR5-5600"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Liquid-cooled",
+        "operating_system": "Ubuntu 24.04"
+      },
+      "software": {
+        "framework": "TensorRT-LLM 0.16, CUDA 12.9",
+        "other_software_stack": "TensorRT 10.11, cuDNN 9.10, Driver 570.148"
+      },
+      "notes": {
+        "hw_notes": "B200 TGP 1000W"
+      }
+    },
+    "b200_vllm": {
+      "system_name": "NVIDIA DGX B200 (8x B200-SXM-180GB, vLLM)",
+      "submitter": "NVIDIA",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.7.1",
+      "accelerator": {
+        "model_name": "NVIDIA B200-SXM-180GB",
+        "count": 8,
+        "memory_capacity": "180 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "8.0 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "5th Gen NVLink, 1.8 TB/s",
+        "tdp": "1000W",
+        "fp8_tflops": 9000,
+        "fp16_tflops": 4500
+      },
+      "host": {
+        "processor_model_name": "Intel Xeon Platinum 8570",
+        "processors_per_node": 2,
+        "processor_core_count": 56,
+        "memory_capacity": "4 TB",
+        "memory_configuration": "32x 128GB DDR5-5600"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Liquid-cooled",
+        "operating_system": "Ubuntu 24.04"
+      },
+      "software": {
+        "framework": "vLLM 0.7.1, CUDA 12.9",
+        "other_software_stack": "PyTorch 2.5, cuDNN 9.10, Driver 570.148"
+      },
+      "notes": {
+        "hw_notes": "B200 TGP 1000W"
+      }
+    },
+    "mi300x_vllm": {
+      "system_name": "AMD Instinct MI300X Platform (8x MI300X-OAM-192GB, vLLM)",
+      "submitter": "AMD",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.6.4 (ROCm)",
+      "accelerator": {
+        "model_name": "AMD Instinct MI300X-OAM-192GB",
+        "count": 8,
+        "memory_capacity": "192 GB",
+        "memory_configuration": "HBM3",
+        "memory_bandwidth": "5.3 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "4th Gen Infinity Fabric, 896 GB/s",
+        "tdp": "750W",
+        "fp8_tflops": 2615,
+        "fp16_tflops": 1307
+      },
+      "host": {
+        "processor_model_name": "AMD EPYC 9654",
+        "processors_per_node": 2,
+        "processor_core_count": 96,
+        "memory_capacity": "1.5 TB",
+        "memory_configuration": "24x 64GB DDR5-4800"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Air-cooled",
+        "operating_system": "Ubuntu 22.04"
+      },
+      "software": {
+        "framework": "vLLM 0.6.4, ROCm 6.2",
+        "other_software_stack": "PyTorch 2.4, MIOpen 3.1"
+      }
+    },
+    "mi325x_vllm": {
+      "system_name": "AMD Instinct MI325X Platform (8x MI325X-OAM-256GB, vLLM)",
+      "submitter": "AMD",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.6.4 (ROCm)",
+      "accelerator": {
+        "model_name": "AMD Instinct MI325X-OAM-256GB",
+        "count": 8,
+        "memory_capacity": "256 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "6.0 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "4th Gen Infinity Fabric, 896 GB/s",
+        "tdp": "1000W",
+        "fp8_tflops": 2615,
+        "fp16_tflops": 1307
+      },
+      "host": {
+        "processor_model_name": "AMD EPYC 9754",
+        "processors_per_node": 2,
+        "processor_core_count": 128,
+        "memory_capacity": "1.5 TB",
+        "memory_configuration": "24x 64GB DDR5-4800"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Air-cooled",
+        "operating_system": "Ubuntu 22.04"
+      },
+      "software": {
+        "framework": "vLLM 0.6.4, ROCm 6.3",
+        "other_software_stack": "PyTorch 2.4, MIOpen 3.2"
+      }
+    },
+    "mi355x_vllm": {
+      "system_name": "AMD Instinct MI355X Platform (8x MI355X-OAM-288GB, vLLM)",
+      "submitter": "AMD",
+      "division": "closed",
+      "status": "available",
+      "system_type": "datacenter",
+      "inference_framework": "vLLM 0.7.2 (ROCm)",
+      "accelerator": {
+        "model_name": "AMD Instinct MI355X-OAM-288GB",
+        "count": 8,
+        "memory_capacity": "288 GB",
+        "memory_configuration": "HBM3e",
+        "memory_bandwidth": "8.0 TB/s",
+        "host_interconnect": "PCIe Gen5 x16",
+        "interconnect": "5th Gen Infinity Fabric, 153.6 GB/s bidirectional per link",
+        "tdp": "1400W",
+        "fp8_tflops": 4600,
+        "fp16_tflops": 2300
+      },
+      "host": {
+        "processor_model_name": "AMD EPYC 9V84 (Turin)",
+        "processors_per_node": 2,
+        "processor_core_count": 128,
+        "memory_capacity": "3 TB",
+        "memory_configuration": "24x 128GB DDR5-5600"
+      },
+      "infrastructure": {
+        "number_of_nodes": 1,
+        "cooling": "Liquid-cooled",
+        "operating_system": "Ubuntu 24.04"
+      },
+      "software": {
+        "framework": "vLLM 0.7.2, ROCm 6.4",
+        "other_software_stack": "PyTorch 2.5, MIOpen 3.3"
+      }
+    }
+  },
+  "benchmarks": [
+    {
+      "system_id": "h100_vllm",
+      "chips": 4,
+      "normalizing_factor": 1.0,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 245, "system_throughput_tokens_sec": 180, "interactivity_tokens_sec_user": 180, "normalized_throughput": 45, "config_detail": "TP4", "utilization_percent": 0.00042 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 268, "system_throughput_tokens_sec": 348, "interactivity_tokens_sec_user": 174, "normalized_throughput": 87, "config_detail": "TP4", "utilization_percent": 0.00082 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 305, "system_throughput_tokens_sec": 672, "interactivity_tokens_sec_user": 168, "normalized_throughput": 168, "config_detail": "TP4", "utilization_percent": 0.00158 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 385, "system_throughput_tokens_sec": 1280, "interactivity_tokens_sec_user": 160, "normalized_throughput": 320, "config_detail": "TP4", "utilization_percent": 0.00301 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 468, "system_throughput_tokens_sec": 2400, "interactivity_tokens_sec_user": 150, "normalized_throughput": 600, "config_detail": "TP4", "utilization_percent": 0.00564 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 592, "system_throughput_tokens_sec": 4480, "interactivity_tokens_sec_user": 140, "normalized_throughput": 1120, "config_detail": "TP4", "utilization_percent": 0.01053 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 785, "system_throughput_tokens_sec": 7680, "interactivity_tokens_sec_user": 120, "normalized_throughput": 1920, "config_detail": "TP4", "utilization_percent": 0.01806 }
+      ]
+    },
+    {
+      "system_id": "h200_trt",
+      "chips": 4,
+      "normalizing_factor": 1.0,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 185, "system_throughput_tokens_sec": 220, "interactivity_tokens_sec_user": 220, "normalized_throughput": 55, "config_detail": "TP4-FP8", "utilization_percent": 0.00045 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 198, "system_throughput_tokens_sec": 432, "interactivity_tokens_sec_user": 216, "normalized_throughput": 108, "config_detail": "TP4-FP8", "utilization_percent": 0.00088 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 225, "system_throughput_tokens_sec": 848, "interactivity_tokens_sec_user": 212, "normalized_throughput": 212, "config_detail": "TP4-FP8", "utilization_percent": 0.00173 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 278, "system_throughput_tokens_sec": 1664, "interactivity_tokens_sec_user": 208, "normalized_throughput": 416, "config_detail": "TP4-FP8", "utilization_percent": 0.00339 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 345, "system_throughput_tokens_sec": 3264, "interactivity_tokens_sec_user": 204, "normalized_throughput": 816, "config_detail": "TP4-FP8", "utilization_percent": 0.00666 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 425, "system_throughput_tokens_sec": 6400, "interactivity_tokens_sec_user": 200, "normalized_throughput": 1600, "config_detail": "TP4-FP8", "utilization_percent": 0.01306 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 545, "system_throughput_tokens_sec": 12160, "interactivity_tokens_sec_user": 190, "normalized_throughput": 3040, "config_detail": "TP4-FP8", "utilization_percent": 0.02482 }
+      ]
+    },
+    {
+      "system_id": "h200_vllm",
+      "chips": 4,
+      "normalizing_factor": 1.0,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 210, "system_throughput_tokens_sec": 200, "interactivity_tokens_sec_user": 200, "normalized_throughput": 50, "config_detail": "TP4", "utilization_percent": 0.00041 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 228, "system_throughput_tokens_sec": 392, "interactivity_tokens_sec_user": 196, "normalized_throughput": 98, "config_detail": "TP4", "utilization_percent": 0.00080 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 258, "system_throughput_tokens_sec": 768, "interactivity_tokens_sec_user": 192, "normalized_throughput": 192, "config_detail": "TP4", "utilization_percent": 0.00157 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 318, "system_throughput_tokens_sec": 1504, "interactivity_tokens_sec_user": 188, "normalized_throughput": 376, "config_detail": "TP4", "utilization_percent": 0.00307 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 398, "system_throughput_tokens_sec": 2944, "interactivity_tokens_sec_user": 184, "normalized_throughput": 736, "config_detail": "TP4", "utilization_percent": 0.00601 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 502, "system_throughput_tokens_sec": 5760, "interactivity_tokens_sec_user": 180, "normalized_throughput": 1440, "config_detail": "TP4", "utilization_percent": 0.01176 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 658, "system_throughput_tokens_sec": 10880, "interactivity_tokens_sec_user": 170, "normalized_throughput": 2720, "config_detail": "TP4", "utilization_percent": 0.02221 }
+      ]
+    },
+    {
+      "system_id": "b200_trt",
+      "chips": 4,
+      "normalizing_factor": 1.0,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 125, "system_throughput_tokens_sec": 380, "interactivity_tokens_sec_user": 380, "normalized_throughput": 95, "config_detail": "TP4-FP8", "utilization_percent": 0.00039 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 135, "system_throughput_tokens_sec": 752, "interactivity_tokens_sec_user": 376, "normalized_throughput": 188, "config_detail": "TP4-FP8", "utilization_percent": 0.00077 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 152, "system_throughput_tokens_sec": 1488, "interactivity_tokens_sec_user": 372, "normalized_throughput": 372, "config_detail": "TP4-FP8", "utilization_percent": 0.00152 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 185, "system_throughput_tokens_sec": 2944, "interactivity_tokens_sec_user": 368, "normalized_throughput": 736, "config_detail": "TP4-FP8", "utilization_percent": 0.00300 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 228, "system_throughput_tokens_sec": 5824, "interactivity_tokens_sec_user": 364, "normalized_throughput": 1456, "config_detail": "TP4-FP8", "utilization_percent": 0.00594 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 295, "system_throughput_tokens_sec": 11520, "interactivity_tokens_sec_user": 360, "normalized_throughput": 2880, "config_detail": "TP4-FP8", "utilization_percent": 0.01175 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 385, "system_throughput_tokens_sec": 22400, "interactivity_tokens_sec_user": 350, "normalized_throughput": 5600, "config_detail": "TP4-FP8", "utilization_percent": 0.02285 }
+      ]
+    },
+    {
+      "system_id": "b200_vllm",
+      "chips": 4,
+      "normalizing_factor": 1.0,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 145, "system_throughput_tokens_sec": 340, "interactivity_tokens_sec_user": 340, "normalized_throughput": 85, "config_detail": "TP4", "utilization_percent": 0.00035 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 158, "system_throughput_tokens_sec": 672, "interactivity_tokens_sec_user": 336, "normalized_throughput": 168, "config_detail": "TP4", "utilization_percent": 0.00069 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 178, "system_throughput_tokens_sec": 1328, "interactivity_tokens_sec_user": 332, "normalized_throughput": 332, "config_detail": "TP4", "utilization_percent": 0.00135 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 215, "system_throughput_tokens_sec": 2624, "interactivity_tokens_sec_user": 328, "normalized_throughput": 656, "config_detail": "TP4", "utilization_percent": 0.00268 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 268, "system_throughput_tokens_sec": 5184, "interactivity_tokens_sec_user": 324, "normalized_throughput": 1296, "config_detail": "TP4", "utilization_percent": 0.00529 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 345, "system_throughput_tokens_sec": 10240, "interactivity_tokens_sec_user": 320, "normalized_throughput": 2560, "config_detail": "TP4", "utilization_percent": 0.01045 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 455, "system_throughput_tokens_sec": 19840, "interactivity_tokens_sec_user": 310, "normalized_throughput": 4960, "config_detail": "TP4", "utilization_percent": 0.02024 }
+      ]
+    },
+    {
+      "system_id": "mi300x_vllm",
+      "chips": 4,
+      "normalizing_factor": 0.66,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 285, "system_throughput_tokens_sec": 165, "interactivity_tokens_sec_user": 165, "normalized_throughput": 62, "config_detail": "TP4-ROCm", "utilization_percent": 0.00048 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 312, "system_throughput_tokens_sec": 322, "interactivity_tokens_sec_user": 161, "normalized_throughput": 122, "config_detail": "TP4-ROCm", "utilization_percent": 0.00094 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 358, "system_throughput_tokens_sec": 628, "interactivity_tokens_sec_user": 157, "normalized_throughput": 238, "config_detail": "TP4-ROCm", "utilization_percent": 0.00183 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 445, "system_throughput_tokens_sec": 1224, "interactivity_tokens_sec_user": 153, "normalized_throughput": 464, "config_detail": "TP4-ROCm", "utilization_percent": 0.00357 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 558, "system_throughput_tokens_sec": 2384, "interactivity_tokens_sec_user": 149, "normalized_throughput": 903, "config_detail": "TP4-ROCm", "utilization_percent": 0.00695 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 715, "system_throughput_tokens_sec": 4640, "interactivity_tokens_sec_user": 145, "normalized_throughput": 1758, "config_detail": "TP4-ROCm", "utilization_percent": 0.01353 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 945, "system_throughput_tokens_sec": 8960, "interactivity_tokens_sec_user": 140, "normalized_throughput": 3394, "config_detail": "TP4-ROCm", "utilization_percent": 0.02612 }
+      ]
+    },
+    {
+      "system_id": "mi325x_vllm",
+      "chips": 4,
+      "normalizing_factor": 0.66,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 265, "system_throughput_tokens_sec": 185, "interactivity_tokens_sec_user": 185, "normalized_throughput": 70, "config_detail": "TP4-ROCm", "utilization_percent": 0.00047 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 288, "system_throughput_tokens_sec": 362, "interactivity_tokens_sec_user": 181, "normalized_throughput": 137, "config_detail": "TP4-ROCm", "utilization_percent": 0.00092 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 328, "system_throughput_tokens_sec": 708, "interactivity_tokens_sec_user": 177, "normalized_throughput": 268, "config_detail": "TP4-ROCm", "utilization_percent": 0.00180 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 405, "system_throughput_tokens_sec": 1384, "interactivity_tokens_sec_user": 173, "normalized_throughput": 524, "config_detail": "TP4-ROCm", "utilization_percent": 0.00351 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 508, "system_throughput_tokens_sec": 2704, "interactivity_tokens_sec_user": 169, "normalized_throughput": 1025, "config_detail": "TP4-ROCm", "utilization_percent": 0.00686 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 648, "system_throughput_tokens_sec": 5280, "interactivity_tokens_sec_user": 165, "normalized_throughput": 2000, "config_detail": "TP4-ROCm", "utilization_percent": 0.01340 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 855, "system_throughput_tokens_sec": 10240, "interactivity_tokens_sec_user": 160, "normalized_throughput": 3879, "config_detail": "TP4-ROCm", "utilization_percent": 0.02598 }
+      ]
+    },
+    {
+      "system_id": "mi355x_vllm",
+      "chips": 4,
+      "normalizing_factor": 0.51,
+      "measurements": [
+        { "concurrent_users": 1, "ttft_ms_p9x": 168, "system_throughput_tokens_sec": 320, "interactivity_tokens_sec_user": 320, "normalized_throughput": 157, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.00037 },
+        { "concurrent_users": 2, "ttft_ms_p9x": 182, "system_throughput_tokens_sec": 632, "interactivity_tokens_sec_user": 316, "normalized_throughput": 310, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.00073 },
+        { "concurrent_users": 4, "ttft_ms_p9x": 205, "system_throughput_tokens_sec": 1248, "interactivity_tokens_sec_user": 312, "normalized_throughput": 612, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.00144 },
+        { "concurrent_users": 8, "ttft_ms_p9x": 248, "system_throughput_tokens_sec": 2464, "interactivity_tokens_sec_user": 308, "normalized_throughput": 1208, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.00284 },
+        { "concurrent_users": 16, "ttft_ms_p9x": 308, "system_throughput_tokens_sec": 4864, "interactivity_tokens_sec_user": 304, "normalized_throughput": 2384, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.00560 },
+        { "concurrent_users": 32, "ttft_ms_p9x": 395, "system_throughput_tokens_sec": 9600, "interactivity_tokens_sec_user": 300, "normalized_throughput": 4706, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.01105 },
+        { "concurrent_users": 64, "ttft_ms_p9x": 515, "system_throughput_tokens_sec": 18560, "interactivity_tokens_sec_user": 290, "normalized_throughput": 9098, "config_detail": "TP4-ROCm-FP8", "utilization_percent": 0.02137 }
+      ]
+    }
+  ]
+}

@@ -46,18 +46,18 @@
 	// Get X domain from timeline range store or calculate from data
 	let rangeStart = $derived(useTimelineRange ? getStart() : null);
 	let rangeEnd = $derived(useTimelineRange ? getEnd() : null);
-	
+
 	// Calculate full domain from all models
 	let allPoints = $derived(data.flatMap((model) => model.points));
 	let fullXDomain = $derived(calculateDomain(allPoints, 'x'));
-	
+
 	// Use timeline range if enabled, otherwise use full domain
 	let xDomain = $derived(
 		useTimelineRange && rangeStart !== null && rangeEnd !== null
 			? [rangeStart, rangeEnd]
 			: fullXDomain
 	);
-	
+
 	// Filter data points within the visible X range (with buffer for line continuity)
 	let filteredData = $derived(
 		useTimelineRange && rangeStart !== null && rangeEnd !== null
@@ -69,7 +69,7 @@
 				}))
 			: data
 	);
-	
+
 	let yDomain = $derived(calculateDomain(filteredData.flatMap((model) => model.points), 'y'));
 
 	// Scales
