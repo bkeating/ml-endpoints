@@ -147,6 +147,16 @@
 								</dd>
 							</div>
 						</dl>
+
+						<!-- View Report Button -->
+						<button
+							type="button"
+							class="mt-3 w-full rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
+							style="background-color: {config.color};"
+							aria-label="View benchmark report for {config.system_name}"
+						>
+							View Benchmark Report
+						</button>
 					</div>
 				{/each}
 			</div>
