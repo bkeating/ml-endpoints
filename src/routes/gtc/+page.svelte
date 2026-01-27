@@ -156,12 +156,10 @@
 				</p>
 			</header>
 
-			<!-- Main content area - custom layout: 1 full, 2&3 side-by-side, 4 full -->
+			<!-- Main content area - 2x2 grid layout -->
 			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-				<!-- Chart 1: TTFT vs #Users (Step Chart) - Full width -->
-				<div class="md:col-span-2">
-					<GtcChartSection chart={ttftVsUsersChart} lineType="step" />
-				</div>
+				<!-- Chart 1: TTFT vs #Users (Step Chart) -->
+				<GtcChartSection chart={ttftVsUsersChart} lineType="step" />
 
 				<!-- Chart 2: System throughput vs Interactivity (Line Chart) -->
 				<GtcChartSection chart={throughputVsInteractivityChart} lineType="line" />
@@ -169,10 +167,8 @@
 				<!-- Chart 3: Normalized throughput vs #Users (Step Chart) -->
 				<GtcChartSection chart={normalizedThroughputVsUsersChart} lineType="step" />
 
-				<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) - Full width -->
-				<div class="md:col-span-2">
-					<GtcChartSection chart={normalizedThroughputVsTTFTChart} lineType="line" />
-				</div>
+				<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) -->
+				<GtcChartSection chart={normalizedThroughputVsTTFTChart} lineType="line" />
 			</div>
 		</div>
 
