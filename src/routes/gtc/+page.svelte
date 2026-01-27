@@ -137,7 +137,7 @@
 		<!-- Charts area -->
 		<div class="min-w-0 flex-1">
 			<!-- Small page hero -->
-			<header class="mb-8 px-3" aria-label="Page introduction">
+			<header class="mb-8 px-3 shadow-lg rounded-lg p-4 bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700" aria-label="Page introduction">
 				<p
 					class="font-instrument-sans text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400"
 				>
@@ -149,7 +149,7 @@
 					MLCommons Endpoints
 				</h1>
 				<p
-					class="font-instrument-sans mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 md:text-base dark:text-slate-400"
+					class="font-instrument-sans mt-2 max-w-2xl leading-relaxed text-slate-600 dark:text-slate-400 text-md"
 				>
 					An easy-to-use dashboard for complex analysis of system configurations. Compare platform
 					performance of models, systems, and services.
