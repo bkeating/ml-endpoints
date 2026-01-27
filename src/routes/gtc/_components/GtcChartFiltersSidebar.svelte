@@ -4,42 +4,60 @@
 	 *
 	 * This component provides:
 	 * - Model filter (at top)
-	 * - Systems selection using LegendItem components
-	 * - System configuration details for enabled systems
+	 * - Systems selection with inline accordion details
+	 * - Smooth slide transitions for expand/collapse
 	 * - Sticky positioning for easy access during scroll
 	 */
-	import LegendItem from '$lib/components/LegendItem.svelte';
+	import { slide } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import FilterSelect from '$lib/components/FilterSelect.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import { modelOptions, getModel, setModel } from '$lib/stores/chartFilters.svelte.js';
-	import { isModelVisible, toggleModel, getVisibleModelIds } from '$lib/stores/chartSettings.svelte.js';
+	import { isModelVisible, toggleModel } from '$lib/stores/chartSettings.svelte.js';
 	import { allGpuConfigs, gpuNames, gpuColors } from '$lib/data/placeholders.js';
 	import gtcData from '../data.json';
 
 	// Reactive getters - these automatically update when store values change
 	let currentModel = $derived(getModel());
 
-	// Build hardware models list from GPU configs
-	let hardwareModels = $derived(
-		allGpuConfigs.map((id) => ({
-			id,
-			name: gpuNames[id] ?? id,
-			color: gpuColors[id] ?? '#64748b'
-		}))
-	);
+	// Track which systems have been manually collapsed (expanded by default when visible)
+	let collapsedSystems = $state(/** @type {Set<string>} */ (new Set()));
 
-	// Get visible system configs with full details from data.json
-	let visibleSystemConfigs = $derived(
-		getVisibleModelIds()
-			.map((id) => {
-				const systemData = gtcData.systems[id];
-				if (!systemData) return null;
-				return {
-					id,
-					color: gpuColors[id] ?? '#64748b',
-					...systemData
-				};
-			})
-			.filter(Boolean)
+	/**
+	 * Toggle the collapsed state for a system's details
+	 * @param {string} id - System ID to toggle
+	 */
+	function toggleCollapsed(id) {
+		if (collapsedSystems.has(id)) {
+			collapsedSystems.delete(id);
+		} else {
+			collapsedSystems.add(id);
+		}
+		// Trigger reactivity by reassigning
+		collapsedSystems = new Set(collapsedSystems);
+	}
+
+	/**
+	 * Check if a system's details should be expanded
+	 * @param {string} id - System ID to check
+	 * @param {boolean} visible - Whether the system is visible
+	 * @returns {boolean} - True if expanded
+	 */
+	function isExpanded(id, visible) {
+		return visible && !collapsedSystems.has(id);
+	}
+
+	// Build hardware models list from GPU configs with system data
+	let hardwareModels = $derived(
+		allGpuConfigs.map((id) => {
+			const systemData = gtcData.systems[id];
+			return {
+				id,
+				name: gpuNames[id] ?? id,
+				color: gpuColors[id] ?? '#64748b',
+				system: systemData ?? null
+			};
+		})
 	);
 </script>
 
@@ -61,7 +79,7 @@
 			/>
 		</div>
 
-		<!-- Systems Selection Section -->
+		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
 			<h4
 				class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
@@ -70,96 +88,120 @@
 			</h4>
 			<div class="flex flex-col gap-0.5">
 				{#each hardwareModels as model (model.id)}
-					<LegendItem
-						name={model.name}
-						color={model.color}
-						visible={isModelVisible(model.id)}
-						ontoggle={() => toggleModel(model.id)}
-					/>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Enabled System Configurations -->
-		{#if visibleSystemConfigs.length > 0}
-			<div class="flex flex-col gap-3">
-				<h4
-					class="text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
-				>
-					System Details
-				</h4>
-				{#each visibleSystemConfigs as config (config.id)}
+					{@const visible = isModelVisible(model.id)}
+					{@const expanded = isExpanded(model.id, visible)}
 					<div
-						class="rounded-lg border p-3 text-xs"
-						style="border-color: {config.color}40; background-color: {config.color}08;"
+						class="rounded-lg transition-all duration-200 {expanded ? 'border' : ''}"
+						style="background-color: {expanded ? model.color + '08' : 'transparent'}; border-color: {expanded ? model.color + '40' : 'transparent'};"
 					>
-						<!-- System Header -->
-						<div class="mb-2 flex items-start gap-2">
-							<span
-								class="mt-1 h-2 w-2 shrink-0 rounded-full"
-								style="background-color: {config.color};"
-							></span>
-							<div class="min-w-0">
-								<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight">
-									{config.system_name}
-								</p>
-								<p class="text-slate-500 dark:text-slate-400 text-[10px]">
-									{config.submitter} / {config.division}
-								</p>
-							</div>
+						<!-- Legend Row with Toggle and Expand Controls -->
+						<div class="flex w-full items-center gap-1 rounded-lg transition-all duration-200 {expanded ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}">
+							<!-- Visibility Toggle Button -->
+							<button
+								type="button"
+								onclick={() => toggleModel(model.id)}
+								class="group flex flex-1 cursor-pointer items-center gap-3 px-3 py-2 text-left"
+								aria-pressed={visible}
+								aria-label="Toggle {model.name} visibility"
+							>
+								<span
+									class="h-3 w-3 rounded-full transition-opacity duration-200"
+									style="background-color: {model.color}; opacity: {visible ? 1 : 0.3};"
+								></span>
+								<span
+									class="flex-1 text-sm font-medium transition-opacity duration-200 {visible
+										? 'text-slate-800 dark:text-slate-200'
+										: 'text-slate-400 line-through dark:text-slate-500'}"
+								>
+									{model.name}
+								</span>
+							</button>
+							<!-- Expand/Collapse Chevron (only shown when visible and system data exists) -->
+							{#if visible && model.system}
+								<button
+									type="button"
+									onclick={() => toggleCollapsed(model.id)}
+									class="mr-2 p-1 rounded transition-colors hover:bg-slate-200 dark:hover:bg-slate-700"
+									aria-expanded={expanded}
+									aria-label="{expanded ? 'Collapse' : 'Expand'} {model.name} details"
+								>
+									<Icon
+										name="ChevronDown"
+										class="h-4 w-4 text-slate-400 transition-transform duration-200 {expanded ? 'rotate-180' : ''}"
+									/>
+								</button>
+							{/if}
 						</div>
 
-						<!-- Config Details -->
-						<dl class="space-y-1.5 text-[11px]">
-							<!-- Inference Framework -->
-							<div>
-								<dt class="font-medium text-slate-600 dark:text-slate-400">Framework</dt>
-								<dd class="text-slate-800 dark:text-slate-200">{config.inference_framework}</dd>
-							</div>
+						<!-- Accordion Details Panel -->
+						{#if expanded && model.system}
+							<div
+								transition:slide={{ duration: 200, easing: cubicOut }}
+								class="px-3 pb-3 text-xs"
+							>
+								<!-- System Header -->
+								<div class="mb-2">
+									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
+										{model.system.system_name}
+									</p>
+									<p class="text-slate-500 dark:text-slate-400 text-[10px]">
+										{model.system.submitter} / {model.system.division}
+									</p>
+								</div>
 
-							<!-- Accelerator -->
-							<div>
-								<dt class="font-medium text-slate-600 dark:text-slate-400">Accelerator</dt>
-								<dd class="text-slate-800 dark:text-slate-200">
-									{config.accelerator.count}x {config.accelerator.model_name}
-								</dd>
-								<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
-									{config.accelerator.memory_capacity} {config.accelerator.memory_configuration} | {config.accelerator.memory_bandwidth}
-								</dd>
-							</div>
+								<!-- Config Details -->
+								<dl class="space-y-1.5 text-[11px]">
+									<!-- Inference Framework -->
+									<div>
+										<dt class="font-medium text-slate-600 dark:text-slate-400">Framework</dt>
+										<dd class="text-slate-800 dark:text-slate-200">{model.system.inference_framework}</dd>
+									</div>
 
-							<!-- Host -->
-							<div>
-								<dt class="font-medium text-slate-600 dark:text-slate-400">Host</dt>
-								<dd class="text-slate-800 dark:text-slate-200">
-									{config.host.processors_per_node}x {config.host.processor_model_name}
-								</dd>
-								<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
-									{config.host.memory_capacity} RAM
-								</dd>
-							</div>
+									<!-- Accelerator -->
+									<div>
+										<dt class="font-medium text-slate-600 dark:text-slate-400">Accelerator</dt>
+										<dd class="text-slate-800 dark:text-slate-200">
+											{model.system.accelerator.count}x {model.system.accelerator.model_name}
+										</dd>
+										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+											{model.system.accelerator.memory_capacity} {model.system.accelerator.memory_configuration} | {model.system.accelerator.memory_bandwidth}
+										</dd>
+									</div>
 
-							<!-- Software -->
-							<div>
-								<dt class="font-medium text-slate-600 dark:text-slate-400">Software</dt>
-								<dd class="text-slate-500 dark:text-slate-400 text-[10px] wrap-break-word">
-									{config.software.framework}
-								</dd>
-							</div>
-						</dl>
+									<!-- Host -->
+									<div>
+										<dt class="font-medium text-slate-600 dark:text-slate-400">Host</dt>
+										<dd class="text-slate-800 dark:text-slate-200">
+											{model.system.host.processors_per_node}x {model.system.host.processor_model_name}
+										</dd>
+										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+											{model.system.host.memory_capacity} RAM
+										</dd>
+									</div>
 
-						<!-- View Report Button -->
-						<button
-							type="button"
-							class="mt-3 w-full rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
-							style="background-color: {config.color};"
-							aria-label="View benchmark report for {config.system_name}"
-						>
-							View Benchmark Report
-						</button>
+									<!-- Software -->
+									<div>
+										<dt class="font-medium text-slate-600 dark:text-slate-400">Software</dt>
+										<dd class="text-slate-500 dark:text-slate-400 text-[10px] wrap-break-word">
+											{model.system.software.framework}
+										</dd>
+									</div>
+								</dl>
+
+								<!-- View Report Button -->
+								<button
+									type="button"
+									class="mt-3 w-full rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
+									style="background-color: {model.color};"
+									aria-label="View benchmark report for {model.system.system_name}"
+								>
+									View Benchmark Report
+								</button>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
-		{/if}
+		</div>
 	</div>
 </aside>
