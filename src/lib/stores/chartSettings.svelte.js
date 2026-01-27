@@ -5,6 +5,7 @@
 
 import { getModelIds } from '$lib/data/benchmarkData.js';
 import { paretoSeries } from '$lib/data/paretoData.js';
+import { allGpuConfigs } from '$lib/data/placeholders.js';
 
 /**
  * @typedef {Object} ChartSettings
@@ -14,8 +15,11 @@ import { paretoSeries } from '$lib/data/paretoData.js';
  * @property {boolean} hideLabels - Whether to hide data point labels
  */
 
-// Initialize visibility map with all models visible
-const initialVisibility = Object.fromEntries(getModelIds().map((id) => [id, true]));
+// Initialize visibility map with only first model visible for each model set
+// Combine IDs from both benchmarkData (hyphenated) and placeholders (underscored)
+const benchmarkVisibility = Object.fromEntries(getModelIds().map((id, index) => [id, index === 0]));
+const gtcVisibility = Object.fromEntries(allGpuConfigs.map((id, index) => [id, index === 0]));
+const initialVisibility = { ...benchmarkVisibility, ...gtcVisibility };
 
 // Initialize pareto series visibility with all series visible
 const initialParetoVisibility = Object.fromEntries(paretoSeries.map((s) => [s.id, true]));
@@ -51,7 +55,7 @@ export function getSettings() {
  * @returns {boolean}
  */
 export function isModelVisible(modelId) {
-	return modelVisibility[modelId] ?? true;
+	return modelVisibility[modelId] ?? false;
 }
 
 /**
@@ -60,6 +64,16 @@ export function isModelVisible(modelId) {
  */
 export function toggleModel(modelId) {
 	modelVisibility[modelId] = !modelVisibility[modelId];
+}
+
+/**
+ * Get all visible model IDs
+ * @returns {string[]}
+ */
+export function getVisibleModelIds() {
+	return Object.entries(modelVisibility)
+		.filter(([, visible]) => visible)
+		.map(([id]) => id);
 }
 
 /**
