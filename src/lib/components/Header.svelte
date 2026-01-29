@@ -48,7 +48,7 @@
 		<!-- Desktop Actions -->
 		<div class="hidden items-center gap-2 justify-self-end md:flex">
 			<div class="flex h-10 items-center justify-center rounded-full bg-[#CCEBD4] px-6 text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
-			<button class="flex h-8 w-8 items-center justify-center rounded-full bg-[#10141F] text-white transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
+			<button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-800 dark:text-slate-200 transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
 				<Icon name="Search" class="h-[18px] w-[18px]" />
 			</button>
 			<button onclick={toggleTheme} class="text-slate-900 transition-colors duration-200 hover:text-slate-600 dark:text-white dark:hover:text-slate-300" aria-label="Toggle dark mode">

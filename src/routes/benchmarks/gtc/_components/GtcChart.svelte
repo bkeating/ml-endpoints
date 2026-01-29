@@ -1,31 +1,36 @@
 <script>
 	/**
 	 * GTC Chart Component - Supports both step and line chart types
-	 * Similar to BenchmarkChart but with configurable line types
+	 * with configurable linear or logarithmic scales
 	 */
 	import { goto } from '$app/navigation';
 	import {
 		createMargins,
 		getInnerDimensions,
 		createLinearScale,
+		createLogScale,
 		createStepLineGenerator,
 		createSmoothLineGenerator,
 		formatYAxis,
 		calculateDomain,
+		calculateLogDomain,
 		generateClipPathId
 	} from '../../../pareto-charts/_components/chartUtils.js';
 	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
+	import { setHoveredRunId, getHoveredRunId } from '$lib/stores/chartSettings.svelte.js';
 
 	/**
 	 * @typedef {Object} PointMeta
-	 * @property {string} systemId - System identifier
-	 * @property {number} concurrent_users - Number of concurrent users
-	 * @property {number} ttft_ms_p9x - Time to first token (ms, p99)
-	 * @property {number} system_throughput_tokens_sec - System throughput
-	 * @property {number} interactivity_tokens_sec_user - Interactivity tokens per second per user
-	 * @property {number} normalized_throughput - Normalized throughput
+	 * @property {string} systemId - System identifier (UUID)
+	 * @property {string} runId - Run identifier (UUID)
+	 * @property {number} concurrency - Number of concurrent users
+	 * @property {number} system_tps - System tokens per second
+	 * @property {number} tps_per_user - Tokens per second per user (interactivity)
+	 * @property {number} ttft - Time to first token P99 (seconds)
+	 * @property {number} utilization - System utilization (0-1)
 	 * @property {string} config_detail - Configuration details
-	 * @property {number} utilization_percent - Utilization percentage
+	 * @property {Object} system - Full system object
+	 * @property {Object} model - Full model object
 	 */
 
 	/**
@@ -36,6 +41,8 @@
 	 * @property {number} [width] - Chart width
 	 * @property {number} [height] - Chart height
 	 * @property {'step' | 'line'} [lineType='line'] - Type of line to render
+	 * @property {'linear' | 'log'} [xScaleType='linear'] - X-axis scale type
+	 * @property {'linear' | 'log'} [yScaleType='linear'] - Y-axis scale type
 	 * @property {boolean} [useTimelineRange=false] - Whether to use the shared timeline range store for X-axis filtering
 	 */
 	/** @type {Props} */
@@ -46,6 +53,8 @@
 		width = 700,
 		height = 450,
 		lineType = 'line',
+		xScaleType = 'linear',
+		yScaleType = 'linear',
 		useTimelineRange = false
 	} = $props();
 
@@ -60,9 +69,13 @@
 	let rangeStart = $derived(useTimelineRange ? getStart() : null);
 	let rangeEnd = $derived(useTimelineRange ? getEnd() : null);
 
-	// Calculate full domain from all models
+	// Calculate full domain from all models based on scale type
 	let allPoints = $derived(data.flatMap((model) => model.points));
-	let fullXDomain = $derived(calculateDomain(allPoints, 'x'));
+	let fullXDomain = $derived(
+		xScaleType === 'log'
+			? calculateLogDomain(allPoints, 'x')
+			: calculateDomain(allPoints, 'x')
+	);
 
 	// Use timeline range if enabled, otherwise use full domain
 	let xDomain = $derived(
@@ -83,15 +96,72 @@
 			: data
 	);
 
-	let yDomain = $derived(calculateDomain(filteredData.flatMap((model) => model.points), 'y'));
+	// Calculate Y domain based on scale type
+	let yDomain = $derived(
+		yScaleType === 'log'
+			? calculateLogDomain(filteredData.flatMap((model) => model.points), 'y')
+			: calculateDomain(filteredData.flatMap((model) => model.points), 'y')
+	);
 
-	// Scales
-	let xScale = $derived(createLinearScale(xDomain, [0, innerWidth]));
-	let yScale = $derived(createLinearScale(yDomain, [innerHeight, 0]));
+	// Create scales based on scale type
+	let xScale = $derived(
+		xScaleType === 'log'
+			? createLogScale(xDomain, [0, innerWidth])
+			: createLinearScale(xDomain, [0, innerWidth])
+	);
+	let yScale = $derived(
+		yScaleType === 'log'
+			? createLogScale(yDomain, [innerHeight, 0])
+			: createLinearScale(yDomain, [innerHeight, 0])
+	);
 
-	// Ticks
-	let xTicks = $derived(xScale.ticks(6));
-	let yTicks = $derived(yScale.ticks(6));
+	/**
+	 * Generate clean tick values for logarithmic scales
+	 * Uses powers of 10 and key intermediate values (2, 5) for readability
+	 * @param {[number, number]} domain - Scale domain [min, max]
+	 * @param {number} maxTicks - Maximum number of ticks
+	 * @returns {number[]} Array of tick values
+	 */
+	function getLogTicks(domain, maxTicks = 5) {
+		const [min, max] = domain;
+		const logMin = Math.floor(Math.log10(Math.max(min, 0.001)));
+		const logMax = Math.ceil(Math.log10(max));
+
+		// Generate candidate ticks at powers of 10 and intermediate values
+		const candidates = [];
+		for (let exp = logMin; exp <= logMax; exp++) {
+			const base = Math.pow(10, exp);
+			[1, 2, 5].forEach(mult => {
+				const val = base * mult;
+				if (val >= min * 0.9 && val <= max * 1.1) {
+					candidates.push(val);
+				}
+			});
+		}
+
+		// If too many candidates, filter to just powers of 10
+		if (candidates.length > maxTicks) {
+			const powersOf10 = candidates.filter(v => {
+				const log = Math.log10(v);
+				return Math.abs(log - Math.round(log)) < 0.001;
+			});
+			if (powersOf10.length >= 3) return powersOf10;
+		}
+
+		return candidates.slice(0, maxTicks);
+	}
+
+	// Ticks - use custom generator for log scales to avoid overcrowding
+	let xTicks = $derived(
+		xScaleType === 'log'
+			? getLogTicks(xDomain, isMobile ? 4 : 5)
+			: xScale.ticks(isMobile ? 4 : 6)
+	);
+	let yTicks = $derived(
+		yScaleType === 'log'
+			? getLogTicks(yDomain, 5)
+			: yScale.ticks(6)
+	);
 
 	// Line generator based on type
 	let lineGenerator = $derived(
@@ -104,6 +174,22 @@
 	let tooltipData = $state(null);
 	let tooltipPosition = $state({ x: 0, y: 0 });
 
+	// Cross-chart hover state (reactive getter)
+	let globalHoveredRunId = $derived(getHoveredRunId());
+
+	/**
+	 * Format value for display based on scale type and magnitude
+	 * @param {number} value - Value to format
+	 * @param {'linear' | 'log'} scaleType - Scale type
+	 * @returns {string} Formatted value
+	 */
+	function formatValue(value, scaleType) {
+		if (scaleType === 'log' && value < 1) {
+			return value.toFixed(3);
+		}
+		return formatYAxis(value);
+	}
+
 	function handlePointHover(event, point, model) {
 		const svgRect = event.currentTarget.closest('svg')?.getBoundingClientRect();
 		if (!svgRect) return;
@@ -113,24 +199,29 @@
 			x: event.clientX - svgRect.left + 15,
 			y: event.clientY - svgRect.top - 10
 		};
+
+		// Set global hovered run ID for cross-chart highlighting
+		if (point.meta?.runId) {
+			setHoveredRunId(point.meta.runId);
+		}
 	}
 
 	function handlePointLeave() {
 		tooltipData = null;
+		setHoveredRunId(null);
 	}
 
 	/**
-	 * Navigate to the report page with point metadata as query params.
+	 * Navigate to the report page with submission and run IDs.
 	 * @param {Object} point - The data point with x, y, and meta
-	 * @param {Object} model - The model containing id and name
+	 * @param {Object} _model - The model containing id and name (unused)
 	 */
-	function handlePointClick(point, model) {
-		if (!point.meta) return;
+	function handlePointClick(point, _model) {
+		if (!point.meta?.submission_id) return;
 
 		const params = new URLSearchParams({
-			system: point.meta.systemId,
-			users: String(point.meta.concurrent_users),
-			config: point.meta.config_detail
+			submission: point.meta.submission_id,
+			run: point.meta.run_id ?? ''
 		});
 
 		goto(`/benchmarks/gtc/report?${params.toString()}`);
@@ -207,14 +298,16 @@
 					/>
 					<!-- Data points -->
 					{#each model.points as point, i (i)}
+						{@const isHighlighted = globalHoveredRunId && point.meta?.runId === globalHoveredRunId}
 						<circle
 							cx={xScale(point.x)}
 							cy={yScale(point.y)}
-							r="4"
-							fill={model.color}
+							r={isHighlighted ? 7 : 4}
+							fill={isHighlighted ? 'white' : model.color}
 							stroke={model.color}
-							stroke-width="1.5"
+							stroke-width={isHighlighted ? 3 : 1.5}
 							class="cursor-pointer transition-all duration-150 hover:brightness-110"
+							class:ring-highlight={isHighlighted}
 							role="button"
 							tabindex="0"
 							aria-label="View report for {model.name}: {point.x}, {point.y}"
@@ -237,20 +330,20 @@
 					class="stroke-slate-400 dark:stroke-slate-500"
 					stroke-width="1"
 				/>
-				{#each yTicks as tick (tick)}
-					<g transform="translate(0, {yScale(tick)})">
-						<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
-						<text
-							x="-12"
-							y="0"
-							dy="0.35em"
-							text-anchor="end"
-							class="fill-slate-600 text-xs dark:fill-slate-400"
-						>
-							{formatYAxis(tick)}
-						</text>
-					</g>
-				{/each}
+			{#each yTicks as tick (tick)}
+				<g transform="translate(0, {yScale(tick)})">
+					<line x1="-6" x2="0" y1="0" y2="0" class="stroke-slate-400 dark:stroke-slate-500" />
+					<text
+						x="-12"
+						y="0"
+						dy="0.35em"
+						text-anchor="end"
+						class="fill-slate-600 text-xs dark:fill-slate-400"
+					>
+						{formatValue(tick, yScaleType)}
+					</text>
+				</g>
+			{/each}
 				<text
 					transform="rotate(-90)"
 					x={-innerHeight / 2}
@@ -272,19 +365,19 @@
 					class="stroke-slate-400 dark:stroke-slate-500"
 					stroke-width="1"
 				/>
-				{#each xTicks as tick (tick)}
-					<g transform="translate({xScale(tick)}, 0)">
-						<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
-						<text
-							x="0"
-							y="20"
-							text-anchor="middle"
-							class="fill-slate-600 text-xs dark:fill-slate-400"
-						>
-							{formatYAxis(tick)}
-						</text>
-					</g>
-				{/each}
+			{#each xTicks as tick (tick)}
+				<g transform="translate({xScale(tick)}, 0)">
+					<line x1="0" x2="0" y1="0" y2="6" class="stroke-slate-400 dark:stroke-slate-500" />
+					<text
+						x="0"
+						y="20"
+						text-anchor="middle"
+						class="fill-slate-600 text-xs dark:fill-slate-400"
+					>
+						{formatValue(tick, xScaleType)}
+					</text>
+				</g>
+			{/each}
 				<text
 					x={innerWidth / 2}
 					y="45"
@@ -306,11 +399,16 @@
 			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
 				<div class="font-semibold text-slate-800 dark:text-slate-200">{tooltipData.model.name}</div>
 				<div>
-					<strong>{xAxisLabel}:</strong> {formatYAxis(tooltipData.point.x)}
+					<strong>{xAxisLabel}:</strong> {formatValue(tooltipData.point.x, xScaleType)}
 				</div>
 				<div>
-					<strong>{yAxisLabel}:</strong> {formatYAxis(tooltipData.point.y)}
+					<strong>{yAxisLabel}:</strong> {formatValue(tooltipData.point.y, yScaleType)}
 				</div>
+				{#if tooltipData.point.meta?.model}
+					<div class="mt-1 pt-1 border-t border-slate-200 dark:border-slate-600">
+						<span class="text-slate-500">{tooltipData.point.meta.model.model_name}</span>
+					</div>
+				{/if}
 			</div>
 		</div>
 	{/if}
@@ -323,5 +421,10 @@
 		max-width: 100%;
 		height: auto;
 		display: block;
+	}
+
+	/* Highlighted point styling for cross-chart hover sync */
+	.ring-highlight {
+		filter: drop-shadow(0 0 4px currentColor);
 	}
 </style>

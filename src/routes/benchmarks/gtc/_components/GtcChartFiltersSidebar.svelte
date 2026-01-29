@@ -10,17 +10,11 @@
 	 */
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
-	import FilterSelect from '$lib/components/FilterSelect.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import GridIcon from '$lib/components/icons/Grid.svelte';
 	import GraphIcon from '$lib/components/icons/Graph.svelte';
-	import { modelOptions, getModel, setModel } from '$lib/stores/chartFilters.svelte.js';
-	import { isModelVisible, toggleModel } from '$lib/stores/chartSettings.svelte.js';
-	import { allGpuConfigs, gpuNames, gpuColors } from '$lib/data/placeholders.js';
-	import gtcData from '../data.json';
-
-	// Reactive getters - these automatically update when store values change
-	let currentModel = $derived(getModel());
+	import { isSystemVisible, toggleSystem } from '$lib/stores/chartSettings.svelte.js';
+	import endpointsData from '../endpoints-benchmark-data.json';
 
 	// Benchmark category state and options
 	let benchmarkCategory = $state('performance');
@@ -67,17 +61,14 @@
 		return visible && !collapsedSystems.has(id);
 	}
 
-	// Build hardware models list from GPU configs with system data
-	let hardwareModels = $derived(
-		allGpuConfigs.map((id) => {
-			const systemData = gtcData.systems[id];
-			return {
-				id,
-				name: gpuNames[id] ?? id,
-				color: gpuColors[id] ?? '#64748b',
-				system: systemData ?? null
-			};
-		})
+	// Build hardware systems list directly from endpoints data
+	let hardwareSystems = $derived(
+		endpointsData.systems.map((system) => ({
+			id: system.id,
+			name: system.system_name,
+			color: system.color,
+			system
+		}))
 	);
 </script>
 
@@ -180,43 +171,43 @@
 			Systems
 		</h4>
 			<div class="flex flex-col gap-0.5">
-				{#each hardwareModels as model (model.id)}
-					{@const visible = isModelVisible(model.id)}
-					{@const expanded = isExpanded(model.id, visible)}
+				{#each hardwareSystems as hw (hw.id)}
+					{@const visible = isSystemVisible(hw.id)}
+					{@const expanded = isExpanded(hw.id, visible)}
 					<div
 						class="rounded-lg transition-all duration-200 {expanded ? 'border' : ''}"
-						style="background-color: {expanded ? model.color + '08' : 'transparent'}; border-color: {expanded ? model.color + '40' : 'transparent'};"
+						style="background-color: {expanded ? hw.color + '08' : 'transparent'}; border-color: {expanded ? hw.color + '40' : 'transparent'};"
 					>
 						<!-- Legend Row with Toggle and Expand Controls -->
 						<div class="flex w-full items-center gap-1 rounded-lg transition-all duration-200 {expanded ? '' : 'hover:bg-slate-700'}">
 							<!-- Visibility Toggle Button -->
 							<button
 								type="button"
-								onclick={() => toggleModel(model.id)}
+								onclick={() => toggleSystem(hw.id)}
 								class="group flex flex-1 cursor-pointer items-center gap-3 px-3 py-2 text-left"
 								aria-pressed={visible}
-								aria-label="Toggle {model.name} visibility"
+								aria-label="Toggle {hw.name} visibility"
 							>
 								<span
 									class="h-3 w-3 rounded-full transition-opacity duration-200"
-									style="background-color: {model.color}; opacity: {visible ? 1 : 0.3};"
+									style="background-color: {hw.color}; opacity: {visible ? 1 : 0.3};"
 								></span>
 								<span
 									class="flex-1 text-sm font-medium transition-opacity duration-200 {visible
 										? 'text-slate-200'
 										: 'text-slate-500 line-through'}"
 								>
-									{model.name}
+									{hw.name}
 								</span>
 							</button>
 							<!-- Expand/Collapse Chevron (only shown when visible and system data exists) -->
-							{#if visible && model.system}
+							{#if visible && hw.system}
 								<button
 									type="button"
-									onclick={() => toggleCollapsed(model.id)}
+									onclick={() => toggleCollapsed(hw.id)}
 									class="mr-2 p-1 rounded transition-colors hover:bg-slate-700"
 									aria-expanded={expanded}
-									aria-label="{expanded ? 'Collapse' : 'Expand'} {model.name} details"
+									aria-label="{expanded ? 'Collapse' : 'Expand'} {hw.name} details"
 								>
 									<Icon
 										name="ChevronDown"
@@ -227,7 +218,7 @@
 						</div>
 
 						<!-- Accordion Details Panel -->
-						{#if expanded && model.system}
+						{#if expanded && hw.system}
 							<div
 								transition:slide={{ duration: 200, easing: cubicOut }}
 								class="px-3 pb-3 text-xs"
@@ -235,29 +226,29 @@
 								<!-- System Header -->
 								<div class="mb-2">
 									<p class="font-semibold text-slate-200 leading-tight text-[11px]">
-										{model.system.system_name}
+										{hw.system.system_name}
 									</p>
 									<p class="text-slate-400 text-[10px]">
-										{model.system.submitter} / {model.system.division}
+										{hw.system.submitter_org_names} / {hw.system.division}
 									</p>
 								</div>
 
 								<!-- Config Details -->
 								<dl class="space-y-1.5 text-[11px]">
-									<!-- Inference Framework -->
+									<!-- Framework -->
 									<div>
 										<dt class="font-medium text-slate-400">Framework</dt>
-										<dd class="text-slate-200">{model.system.inference_framework}</dd>
+										<dd class="text-slate-200">{hw.system.framework}</dd>
 									</div>
 
 									<!-- Accelerator -->
 									<div>
 										<dt class="font-medium text-slate-400">Accelerator</dt>
 										<dd class="text-slate-200">
-											{model.system.accelerator.count}x {model.system.accelerator.model_name}
+											{hw.system.accelerators_per_node}x {hw.system.accelerator_model_name}
 										</dd>
 										<dd class="text-slate-400 text-[10px]">
-											{model.system.accelerator.memory_capacity} {model.system.accelerator.memory_configuration} | {model.system.accelerator.memory_bandwidth}
+											{hw.system.accelerator_memory_capacity} {hw.system.accelerator_memory_type}
 										</dd>
 									</div>
 
@@ -265,18 +256,16 @@
 									<div>
 										<dt class="font-medium text-slate-400">Host</dt>
 										<dd class="text-slate-200">
-											{model.system.host.processors_per_node}x {model.system.host.processor_model_name}
-										</dd>
-										<dd class="text-slate-400 text-[10px]">
-											{model.system.host.memory_capacity} RAM
+											{hw.system.host_processors_per_node}x {hw.system.host_processor_model_name}
 										</dd>
 									</div>
 
-									<!-- Software -->
+									<!-- Category & Status -->
 									<div>
-										<dt class="font-medium text-slate-400">Software</dt>
-										<dd class="text-slate-400 text-[10px] wrap-break-word">
-											{model.system.software.framework}
+										<dt class="font-medium text-slate-400">Category</dt>
+										<dd class="text-slate-200">
+											{hw.system.system_category}
+											<span class="ml-1 text-slate-400">({hw.system.system_availability_status})</span>
 										</dd>
 									</div>
 								</dl>
@@ -285,8 +274,8 @@
 								<button
 									type="button"
 									class="mt-3 w-full rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
-									style="background-color: {model.color};"
-									aria-label="View benchmark report for {model.system.system_name}"
+									style="background-color: {hw.color};"
+									aria-label="View benchmark report for {hw.system.system_name}"
 								>
 									View Benchmark Report
 								</button>

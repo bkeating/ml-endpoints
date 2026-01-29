@@ -4,134 +4,179 @@
 	 *
 	 * This page demonstrates:
 	 * - Two-column layout with sticky sidebar for chart filters
-	 * - Synchronous data loading from local JSON
+	 * - Synchronous data loading from normalized JSON structure
 	 * - Reactive filtering with $derived() for visibility toggles
 	 * - Component composition for maintainable, skinny page files
 	 */
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
-	import { isModelVisible } from '$lib/stores/chartSettings.svelte.js';
-	import { gpuColors } from '$lib/data/placeholders.js';
+	import { isSystemVisible } from '$lib/stores/chartSettings.svelte.js';
 
-	// Import benchmark data from local JSON
-	import gtcData from './data.json';
+	// Import normalized benchmark data from local JSON
+	import endpointsData from './endpoints-benchmark-data.json';
 
 	// ============================================================================
 	// DATA TRANSFORMATION
 	// ============================================================================
 
 	/**
-	 * Transform JSON benchmark data into chart-ready format.
-	 * Each model gets its points array mapped from measurements.
+	 * Build Pareto curves from normalized endpoints data.
+	 * Joins submissions with their systems, models, and runs.
+	 * @param {typeof endpointsData} data - The endpoints benchmark data
+	 * @returns {Array<{id: string, name: string, color: string, system: Object, model: Object, runs: Array}>}
 	 */
-	const baseModels = gtcData.benchmarks.map((benchmark) => {
-		const system = gtcData.systems[benchmark.system_id];
-		return {
-			id: benchmark.system_id,
-			name: system?.system_name ?? benchmark.system_id,
-			color: gpuColors[benchmark.system_id] ?? '#64748b',
-			measurements: benchmark.measurements
-		};
-	});
+	function buildParetoCurves(data) {
+		return data.submissions.map((submission) => {
+			const system = data.systems.find((s) => s.id === submission.system_id);
+			const model = data.models.find((m) => m.model_id === submission.model_id);
+			const runs = data.runs
+				.filter((r) => r.submission_id === submission.submission_id)
+				.sort((a, b) => a.concurrency - b.concurrency);
+
+			return {
+				id: submission.submission_id,
+				systemId: submission.system_id,
+				name: system?.system_name ?? submission.submission_id,
+				color: system?.color ?? '#64748b',
+				system,
+				model,
+				runs
+			};
+		});
+	}
+
+	// Build all Pareto curves from the data
+	const paretoCurves = buildParetoCurves(endpointsData);
+
+	// Chart configurations from meta
+	const chartConfigs = endpointsData.meta.charts;
 
 	// ============================================================================
 	// CHART DATA STRUCTURES
 	// ============================================================================
 
 	/**
-	 * Chart 1: TTFT vs #Users (End-to-end Latency)
-	 * X = concurrent_users, Y = ttft_ms_p9x (converted to seconds)
+	 * Chart 1: Concurrency vs TTFT (End-to-end Latency)
+	 * X = concurrency, Y = ttft (P99 in seconds)
 	 */
-	let ttftVsUsersChart = $derived({
-		title: 'End-to-end Latency',
-		subtitle:
-			'How quickly users receive their first response as concurrent load increases. Lower curves indicate systems that maintain fast initial responses even under heavy load.',
-		xLabel: '#Users',
-		yLabel: 'Time to First Token (ms)',
-		models: baseModels
-			.map((m) => ({
-				id: m.id,
-				name: m.name,
-				color: m.color,
-				points: m.measurements.map((p) => ({
-					x: p.concurrent_users,
-					y: p.ttft_ms_p9x,
-					meta: { systemId: m.id, ...p }
+	let concurrencyVsTtftChart = $derived({
+		title: 'End-to-End Latency',
+		subtitle: 'How quickly users receive their first response as concurrent load increases. Lower curves indicate better responsiveness under load.',
+		xLabel: chartConfigs.pareto_concurrency_ttft.x_axis.label,
+		yLabel: chartConfigs.pareto_concurrency_ttft.y_axis.label,
+		xScale: chartConfigs.pareto_concurrency_ttft.x_axis.scale,
+		yScale: chartConfigs.pareto_concurrency_ttft.y_axis.scale,
+		models: paretoCurves
+			.filter((curve) => isSystemVisible(curve.systemId))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.ttft,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
 				}))
 			}))
-			.filter((m) => isModelVisible(m.id))
 	});
 
 	/**
-	 * Chart 2: System Throughput vs Interactivity (TPOT-related)
-	 * X = interactivity_tokens_sec_user, Y = system_throughput_tokens_sec
+	 * Chart 2: Time Per Output Token (TPOT)
+	 * X = tps_per_user (interactivity), Y = system_tps
 	 */
 	let throughputVsInteractivityChart = $derived({
 		title: 'Time Per Output Token (TPOT)',
-		subtitle:
-			'The trade-off between total system capacity and per-user token delivery speed. Points closer to the upper-right represent superior systems.',
-		xLabel: 'Interactivity (tok/s/user)',
-		yLabel: 'System Throughput (tok/s)',
-		models: baseModels
-			.map((m) => ({
-				id: m.id,
-				name: m.name,
-				color: m.color,
-				points: m.measurements.map((p) => ({
-					x: p.interactivity_tokens_sec_user,
-					y: p.system_throughput_tokens_sec,
-					meta: { systemId: m.id, ...p }
+		subtitle: 'Trade-off between system capacity and per-user token delivery speed. Upper-right positioning indicates superior throughput-interactivity balance.',
+		xLabel: chartConfigs.pareto_throughput_interactivity.x_axis.label,
+		yLabel: chartConfigs.pareto_throughput_interactivity.y_axis.label,
+		xScale: chartConfigs.pareto_throughput_interactivity.x_axis.scale,
+		yScale: chartConfigs.pareto_throughput_interactivity.y_axis.scale,
+		models: paretoCurves
+			.filter((curve) => isSystemVisible(curve.systemId))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.tps_per_user,
+					y: run.system_tps,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
 				}))
 			}))
-			.filter((m) => isModelVisible(m.id))
 	});
 
 	/**
-	 * Chart 3: Normalized Throughput vs #Users (Per-GPU Efficiency)
-	 * X = concurrent_users, Y = normalized_throughput
+	 * Chart 3: System Throughput Scaling
+	 * X = concurrency, Y = system_tps
 	 */
-	let normalizedThroughputVsUsersChart = $derived({
-		title: 'Per-GPU Efficiency',
-		subtitle:
-			'How effectively each accelerator maintains performance under growing demand. Flatter curves reveal hardware that scales gracefully.',
-		xLabel: '#Users',
-		yLabel: 'Normalized Throughput (tok/s/gpu)',
-		models: baseModels
-			.map((m) => ({
-				id: m.id,
-				name: m.name,
-				color: m.color,
-				points: m.measurements.map((p) => ({
-					x: p.concurrent_users,
-					y: p.normalized_throughput,
-					meta: { systemId: m.id, ...p }
+	let concurrencyVsThroughputChart = $derived({
+		title: 'Throughput Scaling',
+		subtitle: 'How system throughput scales with concurrent users. Flatter elevated curves demonstrate better scaling under load.',
+		xLabel: chartConfigs.pareto_concurrency_throughput.x_axis.label,
+		yLabel: chartConfigs.pareto_concurrency_throughput.y_axis.label,
+		xScale: chartConfigs.pareto_concurrency_throughput.x_axis.scale,
+		yScale: chartConfigs.pareto_concurrency_throughput.y_axis.scale,
+		models: paretoCurves
+			.filter((curve) => isSystemVisible(curve.systemId))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.system_tps,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
 				}))
 			}))
-			.filter((m) => isModelVisible(m.id))
 	});
 
 	/**
-	 * Chart 4: Normalized Throughput vs TTFT
-	 * X = ttft_ms_p9x (converted to seconds), Y = normalized_throughput
+	 * Chart 4: Time to First Token (TTFT)
+	 * X = ttft, Y = system_tps
 	 */
-	let normalizedThroughputVsTTFTChart = $derived({
-		title: 'Time to First Token',
-		subtitle:
-			'Balancing per-accelerator output against initial response time constraints. The Pareto frontier highlights configurations that maximize token generation per GPU.',
-		xLabel: 'Time to First Token (ms)',
-		yLabel: 'Normalized Throughput (tok/s/gpu)',
-		models: baseModels
-			.map((m) => ({
-				id: m.id,
-				name: m.name,
-				color: m.color,
-				points: m.measurements.map((p) => ({
-					x: p.ttft_ms_p9x,
-					y: p.normalized_throughput,
-					meta: { systemId: m.id, ...p }
+	let throughputVsTtftChart = $derived({
+		title: 'Time to First Token (TTFT)',
+		subtitle: 'Balancing throughput against initial response time. The Pareto frontier highlights optimal configurations.',
+		xLabel: chartConfigs.pareto_throughput_ttft.x_axis.label,
+		yLabel: chartConfigs.pareto_throughput_ttft.y_axis.label,
+		xScale: chartConfigs.pareto_throughput_ttft.x_axis.scale,
+		yScale: chartConfigs.pareto_throughput_ttft.y_axis.scale,
+		models: paretoCurves
+			.filter((curve) => isSystemVisible(curve.systemId))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.ttft,
+					y: run.system_tps,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
 				}))
 			}))
-			.filter((m) => isModelVisible(m.id))
 	});
 </script>
 
@@ -158,17 +203,17 @@
 
 			<!-- Main content area - 2x2 grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-				<!-- Chart 1: TTFT vs #Users (Step Chart) -->
-				<GtcChartSection chart={ttftVsUsersChart} lineType="step" />
+				<!-- Chart 1: Concurrency vs TTFT -->
+				<GtcChartSection chart={concurrencyVsTtftChart} lineType="step" />
 
-				<!-- Chart 2: System throughput vs Interactivity (Line Chart) -->
+				<!-- Chart 2: System Throughput vs Interactivity -->
 				<GtcChartSection chart={throughputVsInteractivityChart} lineType="line" />
 
-				<!-- Chart 3: Normalized throughput vs #Users (Step Chart) -->
-				<GtcChartSection chart={normalizedThroughputVsUsersChart} lineType="step" />
+				<!-- Chart 3: Concurrency vs System Throughput -->
+				<GtcChartSection chart={concurrencyVsThroughputChart} lineType="step" />
 
-				<!-- Chart 4: Normalized throughput vs TTFT (Line Chart) -->
-				<GtcChartSection chart={normalizedThroughputVsTTFTChart} lineType="line" />
+				<!-- Chart 4: System Throughput vs TTFT -->
+				<GtcChartSection chart={throughputVsTtftChart} lineType="line" />
 			</div>
 		</div>
 
