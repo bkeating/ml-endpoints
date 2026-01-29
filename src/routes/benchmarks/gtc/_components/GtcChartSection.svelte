@@ -18,13 +18,13 @@
 </script>
 
 <!-- Default layout: title/subtitle above, full-width chart below -->
-<section class="mb-3 w-full px-3">
+<section class="mb-4 w-full">
 	<h2
-		class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-3xl dark:text-slate-200"
+		class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-2xl dark:text-slate-200"
 	>
 		{chart.title}
 	</h2>
-	<p class="mb-4 text-sm text-slate-500 dark:text-slate-400">
+	<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-balance">
 		{chart.subtitle}
 	</p>
 

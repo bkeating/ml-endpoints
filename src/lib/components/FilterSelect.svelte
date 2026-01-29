@@ -33,7 +33,7 @@
   {#if label}
 	<label
 		for={id}
-      class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+      class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
     >
       {label}
     </label>
@@ -42,7 +42,7 @@
 		{id}
 		{value}
 		onchange={handleChange}
-		class="dm-mono h-9 rounded-md border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+		class="dm-mono h-9 rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
 		aria-label={label}
 	>
 		{#each options as option (option.id)}

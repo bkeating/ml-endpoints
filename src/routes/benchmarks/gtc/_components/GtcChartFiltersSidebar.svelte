@@ -20,6 +20,13 @@
 	// Reactive getters - these automatically update when store values change
 	let currentModel = $derived(getModel());
 
+	// Benchmark category state and options
+	let benchmarkCategory = $state('performance');
+	const benchmarkCategoryOptions = [
+		{ id: 'performance', label: 'Performance (MLPerf)' },
+		{ id: 'risk', label: 'Risk & Reliability (AIRR)' }
+	];
+
 	// Track which systems have been manually collapsed (expanded by default when visible)
 	let collapsedSystems = $state(/** @type {Set<string>} */ (new Set()));
 
@@ -62,11 +69,33 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/80 p-4 shadow-lg backdrop-blur-sm lg:block dark:border-slate-700 dark:bg-slate-800/60"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800/90 p-4 shadow-lg backdrop-blur-sm lg:block"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-6">
-		<!-- Model Select (at top) -->
+		<!-- Benchmark Category -->
+		<fieldset class="flex flex-col gap-1">
+			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase">
+				Benchmark Category
+			</legend>
+			<div class="mt-1 flex flex-col rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
+				{#each benchmarkCategoryOptions as option, i (option.id)}
+					<label class="dm-mono flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkCategory === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
+						<input
+							type="radio"
+							name="benchmarkCategory"
+							value={option.id}
+							checked={benchmarkCategory === option.id}
+							onchange={() => (benchmarkCategory = option.id)}
+							class="h-4 w-4 border-slate-600 text-emerald-600 focus:ring-emerald-500"
+						/>
+						<span class="text-sm text-slate-300">{option.label}</span>
+					</label>
+				{/each}
+			</div>
+		</fieldset>
+
+		<!-- Model Select -->
 		<div class="w-full">
 			<FilterSelect
 				id="gtc-model-select"
@@ -81,11 +110,11 @@
 
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
-			<h4
-				class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
-			>
-				Systems
-			</h4>
+		<h4
+			class="mb-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+		>
+			Systems
+		</h4>
 			<div class="flex flex-col gap-0.5">
 				{#each hardwareModels as model (model.id)}
 					{@const visible = isModelVisible(model.id)}
@@ -95,7 +124,7 @@
 						style="background-color: {expanded ? model.color + '08' : 'transparent'}; border-color: {expanded ? model.color + '40' : 'transparent'};"
 					>
 						<!-- Legend Row with Toggle and Expand Controls -->
-						<div class="flex w-full items-center gap-1 rounded-lg transition-all duration-200 {expanded ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-800'}">
+						<div class="flex w-full items-center gap-1 rounded-lg transition-all duration-200 {expanded ? '' : 'hover:bg-slate-700'}">
 							<!-- Visibility Toggle Button -->
 							<button
 								type="button"
@@ -110,8 +139,8 @@
 								></span>
 								<span
 									class="flex-1 text-sm font-medium transition-opacity duration-200 {visible
-										? 'text-slate-800 dark:text-slate-200'
-										: 'text-slate-400 line-through dark:text-slate-500'}"
+										? 'text-slate-200'
+										: 'text-slate-500 line-through'}"
 								>
 									{model.name}
 								</span>
@@ -121,7 +150,7 @@
 								<button
 									type="button"
 									onclick={() => toggleCollapsed(model.id)}
-									class="mr-2 p-1 rounded transition-colors hover:bg-slate-200 dark:hover:bg-slate-700"
+									class="mr-2 p-1 rounded transition-colors hover:bg-slate-700"
 									aria-expanded={expanded}
 									aria-label="{expanded ? 'Collapse' : 'Expand'} {model.name} details"
 								>
@@ -141,10 +170,10 @@
 							>
 								<!-- System Header -->
 								<div class="mb-2">
-									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
+									<p class="font-semibold text-slate-200 leading-tight text-[11px]">
 										{model.system.system_name}
 									</p>
-									<p class="text-slate-500 dark:text-slate-400 text-[10px]">
+									<p class="text-slate-400 text-[10px]">
 										{model.system.submitter} / {model.system.division}
 									</p>
 								</div>
@@ -153,36 +182,36 @@
 								<dl class="space-y-1.5 text-[11px]">
 									<!-- Inference Framework -->
 									<div>
-										<dt class="font-medium text-slate-600 dark:text-slate-400">Framework</dt>
-										<dd class="text-slate-800 dark:text-slate-200">{model.system.inference_framework}</dd>
+										<dt class="font-medium text-slate-400">Framework</dt>
+										<dd class="text-slate-200">{model.system.inference_framework}</dd>
 									</div>
 
 									<!-- Accelerator -->
 									<div>
-										<dt class="font-medium text-slate-600 dark:text-slate-400">Accelerator</dt>
-										<dd class="text-slate-800 dark:text-slate-200">
+										<dt class="font-medium text-slate-400">Accelerator</dt>
+										<dd class="text-slate-200">
 											{model.system.accelerator.count}x {model.system.accelerator.model_name}
 										</dd>
-										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+										<dd class="text-slate-400 text-[10px]">
 											{model.system.accelerator.memory_capacity} {model.system.accelerator.memory_configuration} | {model.system.accelerator.memory_bandwidth}
 										</dd>
 									</div>
 
 									<!-- Host -->
 									<div>
-										<dt class="font-medium text-slate-600 dark:text-slate-400">Host</dt>
-										<dd class="text-slate-800 dark:text-slate-200">
+										<dt class="font-medium text-slate-400">Host</dt>
+										<dd class="text-slate-200">
 											{model.system.host.processors_per_node}x {model.system.host.processor_model_name}
 										</dd>
-										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+										<dd class="text-slate-400 text-[10px]">
 											{model.system.host.memory_capacity} RAM
 										</dd>
 									</div>
 
 									<!-- Software -->
 									<div>
-										<dt class="font-medium text-slate-600 dark:text-slate-400">Software</dt>
-										<dd class="text-slate-500 dark:text-slate-400 text-[10px] wrap-break-word">
+										<dt class="font-medium text-slate-400">Software</dt>
+										<dd class="text-slate-400 text-[10px] wrap-break-word">
 											{model.system.software.framework}
 										</dd>
 									</div>

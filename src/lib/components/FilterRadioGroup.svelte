@@ -22,12 +22,12 @@
 
 <fieldset class="flex flex-col gap-1">
 	<legend
-		class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+		class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
 	>
 		{legend}
 	</legend>
 	<div
-		class="mt-1 flex h-9 gap-4 rounded-lg border border-slate-300 bg-slate-50 px-3 dark:border-slate-600 dark:bg-slate-800"
+		class="mt-1 flex h-9 gap-4 rounded-lg border border-slate-600 bg-slate-800 px-3"
 		role="radiogroup"
 		aria-label={ariaLabel}
 	>
@@ -39,9 +39,9 @@
 					value={option.id}
 					checked={value === option.id}
 					onchange={() => onchange(option.id)}
-					class="h-4 w-4 border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600"
+					class="h-4 w-4 border-slate-600 text-emerald-600 focus:ring-emerald-500"
 				/>
-				<span class="text-sm text-slate-700 dark:text-slate-300">{option.label}</span>
+				<span class="text-sm text-slate-300">{option.label}</span>
 			</label>
 		{/each}
 	</div>

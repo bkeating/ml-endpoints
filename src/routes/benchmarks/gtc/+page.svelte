@@ -132,32 +132,28 @@
 </script>
 
 <!-- Side-by-side layout with filters sidebar and charts -->
-<div class="mx-auto max-w-7xl px-3 pb-3 pt-9">
+<div class="mx-auto max-w-7xl pb-3 md:pt-9 px-3">
 	<div class="flex flex-col gap-6 lg:flex-row">
 		<!-- Charts area -->
 		<div class="min-w-0 flex-1">
 			<!-- Small page hero -->
-			<header class="mb-8 px-3 shadow-lg rounded-lg p-4 bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700" aria-label="Page introduction">
-				<p
-					class="font-instrument-sans text-xs font-medium uppercase tracking-widest text-slate-500 dark:text-slate-400"
-				>
-					Benchmark dashboard
-				</p>
+			<header class="mb-12 md:mb-12" aria-label="Page introduction">
 				<h1
-					class="font-instrument-sans mt-1 text-2xl font-semibold tracking-tight text-slate-800 md:text-3xl dark:text-slate-100"
-				>
-					MLCommons Endpoints
-				</h1>
+				class="instrument-serif-regular-italic mt-8 text-4xl md:text-5xl font-bold text-balance text-slate-700 dark:text-white md:mt-0"
+			>
+      MLCommons <br />
+				<span class="mr-1 mb-2 inline-block h-7 w-7 rounded-full bg-[#CCEBD4]"></span>
+				Benchmarks
+			</h1>
 				<p
-					class="font-instrument-sans mt-2 max-w-2xl leading-relaxed text-slate-600 dark:text-slate-400 text-md"
+					class="font-instrument-sans mt-2 max-w-lg leading-relaxed text-slate-600 dark:text-slate-400 text-md text-pretty md:text-balance"
 				>
-					An easy-to-use dashboard for complex analysis of system configurations. Compare platform
-					performance of models, systems, and services.
+				Compare complex analysis of system configurations and results for MLPerf and AIRR benchmarks.
 				</p>
 			</header>
 
 			<!-- Main content area - 2x2 grid layout -->
-			<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Chart 1: TTFT vs #Users (Step Chart) -->
 				<GtcChartSection chart={ttftVsUsersChart} lineType="step" />
 

@@ -12,7 +12,7 @@
 		formatYAxis,
 		calculateDomain,
 		generateClipPathId
-	} from '../../pareto-charts/_components/chartUtils.js';
+	} from '../../../pareto-charts/_components/chartUtils.js';
 	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
 
 	/**
@@ -223,7 +223,7 @@
 					x={-innerHeight / 2}
 					y="-50"
 					text-anchor="middle"
-					class="fill-slate-700 text-xs font-medium dark:fill-slate-300"
+					class="fill-slate-700 font-semibold font-instrument-sans-bold dark:fill-slate-300"
 				>
 					{yAxisLabel}
 				</text>
@@ -256,7 +256,7 @@
 					x={innerWidth / 2}
 					y="45"
 					text-anchor="middle"
-					class="fill-slate-700 text-xs font-medium dark:fill-slate-300"
+					class="fill-slate-700 font-semibold font-instrument-sans-bold dark:fill-slate-300"
 				>
 					{xAxisLabel}
 				</text>

@@ -136,6 +136,9 @@ export function setShowParetoIdealLine(show) {
 /** @type {boolean} */
 let mobileFiltersOpen = $state(false);
 
+/** @type {boolean} */
+let hasFilters = $state(false);
+
 /**
  * Get the mobile filters panel open state
  * @returns {boolean}
@@ -166,6 +169,22 @@ export function closeMobileFilters() {
 	mobileFiltersOpen = false;
 }
 
+/**
+ * Get whether the current page has filters
+ * @returns {boolean}
+ */
+export function getHasFilters() {
+	return hasFilters;
+}
+
+/**
+ * Set whether the current page has filters (call from pages with filter sidebars)
+ * @param {boolean} value
+ */
+export function setHasFilters(value) {
+	hasFilters = value;
+}
+
 // ============================================================================
 // RESET
 // ============================================================================
@@ -186,4 +205,5 @@ export function resetPageSettings() {
 
 	// Mobile filters
 	mobileFiltersOpen = false;
+	hasFilters = false;
 }

@@ -41,7 +41,7 @@
 		getHideLabels,
 		toggleLabels
 	} from '$lib/stores/chartSettings.svelte.js';
-	import { getMobileFiltersOpen, closeMobileFilters } from '$lib/stores/pageSettings.svelte.js';
+	import { getMobileFiltersOpen, closeMobileFilters, setHasFilters } from '$lib/stores/pageSettings.svelte.js';
 	import { allGpuConfigs, gpuNames, gpuColors } from '$lib/data/placeholders.js';
 
 	// Reactive getters - these automatically update when store values change
@@ -76,6 +76,8 @@
 
 	// Observe sentinel to detect sticky state
 	onMount(() => {
+		setHasFilters(true);
+
 		if (!sentinelEl) return;
 
 		const observer = new IntersectionObserver(
@@ -87,7 +89,10 @@
 		);
 
 		observer.observe(sentinelEl);
-		return () => observer.disconnect();
+		return () => {
+			setHasFilters(false);
+			observer.disconnect();
+		};
 	});
 </script>
 
@@ -176,18 +181,18 @@
 					type="checkbox"
 					checked={hideNonOptimal}
 					onchange={toggleNonOptimal}
-					class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800"
+					class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
 				/>
-				<span class="text-sm text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
+				<span class="text-sm text-slate-300">Hide Non-Optimal</span>
 			</label>
 			<label class="flex cursor-pointer items-center gap-3">
 				<input
 					type="checkbox"
 					checked={hideLabels}
 					onchange={toggleLabels}
-					class="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800"
+					class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-600 focus:ring-emerald-500"
 				/>
-				<span class="text-sm text-slate-700 dark:text-slate-300">Hide Labels</span>
+				<span class="text-sm text-slate-300">Hide Labels</span>
 			</label>
 		</div>
 
@@ -278,7 +283,7 @@
 
 				<div class="flex shrink-0 flex-col gap-1">
 					<span
-						class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+						class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
 					>
 						Advanced
 					</span>
@@ -286,8 +291,8 @@
 						type="button"
 						onclick={() => (settingsOpen = !settingsOpen)}
 						class="flex h-9 w-9 items-center justify-center rounded-md border transition-colors {settingsOpen
-							? 'border-yellow-500 bg-yellow-500 hover:bg-yellow-600 dark:border-yellow-500 dark:bg-yellow-500 dark:hover:bg-yellow-600'
-							: 'border-slate-300 bg-white hover:bg-slate-100 dark:border-slate-600 dark:bg-slate-700 dark:hover:bg-slate-600'}"
+							? 'border-yellow-500 bg-yellow-500 hover:bg-yellow-600'
+							: 'border-slate-600 bg-slate-700 hover:bg-slate-600'}"
 						aria-expanded={settingsOpen}
 						aria-controls="settings-panel"
 						aria-label="Toggle advanced chart settings"
@@ -297,7 +302,7 @@
 							name="AdjustmentsCog"
 							class="h-5 w-5 transition-colors {settingsOpen
 								? 'text-white'
-								: 'text-slate-600 dark:text-slate-300'}"
+								: 'text-slate-300'}"
 						/>
 					</button>
 				</div>
@@ -323,18 +328,18 @@
 									type="checkbox"
 									checked={hideNonOptimal}
 									onchange={toggleNonOptimal}
-									class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
+									class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-yellow-600 focus:ring-yellow-500"
 								/>
-								<span class="text-sm text-slate-700 dark:text-slate-300">Hide Non-Optimal</span>
+								<span class="text-sm text-slate-300">Hide Non-Optimal</span>
 							</label>
 							<label class="flex cursor-pointer items-center gap-2">
 								<input
 									type="checkbox"
 									checked={hideLabels}
 									onchange={toggleLabels}
-									class="h-4 w-4 rounded border-slate-300 text-yellow-600 focus:ring-yellow-500 dark:border-slate-600 dark:bg-slate-800"
+									class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-yellow-600 focus:ring-yellow-500"
 								/>
-								<span class="text-sm text-slate-700 dark:text-slate-300">Hide Labels</span>
+								<span class="text-sm text-slate-300">Hide Labels</span>
 							</label>
 						</div>
 

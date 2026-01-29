@@ -66,7 +66,7 @@
 
 <div class="flex min-w-36 flex-col gap-1" bind:this={dropdownRef}>
 	<span
-		class="dm-mono text-xs font-medium tracking-wide text-slate-300 uppercase dark:text-slate-400"
+		class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
 		id={labelId}
 	>
 		{label}
@@ -75,7 +75,7 @@
 		<button
 			type="button"
 			onclick={() => (isOpen = !isOpen)}
-			class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-300 bg-slate-50 px-3 text-sm text-slate-900 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+			class="flex h-9 w-full items-center justify-between gap-2 rounded-md border border-slate-600 bg-slate-800 px-3 text-sm text-slate-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
 			aria-expanded={isOpen}
 			aria-haspopup="listbox"
 			aria-labelledby={labelId}
@@ -106,7 +106,7 @@
 
 		{#if isOpen}
 			<div
-				class="absolute top-full left-0 z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-200 bg-slate-50 shadow-lg dark:border-slate-600 dark:bg-slate-800"
+				class="absolute top-full left-0 z-50 mt-1 max-h-64 w-full min-w-56 overflow-auto rounded-md border border-slate-600 bg-slate-800 shadow-lg"
 				role="listbox"
 				aria-multiselectable="true"
 			>
@@ -117,7 +117,7 @@
 						role="option"
 						aria-selected={selected}
 						onclick={() => onToggle(option.id)}
-						class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-700 {selected
+						class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-slate-700 {selected
 							? 'rounded-sm'
 							: ''}"
 						style={selected ? `background-color: ${option.color}20;` : ''}
@@ -130,8 +130,8 @@
 						></span>
 						<span
 							class="truncate {selected
-								? 'font-medium text-slate-900 dark:text-slate-100'
-								: 'text-slate-700 dark:text-slate-300'}"
+								? 'font-medium text-slate-100'
+								: 'text-slate-300'}"
 						>
 							{option.name}
 						</span>
