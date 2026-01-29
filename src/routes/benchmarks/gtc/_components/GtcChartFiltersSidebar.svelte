@@ -3,39 +3,75 @@
 	 * GTC Chart Filters Sidebar - Sidebar component for chart filtering.
 	 *
 	 * This component provides:
-	 * - Model filter (at top)
+	 * - Model, Processor, Accelerator, Organization filters (selects)
 	 * - Systems selection with inline accordion details
 	 * - Smooth slide transitions for expand/collapse
 	 * - Sticky positioning for easy access during scroll
 	 */
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
-	import GridIcon from '$lib/components/icons/Grid.svelte';
-	import GraphIcon from '$lib/components/icons/Graph.svelte';
 	import { isSystemVisible, toggleSystem } from '$lib/stores/chartSettings.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
-	// Benchmark category state and options
-	let benchmarkCategory = $state('performance');
-	const benchmarkCategoryOptions = [
-		{ id: 'performance', label: 'Performance (MLPerf)' },
-		{ id: 'risk', label: 'Risk & Reliability (AIRR)' }
+	// ============================================================================
+	// FILTER OPTIONS
+	// ============================================================================
+
+	// Model filter options (LLM models)
+	const modelOptions = [
+		{ id: 'all', label: 'All Models' },
+		{ id: 'deepseek-r1', label: 'deepseek-r1' },
+		{ id: 'dlrm-v2-99', label: 'dlrm-v2-99' },
+		{ id: 'dlrm-v2-99.9', label: 'dlrm-v2-99.9' }
 	];
 
-	// Benchmark type state and options
-	let benchmarkType = $state('all');
-	const benchmarkTypeOptions = [
-		{ id: 'all', label: 'All' },
-		{ id: 'benchmark1', label: 'Benchmark 1' },
-		{ id: 'benchmark2', label: 'Benchmark 2' }
+	// Processor filter options
+	const processorOptions = [
+		{ id: 'all', label: 'All Processors' },
+		{ id: 'amd-epyc-9534', label: 'AMD EPYC 9534' },
+		{ id: 'amd-epyc-9655', label: 'AMD EPYC 9655' },
+		{ id: 'amd-epyc-9755', label: 'AMD EPYC 9755' },
+		{ id: 'intel-xeon-platinum-84', label: 'Intel(R) Xeon(R) Platinum 84' },
+		{ id: 'intel-xeon-platinum-85', label: 'Intel(R) Xeon(R) Platinum 85' },
+		{ id: 'intel-xeon-6787p', label: 'Intel(R) Xeon(R) 6787P' },
+		{ id: 'nvidia-grace-cpu', label: 'Nvidia Grace CPU' }
 	];
 
-	// Data display mode state (grid or graph)
-	let dataDisplay = $state('graph');
+	// Accelerator filter options
+	const acceleratorOptions = [
+		{ id: 'all', label: 'All Accelerators' },
+		{ id: 'amd-mi300x-192gb', label: 'AMD Instinct MI300X 192GB' },
+		{ id: 'amd-mi325x-256gb', label: 'AMD Instinct MI325X 256GB' },
+		{ id: 'nvidia-b200-sxm-180gb', label: 'NVIDIA B200-SXM-180GB' },
+		{ id: 'nvidia-gb200', label: 'NVIDIA GB200' },
+		{ id: 'nvidia-h200-nvl-141gb', label: 'NVIDIA H200-NVL-141GB' },
+		{ id: 'nvidia-h200-sxm-141gb', label: 'NVIDIA H200-SXM-141GB' }
+	];
+
+	// Organization filter options
+	const organizationOptions = [
+		{ id: 'all', label: 'All Organizations' },
+		{ id: 'mangoboost', label: 'MangoBoost' },
+		{ id: 'mitac', label: 'MiTAC' },
+		{ id: 'nvidia', label: 'NVIDIA' },
+		{ id: 'nebius', label: 'Nebius' },
+		{ id: 'oracle', label: 'Oracle' },
+		{ id: 'quanta-cloud', label: 'Quanta_Cloud' }
+	];
+
+	// ============================================================================
+	// FILTER STATE
+	// ============================================================================
+
+	let selectedModel = $state('all');
+	let selectedProcessor = $state('all');
+	let selectedAccelerator = $state('all');
+	let selectedOrganization = $state('all');
 
 	// Track which systems have been manually collapsed (expanded by default when visible)
-	let collapsedSystems = $state(/** @type {Set<string>} */ (new Set()));
+	let collapsedSystems = new SvelteSet();
 
 	/**
 	 * Toggle the collapsed state for a system's details
@@ -47,8 +83,6 @@
 		} else {
 			collapsedSystems.add(id);
 		}
-		// Trigger reactivity by reassigning
-		collapsedSystems = new Set(collapsedSystems);
 	}
 
 	/**
@@ -76,92 +110,86 @@
 	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800/90 p-4 shadow-lg backdrop-blur-sm lg:block"
 	aria-label="Chart filters sidebar"
 >
-	<div class="flex flex-col gap-6">
-		<!-- Benchmark Category -->
-		<fieldset class="flex flex-col gap-1">
-			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase mb-1">
-				Benchmark Category
-			</legend>
-			<div class="mt-1 flex flex-col rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
-				{#each benchmarkCategoryOptions as option, i (option.id)}
-					<label class=" flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkCategory === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
-						<input
-							type="radio"
-							name="benchmarkCategory"
-							value={option.id}
-							checked={benchmarkCategory === option.id}
-							onchange={() => (benchmarkCategory = option.id)}
-							class="h-4 w-4 border-slate-600 text-emerald-600 focus:ring-emerald-500"
-						/>
-						<span class="text-sm text-slate-300">{option.label}</span>
-					</label>
-				{/each}
-			</div>
-		</fieldset>
-
-		<!-- Benchmark Type -->
-		<fieldset class="flex flex-col gap-1">
-			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase mb-1">
-				Benchmark Type
-			</legend>
-			<div class="mt-1 flex flex-col rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
-				{#each benchmarkTypeOptions as option, i (option.id)}
-					<label class=" flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkType === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
-						<input
-							type="radio"
-							name="benchmarkType"
-							value={option.id}
-							checked={benchmarkType === option.id}
-							onchange={() => (benchmarkType = option.id)}
-							class="h-4 w-4 border-slate-600 text-emerald-600 focus:ring-emerald-500"
-						/>
-						<span class="text-sm text-slate-300">{option.label}</span>
-					</label>
-				{/each}
-			</div>
-		</fieldset>
-
-		<!-- Data Display Toggle -->
-		<fieldset class="flex flex-col gap-1">
-			<legend class="dm-mono text-xs tracking-wide text-slate-400 uppercase mb-1">
-				Data Display
-			</legend>
-			<div class="mt-1 flex rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
-				<button
-					type="button"
-					onclick={() => (dataDisplay = 'grid')}
-					class="flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-2 transition-colors {dataDisplay === 'grid' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'}"
-					aria-pressed={dataDisplay === 'grid'}
-					aria-label="Grid view"
-				>
-					<GridIcon class="h-4 w-4" />
-					<span class="text-sm">Grid</span>
-				</button>
-				<button
-					type="button"
-					onclick={() => (dataDisplay = 'graph')}
-					class="flex flex-1 cursor-pointer items-center justify-center gap-2 border-l border-slate-600 px-3 py-2 transition-colors {dataDisplay === 'graph' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'}"
-					aria-pressed={dataDisplay === 'graph'}
-					aria-label="Graph view"
-				>
-					<GraphIcon class="h-4 w-4" />
-					<span class="text-sm">Graph</span>
-				</button>
-			</div>
-		</fieldset>
-
+	<div class="flex flex-col gap-5">
 		<!-- Model Select -->
-		<!-- <div class="w-full">
-			<FilterSelect
-				id="gtc-model-select"
-				label="Model"
-				value={currentModel}
-				options={modelOptions}
-				onchange={(v) => setModel(/** @type {any} */ (v))}
-				minWidth="w-full"
-				maxWidth=""
-			/>
-		</div> -->
+		<div class="flex flex-col gap-1.5">
+			<label
+				for="model-select"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+			>
+				Model
+			</label>
+			<select
+				id="model-select"
+				bind:value={selectedModel}
+				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				aria-label="Select LLM model"
+			>
+				{#each modelOptions as option (option.id)}
+					<option value={option.id}>{option.label}</option>
+				{/each}
+			</select>
+		</div>
+
+		<!-- Processor Select -->
+		<div class="flex flex-col gap-1.5">
+			<label
+				for="processor-select"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+			>
+				Processor
+			</label>
+			<select
+				id="processor-select"
+				bind:value={selectedProcessor}
+				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				aria-label="Select processor"
+			>
+				{#each processorOptions as option (option.id)}
+					<option value={option.id}>{option.label}</option>
+				{/each}
+			</select>
+		</div>
+
+		<!-- Accelerator Select -->
+		<div class="flex flex-col gap-1.5">
+			<label
+				for="accelerator-select"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+			>
+				Accelerator
+			</label>
+			<select
+				id="accelerator-select"
+				bind:value={selectedAccelerator}
+				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				aria-label="Select accelerator"
+			>
+				{#each acceleratorOptions as option (option.id)}
+					<option value={option.id}>{option.label}</option>
+				{/each}
+			</select>
+		</div>
+
+		<!-- Organization Select -->
+		<div class="flex flex-col gap-1.5">
+			<label
+				for="organization-select"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+			>
+				Organization
+			</label>
+			<select
+				id="organization-select"
+				bind:value={selectedOrganization}
+				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				aria-label="Select organization"
+			>
+				{#each organizationOptions as option (option.id)}
+					<option value={option.id}>{option.label}</option>
+				{/each}
+			</select>
+		</div>
 
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>

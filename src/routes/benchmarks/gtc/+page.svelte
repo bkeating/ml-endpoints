@@ -197,8 +197,8 @@
 				<p
 					class="font-instrument-sans mt-2 max-w-lg leading-relaxed text-slate-600 dark:text-slate-400 text-md text-pretty md:text-balance"
 				>
-				Compare complex analysis of system configurations and results for MLPerf and AIRR benchmarks.
-				</p>
+        MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations that reveal performance trade-offs at a glance. Compare systems, understand what you're acquiring, and make confident infrastructure decisions.
+      </p>
 			</header>
 
 			<!-- Main content area - 2x2 grid layout -->
