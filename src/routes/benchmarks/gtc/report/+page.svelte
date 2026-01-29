@@ -15,6 +15,7 @@
 	import { page } from '$app/stores';
 	import endpointsData from '../endpoints-benchmark-data.json';
 	import ReportMiniChart from './_components/ReportMiniChart.svelte';
+	import ReportRunsTable from './_components/ReportRunsTable.svelte';
 
 	// ============================================================================
 	// DATA LOADING
@@ -567,28 +568,13 @@
 				</div>
 			</div>
 
-			<!-- Bottom: Full-width Chart/Grid Section -->
+			<!-- Bottom: Full-width Benchmark Runs Table -->
 			<section class="mt-6">
-				<div
-					class="flex aspect-2/1 items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800"
-				>
-					<div class="text-center text-slate-400 dark:text-slate-500">
-						<svg
-							class="mx-auto h-16 w-16"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							stroke-width="1"
-						>
-							<path
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"
-							/>
-						</svg>
-						<p class="mt-2 text-sm font-medium">Chart / Grid</p>
-					</div>
-				</div>
+				<ReportRunsTable
+					runs={reportData.runs}
+					currentRunId={reportData.currentRun?.run_id ?? ''}
+					systemColor={reportData.system?.color ?? '#64748b'}
+				/>
 			</section>
 		{:else}
 			<!-- Loading/Error State -->

@@ -10,6 +10,7 @@
 	 */
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
+	import GtcResultsTable from './_components/GtcResultsTable.svelte';
 	import { isSystemVisible, getSelectedBenchmarkModelId } from '$lib/stores/chartSettings.svelte.js';
 
 	// Import normalized benchmark data from local JSON
@@ -228,6 +229,11 @@
 				<!-- Chart 4: System Throughput vs TTFT -->
 				<GtcChartSection chart={throughputVsTtftChart} lineType="line" />
 			</div>
+
+			<!-- Results Table Section -->
+			<section class="mt-8">
+				<GtcResultsTable />
+			</section>
 		</div>
 
 		<!-- Chart Filters Sidebar (hidden on mobile) -->
