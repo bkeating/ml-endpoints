@@ -415,7 +415,7 @@
 	<!-- Tooltip (source chart - user is hovering here) -->
 	{#if tooltipData}
 		<div
-			class="pointer-events-none absolute z-50 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+			class="pointer-events-none absolute z-50 min-w-48 whitespace-nowrap rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-slate-700 dark:bg-slate-800"
 			style="left: {tooltipPosition.x}px; top: {tooltipPosition.y}px;"
 		>
 			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
@@ -438,7 +438,7 @@
 	<!-- Synced Tooltip (other charts - showing the same run) -->
 	{#if syncedTooltipPoint && syncedTooltipPosition}
 		<div
-			class="pointer-events-none absolute z-50 rounded-lg border px-3 py-2 shadow-lg bg-white dark:bg-slate-800"
+			class="pointer-events-none absolute z-50 min-w-48 whitespace-nowrap rounded-lg border px-3 py-2 shadow-lg bg-white dark:bg-slate-800"
 			style="left: {syncedTooltipPosition.x}px; top: {syncedTooltipPosition.y}px; border-color: {globalHoveredRunInfo?.modelColor ?? '#94a3b8'};"
 		>
 			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
