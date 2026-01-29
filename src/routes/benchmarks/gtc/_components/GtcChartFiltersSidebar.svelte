@@ -12,19 +12,25 @@
 	import { cubicOut } from 'svelte/easing';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
-	import { isSystemVisible, toggleSystem } from '$lib/stores/chartSettings.svelte.js';
+	import {
+		isSystemVisible,
+		toggleSystem,
+		getSelectedBenchmarkModelId,
+		setSelectedBenchmarkModelId
+	} from '$lib/stores/chartSettings.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
 	// ============================================================================
 	// FILTER OPTIONS
 	// ============================================================================
 
-	// Model filter options (LLM models)
+	// Model filter options from JSON data (benchmark models like "Llama 2 70B", "GPT-J 6B")
 	const modelOptions = [
 		{ id: 'all', label: 'All Models' },
-		{ id: 'deepseek-r1', label: 'deepseek-r1' },
-		{ id: 'dlrm-v2-99', label: 'dlrm-v2-99' },
-		{ id: 'dlrm-v2-99.9', label: 'dlrm-v2-99.9' }
+		...endpointsData.models.map((model) => ({
+			id: model.model_id,
+			label: model.model_name
+		}))
 	];
 
 	// Processor filter options
@@ -65,7 +71,9 @@
 	// FILTER STATE
 	// ============================================================================
 
-	let selectedModel = $state('all');
+	// Model selection is managed by the store for cross-component reactivity
+	let selectedModel = $derived(getSelectedBenchmarkModelId());
+
 	let selectedProcessor = $state('all');
 	let selectedAccelerator = $state('all');
 	let selectedOrganization = $state('all');
@@ -121,9 +129,10 @@
 			</label>
 			<select
 				id="model-select"
-				bind:value={selectedModel}
+				value={selectedModel}
+				onchange={(e) => setSelectedBenchmarkModelId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
 				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-				aria-label="Select LLM model"
+				aria-label="Select benchmark model"
 			>
 				{#each modelOptions as option (option.id)}
 					<option value={option.id}>{option.label}</option>

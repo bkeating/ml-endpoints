@@ -135,6 +135,29 @@ export function isSystemVisible(systemId) {
 	return systemVisibility[systemId] ?? false;
 }
 
+// ============================================================================
+// BENCHMARK MODEL FILTER (for filtering submissions by model)
+// ============================================================================
+
+/** @type {number | 'all'} - Selected benchmark model ID or 'all' for no filter */
+let selectedBenchmarkModelId = $state(endpointsData.models[0]?.model_id ?? 'all');
+
+/**
+ * Get the currently selected benchmark model ID
+ * @returns {number | 'all'}
+ */
+export function getSelectedBenchmarkModelId() {
+	return selectedBenchmarkModelId;
+}
+
+/**
+ * Set the selected benchmark model ID
+ * @param {number | 'all'} modelId - Model ID or 'all'
+ */
+export function setSelectedBenchmarkModelId(modelId) {
+	selectedBenchmarkModelId = modelId;
+}
+
 /**
  * Toggle visibility for a specific system
  * @param {string} systemId - System UUID
@@ -229,6 +252,7 @@ export function resetSettings() {
 	modelVisibility = { ...initialVisibility };
 	paretoVisibility = { ...initialParetoVisibility };
 	systemVisibility = { ...initialSystemVisibility };
+	selectedBenchmarkModelId = endpointsData.models[0]?.model_id ?? 'all';
 	hideNonOptimal = false;
 	hideLabels = false;
 }

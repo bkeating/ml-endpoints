@@ -10,7 +10,7 @@
 	 */
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
-	import { isSystemVisible } from '$lib/stores/chartSettings.svelte.js';
+	import { isSystemVisible, getSelectedBenchmarkModelId } from '$lib/stores/chartSettings.svelte.js';
 
 	// Import normalized benchmark data from local JSON
 	import endpointsData from './endpoints-benchmark-data.json';
@@ -51,6 +51,19 @@
 	// Chart configurations from meta
 	const chartConfigs = endpointsData.meta.charts;
 
+	/**
+	 * Filter pareto curves by selected benchmark model.
+	 * When a specific model is selected, only submissions for that model are shown.
+	 * This prevents duplicate curves when a system has multiple submissions (one per model).
+	 */
+	let filteredParetoCurves = $derived.by(() => {
+		const selectedModelId = getSelectedBenchmarkModelId();
+		if (selectedModelId === 'all') {
+			return paretoCurves;
+		}
+		return paretoCurves.filter((curve) => curve.model?.model_id === selectedModelId);
+	});
+
 	// ============================================================================
 	// CHART DATA STRUCTURES
 	// ============================================================================
@@ -66,7 +79,7 @@
 		yLabel: chartConfigs.pareto_concurrency_ttft.y_axis.label,
 		xScale: chartConfigs.pareto_concurrency_ttft.x_axis.scale,
 		yScale: chartConfigs.pareto_concurrency_ttft.y_axis.scale,
-		models: paretoCurves
+		models: filteredParetoCurves
 			.filter((curve) => isSystemVisible(curve.systemId))
 			.map((curve) => ({
 				id: curve.id,
@@ -97,7 +110,7 @@
 		yLabel: chartConfigs.pareto_throughput_interactivity.y_axis.label,
 		xScale: chartConfigs.pareto_throughput_interactivity.x_axis.scale,
 		yScale: chartConfigs.pareto_throughput_interactivity.y_axis.scale,
-		models: paretoCurves
+		models: filteredParetoCurves
 			.filter((curve) => isSystemVisible(curve.systemId))
 			.map((curve) => ({
 				id: curve.id,
@@ -128,7 +141,7 @@
 		yLabel: chartConfigs.pareto_concurrency_throughput.y_axis.label,
 		xScale: chartConfigs.pareto_concurrency_throughput.x_axis.scale,
 		yScale: chartConfigs.pareto_concurrency_throughput.y_axis.scale,
-		models: paretoCurves
+		models: filteredParetoCurves
 			.filter((curve) => isSystemVisible(curve.systemId))
 			.map((curve) => ({
 				id: curve.id,
@@ -159,7 +172,7 @@
 		yLabel: chartConfigs.pareto_throughput_ttft.y_axis.label,
 		xScale: chartConfigs.pareto_throughput_ttft.x_axis.scale,
 		yScale: chartConfigs.pareto_throughput_ttft.y_axis.scale,
-		models: paretoCurves
+		models: filteredParetoCurves
 			.filter((curve) => isSystemVisible(curve.systemId))
 			.map((curve) => ({
 				id: curve.id,
@@ -195,7 +208,7 @@
 				Benchmarks
 			</h1>
 				<p
-					class="font-instrument-sans mt-2 max-w-lg leading-relaxed text-slate-600 dark:text-slate-400 text-md text-pretty md:text-balance"
+					class="border-l-4 border-l-[#ccead463] ml-3 pl-3 font-instrument-sans mt-2 max-w-lg leading-relaxed text-slate-600 dark:text-slate-400 text-md text-pretty md:text-balance"
 				>
         MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations that reveal performance trade-offs at a glance. Compare systems, understand what you're acquiring, and make confident infrastructure decisions.
       </p>
