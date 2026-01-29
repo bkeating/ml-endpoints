@@ -51,6 +51,9 @@ let hideLabels = $state(false);
 /** @type {string | null} */
 let hoveredRunId = $state(null);
 
+/** @type {{ modelName: string, modelColor: string } | null} */
+let hoveredRunInfo = $state(null);
+
 /**
  * Get current chart settings
  * @returns {ChartSettings}
@@ -185,11 +188,13 @@ export function getHideLabels() {
 // ============================================================================
 
 /**
- * Set the currently hovered run ID (for cross-chart highlighting)
+ * Set the currently hovered run ID and info (for cross-chart highlighting and tooltips)
  * @param {string | null} runId - Run UUID or null to clear
+ * @param {{ modelName: string, modelColor: string }} [info] - Optional model info for tooltip display
  */
-export function setHoveredRunId(runId) {
+export function setHoveredRunId(runId, info = null) {
 	hoveredRunId = runId;
+	hoveredRunInfo = info;
 }
 
 /**
@@ -207,6 +212,14 @@ export function getHoveredRunId() {
  */
 export function isRunHovered(runId) {
 	return hoveredRunId === runId;
+}
+
+/**
+ * Get the currently hovered run info (model name and color)
+ * @returns {{ modelName: string, modelColor: string } | null}
+ */
+export function getHoveredRunInfo() {
+	return hoveredRunInfo;
 }
 
 /**

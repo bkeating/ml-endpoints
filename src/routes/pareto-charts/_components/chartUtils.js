@@ -137,11 +137,16 @@ export function calculateDomain(data, axis, paddingPercent = 0.02) {
  * @returns {[number, number]} Domain [min, max]
  */
 export function calculateLogDomain(data, axis, paddingPercent = 0.01) {
-	const values = data.map((d) => d[axis]);
-	const min = Math.max(1, Math.min(...values));
+	const values = data.map((d) => d[axis]).filter((v) => v > 0);
+	if (values.length === 0) return [0.001, 1];
+
+	const min = Math.min(...values);
 	const max = Math.max(...values);
 
-	const logMin = Math.log10(min);
+	// Ensure min is positive for log scale (use a small epsilon if needed)
+	const safeMin = min > 0 ? min : 0.001;
+
+	const logMin = Math.log10(safeMin);
 	const logMax = Math.log10(max);
 	const logPadding = (logMax - logMin) * paddingPercent;
 

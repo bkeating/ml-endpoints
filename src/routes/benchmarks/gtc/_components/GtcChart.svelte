@@ -17,7 +17,7 @@
 		generateClipPathId
 	} from '../../../pareto-charts/_components/chartUtils.js';
 	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
-	import { setHoveredRunId, getHoveredRunId } from '$lib/stores/chartSettings.svelte.js';
+	import { setHoveredRunId, getHoveredRunId, getHoveredRunInfo } from '$lib/stores/chartSettings.svelte.js';
 
 	/**
 	 * @typedef {Object} PointMeta
@@ -176,6 +176,28 @@
 
 	// Cross-chart hover state (reactive getter)
 	let globalHoveredRunId = $derived(getHoveredRunId());
+	let globalHoveredRunInfo = $derived(getHoveredRunInfo());
+
+	// Find the highlighted point in this chart's data for synced tooltip
+	let syncedTooltipPoint = $derived.by(() => {
+		if (!globalHoveredRunId || tooltipData) return null; // Don't show synced tooltip if we're the source
+
+		for (const model of filteredData) {
+			const point = model.points.find((p) => p.meta?.runId === globalHoveredRunId);
+			if (point) {
+				return { point, model };
+			}
+		}
+		return null;
+	});
+
+	// Calculate synced tooltip position based on the point's position in this chart
+	let syncedTooltipPosition = $derived.by(() => {
+		if (!syncedTooltipPoint) return null;
+		const x = xScale(syncedTooltipPoint.point.x) + margin.left + 15;
+		const y = yScale(syncedTooltipPoint.point.y) + margin.top - 10;
+		return { x, y };
+	});
 
 	/**
 	 * Format value for display based on scale type and magnitude
@@ -202,7 +224,7 @@
 
 		// Set global hovered run ID for cross-chart highlighting
 		if (point.meta?.runId) {
-			setHoveredRunId(point.meta.runId);
+			setHoveredRunId(point.meta.runId, { modelName: model.name, modelColor: model.color });
 		}
 	}
 
@@ -390,7 +412,7 @@
 		</g>
 	</svg>
 
-	<!-- Tooltip -->
+	<!-- Tooltip (source chart - user is hovering here) -->
 	{#if tooltipData}
 		<div
 			class="pointer-events-none absolute z-50 rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-lg dark:border-slate-700 dark:bg-slate-800"
@@ -409,6 +431,24 @@
 						<span class="text-slate-500">{tooltipData.point.meta.model.model_name}</span>
 					</div>
 				{/if}
+			</div>
+		</div>
+	{/if}
+
+	<!-- Synced Tooltip (other charts - showing the same run) -->
+	{#if syncedTooltipPoint && syncedTooltipPosition}
+		<div
+			class="pointer-events-none absolute z-50 rounded-lg border px-3 py-2 shadow-lg bg-white dark:bg-slate-800"
+			style="left: {syncedTooltipPosition.x}px; top: {syncedTooltipPosition.y}px; border-color: {globalHoveredRunInfo?.modelColor ?? '#94a3b8'};"
+		>
+			<div class="space-y-0.5 text-xs text-slate-600 dark:text-slate-400">
+				<div class="font-semibold text-slate-800 dark:text-slate-200">{globalHoveredRunInfo?.modelName ?? syncedTooltipPoint.model.name}</div>
+				<div>
+					<strong>{xAxisLabel}:</strong> {formatValue(syncedTooltipPoint.point.x, xScaleType)}
+				</div>
+				<div>
+					<strong>{yAxisLabel}:</strong> {formatValue(syncedTooltipPoint.point.y, yScaleType)}
+				</div>
 			</div>
 		</div>
 	{/if}
