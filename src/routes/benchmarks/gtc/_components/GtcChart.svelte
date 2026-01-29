@@ -3,6 +3,7 @@
 	 * GTC Chart Component - Supports both step and line chart types
 	 * Similar to BenchmarkChart but with configurable line types
 	 */
+	import { goto } from '$app/navigation';
 	import {
 		createMargins,
 		getInnerDimensions,
@@ -16,8 +17,20 @@
 	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
 
 	/**
+	 * @typedef {Object} PointMeta
+	 * @property {string} systemId - System identifier
+	 * @property {number} concurrent_users - Number of concurrent users
+	 * @property {number} ttft_ms_p9x - Time to first token (ms, p99)
+	 * @property {number} system_throughput_tokens_sec - System throughput
+	 * @property {number} interactivity_tokens_sec_user - Interactivity tokens per second per user
+	 * @property {number} normalized_throughput - Normalized throughput
+	 * @property {string} config_detail - Configuration details
+	 * @property {number} utilization_percent - Utilization percentage
+	 */
+
+	/**
 	 * @typedef {Object} Props
-	 * @property {Array<{id: string, name: string, color: string, points: Array<{x: number, y: number}>}>} data - Chart data with models
+	 * @property {Array<{id: string, name: string, color: string, points: Array<{x: number, y: number, meta?: PointMeta}>}>} data - Chart data with models
 	 * @property {string} xAxisLabel - X-axis label
 	 * @property {string} yAxisLabel - Y-axis label
 	 * @property {number} [width] - Chart width
@@ -106,6 +119,23 @@
 		tooltipData = null;
 	}
 
+	/**
+	 * Navigate to the report page with point metadata as query params.
+	 * @param {Object} point - The data point with x, y, and meta
+	 * @param {Object} model - The model containing id and name
+	 */
+	function handlePointClick(point, model) {
+		if (!point.meta) return;
+
+		const params = new URLSearchParams({
+			system: point.meta.systemId,
+			users: String(point.meta.concurrent_users),
+			config: point.meta.config_detail
+		});
+
+		goto(`/benchmarks/gtc/report?${params.toString()}`);
+	}
+
 	const clipId = generateClipPathId();
 </script>
 
@@ -184,11 +214,14 @@
 							fill={model.color}
 							stroke={model.color}
 							stroke-width="1.5"
-							class="hover:r-[6px] cursor-pointer transition-all duration-150"
-							role="img"
-							aria-label="{model.name}: {point.x}, {point.y}"
+							class="cursor-pointer transition-all duration-150 hover:brightness-110"
+							role="button"
+							tabindex="0"
+							aria-label="View report for {model.name}: {point.x}, {point.y}"
 							onmouseenter={(e) => handlePointHover(e, point, model)}
 							onmouseleave={handlePointLeave}
+							onclick={() => handlePointClick(point, model)}
+							onkeydown={(e) => e.key === 'Enter' && handlePointClick(point, model)}
 						/>
 					{/each}
 				{/each}

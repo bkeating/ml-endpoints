@@ -55,7 +55,8 @@
 				color: m.color,
 				points: m.measurements.map((p) => ({
 					x: p.concurrent_users,
-					y: p.ttft_ms_p9x
+					y: p.ttft_ms_p9x,
+					meta: { systemId: m.id, ...p }
 				}))
 			}))
 			.filter((m) => isModelVisible(m.id))
@@ -78,7 +79,8 @@
 				color: m.color,
 				points: m.measurements.map((p) => ({
 					x: p.interactivity_tokens_sec_user,
-					y: p.system_throughput_tokens_sec
+					y: p.system_throughput_tokens_sec,
+					meta: { systemId: m.id, ...p }
 				}))
 			}))
 			.filter((m) => isModelVisible(m.id))
@@ -101,7 +103,8 @@
 				color: m.color,
 				points: m.measurements.map((p) => ({
 					x: p.concurrent_users,
-					y: p.normalized_throughput
+					y: p.normalized_throughput,
+					meta: { systemId: m.id, ...p }
 				}))
 			}))
 			.filter((m) => isModelVisible(m.id))
@@ -124,7 +127,8 @@
 				color: m.color,
 				points: m.measurements.map((p) => ({
 					x: p.ttft_ms_p9x,
-					y: p.normalized_throughput
+					y: p.normalized_throughput,
+					meta: { systemId: m.id, ...p }
 				}))
 			}))
 			.filter((m) => isModelVisible(m.id))

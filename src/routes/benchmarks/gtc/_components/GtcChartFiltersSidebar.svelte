@@ -12,6 +12,8 @@
 	import { cubicOut } from 'svelte/easing';
 	import FilterSelect from '$lib/components/FilterSelect.svelte';
 	import Icon from '$lib/components/Icon.svelte';
+	import GridIcon from '$lib/components/icons/Grid.svelte';
+	import GraphIcon from '$lib/components/icons/Graph.svelte';
 	import { modelOptions, getModel, setModel } from '$lib/stores/chartFilters.svelte.js';
 	import { isModelVisible, toggleModel } from '$lib/stores/chartSettings.svelte.js';
 	import { allGpuConfigs, gpuNames, gpuColors } from '$lib/data/placeholders.js';
@@ -26,6 +28,17 @@
 		{ id: 'performance', label: 'Performance (MLPerf)' },
 		{ id: 'risk', label: 'Risk & Reliability (AIRR)' }
 	];
+
+	// Benchmark type state and options
+	let benchmarkType = $state('all');
+	const benchmarkTypeOptions = [
+		{ id: 'all', label: 'All' },
+		{ id: 'benchmark1', label: 'Benchmark 1' },
+		{ id: 'benchmark2', label: 'Benchmark 2' }
+	];
+
+	// Data display mode state (grid or graph)
+	let dataDisplay = $state('graph');
 
 	// Track which systems have been manually collapsed (expanded by default when visible)
 	let collapsedSystems = $state(/** @type {Set<string>} */ (new Set()));
@@ -75,12 +88,12 @@
 	<div class="flex flex-col gap-6">
 		<!-- Benchmark Category -->
 		<fieldset class="flex flex-col gap-1">
-			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase">
+			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase mb-1">
 				Benchmark Category
 			</legend>
 			<div class="mt-1 flex flex-col rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
 				{#each benchmarkCategoryOptions as option, i (option.id)}
-					<label class="dm-mono flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkCategory === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
+					<label class=" flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkCategory === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
 						<input
 							type="radio"
 							name="benchmarkCategory"
@@ -95,8 +108,59 @@
 			</div>
 		</fieldset>
 
+		<!-- Benchmark Type -->
+		<fieldset class="flex flex-col gap-1">
+			<legend class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase mb-1">
+				Benchmark Type
+			</legend>
+			<div class="mt-1 flex flex-col rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
+				{#each benchmarkTypeOptions as option, i (option.id)}
+					<label class=" flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors hover:bg-slate-700 {benchmarkType === option.id ? 'bg-slate-700' : ''} {i > 0 ? 'border-t border-slate-600' : ''}">
+						<input
+							type="radio"
+							name="benchmarkType"
+							value={option.id}
+							checked={benchmarkType === option.id}
+							onchange={() => (benchmarkType = option.id)}
+							class="h-4 w-4 border-slate-600 text-emerald-600 focus:ring-emerald-500"
+						/>
+						<span class="text-sm text-slate-300">{option.label}</span>
+					</label>
+				{/each}
+			</div>
+		</fieldset>
+
+		<!-- Data Display Toggle -->
+		<fieldset class="flex flex-col gap-1">
+			<legend class="dm-mono text-xs tracking-wide text-slate-400 uppercase mb-1">
+				Data Display
+			</legend>
+			<div class="mt-1 flex rounded-lg border border-slate-600 bg-slate-800 overflow-hidden" role="radiogroup">
+				<button
+					type="button"
+					onclick={() => (dataDisplay = 'grid')}
+					class="flex flex-1 cursor-pointer items-center justify-center gap-2 px-3 py-2 transition-colors {dataDisplay === 'grid' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'}"
+					aria-pressed={dataDisplay === 'grid'}
+					aria-label="Grid view"
+				>
+					<GridIcon class="h-4 w-4" />
+					<span class="text-sm">Grid</span>
+				</button>
+				<button
+					type="button"
+					onclick={() => (dataDisplay = 'graph')}
+					class="flex flex-1 cursor-pointer items-center justify-center gap-2 border-l border-slate-600 px-3 py-2 transition-colors {dataDisplay === 'graph' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:bg-slate-700 hover:text-slate-200'}"
+					aria-pressed={dataDisplay === 'graph'}
+					aria-label="Graph view"
+				>
+					<GraphIcon class="h-4 w-4" />
+					<span class="text-sm">Graph</span>
+				</button>
+			</div>
+		</fieldset>
+
 		<!-- Model Select -->
-		<div class="w-full">
+		<!-- <div class="w-full">
 			<FilterSelect
 				id="gtc-model-select"
 				label="Model"
@@ -106,7 +170,7 @@
 				minWidth="w-full"
 				maxWidth=""
 			/>
-		</div>
+		</div> -->
 
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
