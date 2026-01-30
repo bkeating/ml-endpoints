@@ -19,7 +19,9 @@
 		setSelectedBenchmarkModelId,
 		getSelectedAccelerator,
 		setSelectedAccelerator,
-		isSystemDisabledByAccelerator
+		isSystemDisabledByAccelerator,
+		getShowComparison,
+		toggleComparison
 	} from '$lib/stores/chartSettings.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
@@ -78,6 +80,7 @@
 	// Model and accelerator selection is managed by the store for cross-component reactivity
 	let selectedModel = $derived(getSelectedBenchmarkModelId());
 	let selectedAccelerator = $derived(getSelectedAccelerator());
+	let comparisonEnabled = $derived(getShowComparison());
 
 	let selectedProcessor = $state('all');
 	let selectedOrganization = $state('all');
@@ -297,6 +300,26 @@
 					<option value={option.id}>{option.label}</option>
 				{/each}
 			</select>
+		</div>
+
+		<!-- System Comparison Toggle -->
+		<div class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-600 dark:bg-slate-800">
+			<div class="flex flex-col gap-0.5">
+				<span class="text-sm font-medium text-slate-800 dark:text-slate-200">Compare Systems</span>
+				<span class="text-[10px] text-slate-500 dark:text-slate-400">Show relative performance on hover</span>
+			</div>
+			<button
+				type="button"
+				role="switch"
+				aria-checked={comparisonEnabled}
+				aria-label="Toggle system comparison"
+				onclick={toggleComparison}
+				class="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 {comparisonEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}"
+			>
+				<span
+					class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 {comparisonEnabled ? 'translate-x-5' : 'translate-x-0'}"
+				></span>
+			</button>
 		</div>
 
 		<!-- Systems Selection Section with Inline Accordion -->

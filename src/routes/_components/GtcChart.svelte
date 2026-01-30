@@ -15,7 +15,7 @@
 		calculateDomain,
 		calculateLogDomain,
 		generateClipPathId
-	} from '../../../pareto-charts/_components/chartUtils.js';
+	} from '../pareto-charts/_components/chartUtils.js';
 	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
 	import { setHoveredRunId, getHoveredRunId, getHoveredRunInfo } from '$lib/stores/chartSettings.svelte.js';
 
@@ -44,6 +44,7 @@
 	 * @property {'linear' | 'log'} [xScaleType='linear'] - X-axis scale type
 	 * @property {'linear' | 'log'} [yScaleType='linear'] - Y-axis scale type
 	 * @property {boolean} [useTimelineRange=false] - Whether to use the shared timeline range store for X-axis filtering
+	 * @property {boolean} [showComparison=false] - Whether to show comparison lines between systems on hover
 	 */
 	/** @type {Props} */
 	let {
@@ -55,7 +56,8 @@
 		lineType = 'line',
 		xScaleType = 'linear',
 		yScaleType = 'linear',
-		useTimelineRange = false
+		useTimelineRange = false,
+		showComparison = false
 	} = $props();
 
 	// Responsive margins
@@ -174,6 +176,65 @@
 	// Shows the "imagined" smooth curve that the step function conservatively approximates
 	let smoothLineGenerator = $derived(createSmoothLineGenerator(xScale, yScale));
 
+	/**
+	 * Find the Y value on a step-after curve at a given X value.
+	 * For step-after: use the Y value of the point with the largest X <= queryX
+	 * @param {Array<{x: number, y: number}>} points - Sorted points array
+	 * @param {number} queryX - The X value to query
+	 * @returns {number | null} - The Y value at queryX, or null if out of range
+	 */
+	function getStepYAtX(points, queryX) {
+		if (!points || points.length === 0) return null;
+
+		// Sort by X to ensure correct step evaluation
+		const sorted = [...points].sort((a, b) => a.x - b.x);
+
+		// Find the point with the largest X <= queryX (step-after behavior)
+		let result = null;
+		for (const p of sorted) {
+			if (p.x <= queryX) {
+				result = p.y;
+			} else {
+				break;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Compute comparison data when hovering over a point.
+	 * Finds where a vertical line from the hovered point intersects other systems' curves.
+	 * @param {Object} hoveredPoint - The point being hovered
+	 * @param {Object} hoveredModel - The model/system being hovered
+	 * @returns {Array<{model: Object, y: number, ratio: number}>} - Comparison data for other systems
+	 */
+	function computeComparisonPoints(hoveredPoint, hoveredModel) {
+		if (!hoveredPoint || !showComparison || lineType !== 'step') return [];
+
+		const queryX = hoveredPoint.x;
+		const hoveredY = hoveredPoint.y;
+		const comparisons = [];
+
+		for (const model of filteredData) {
+			if (model.id === hoveredModel.id) continue; // Skip the hovered system
+
+			const y = getStepYAtX(model.points, queryX);
+			if (y !== null && y > 0) {
+				const ratio = hoveredY / y;
+				comparisons.push({
+					model,
+					y,
+					ratio,
+					// Calculate which is better and by how much
+					betterSystem: hoveredY >= y ? hoveredModel.name : model.name,
+					multiplier: hoveredY >= y ? ratio : 1 / ratio
+				});
+			}
+		}
+
+		return comparisons;
+	}
+
 	// Tooltip state
 	let tooltipData = $state(null);
 	let tooltipPosition = $state({ x: 0, y: 0 });
@@ -201,6 +262,12 @@
 		const x = xScale(syncedTooltipPoint.point.x) + margin.left + 15;
 		const y = yScale(syncedTooltipPoint.point.y) + margin.top - 10;
 		return { x, y };
+	});
+
+	// Compute comparison points when hovering (for system comparison feature)
+	let comparisonData = $derived.by(() => {
+		if (!tooltipData || !showComparison) return [];
+		return computeComparisonPoints(tooltipData.point, tooltipData.model);
 	});
 
 	/**
@@ -358,6 +425,77 @@
 						/>
 					{/each}
 				{/each}
+
+				<!-- Comparison lines between systems (when hovering with comparison mode on) -->
+				{#if tooltipData && showComparison && comparisonData.length > 0}
+					{@const hoveredX = xScale(tooltipData.point.x)}
+					{@const hoveredY = yScale(tooltipData.point.y)}
+					{#each comparisonData as comparison (comparison.model.id)}
+						{@const compY = yScale(comparison.y)}
+						<!-- Vertical dotted line from hovered point to comparison point -->
+						<line
+							x1={hoveredX}
+							y1={hoveredY}
+							x2={hoveredX}
+							y2={compY}
+							stroke={comparison.model.color}
+							stroke-width="2"
+							stroke-dasharray="4,4"
+							opacity="0.8"
+						/>
+						<!-- Comparison point marker on the other system's curve -->
+						<circle
+							cx={hoveredX}
+							cy={compY}
+							r="5"
+							fill="white"
+							stroke={comparison.model.color}
+							stroke-width="2"
+						/>
+						<!-- Y-value label at comparison point -->
+						<g transform="translate({hoveredX + 8}, {compY})">
+							<rect
+								x="-2"
+								y="-10"
+								width="50"
+								height="20"
+								rx="3"
+								class="fill-white dark:fill-slate-800"
+								opacity="0.9"
+							/>
+							<text
+								class="fill-slate-700 dark:fill-slate-200"
+								font-size="11"
+								font-weight="600"
+								dy="4"
+							>
+								{formatValue(comparison.y, yScaleType)}
+							</text>
+						</g>
+					{/each}
+					<!-- Ratio badge near the hovered point -->
+					{#if comparisonData.length === 1}
+						{@const comp = comparisonData[0]}
+						<g transform="translate({hoveredX + 12}, {(hoveredY + yScale(comp.y)) / 2})">
+							<rect
+								x="-4"
+								y="-12"
+								width="42"
+								height="24"
+								rx="4"
+								class="fill-slate-800 dark:fill-slate-200"
+							/>
+							<text
+								class="fill-white dark:fill-slate-800"
+								font-size="12"
+								font-weight="700"
+								dy="4"
+							>
+								{comp.multiplier.toFixed(1)}x
+							</text>
+						</g>
+					{/if}
+				{/if}
 			</g>
 
 			<!-- Y-axis -->

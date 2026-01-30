@@ -1,360 +1,480 @@
 <script>
 	/**
-	 * Main page for the LLM Inference Benchmark dashboard.
+	 * GTC Page - LLM Inference Benchmark dashboard with sidebar layout.
 	 *
 	 * This page demonstrates:
-	 * - Reactive data fetching with $derived() that auto-refetches when filters change
-	 * - Async/await pattern with {#await} blocks for loading states
+	 * - Two-column layout with sticky sidebar for chart filters
+	 * - Synchronous data loading from normalized JSON structure
+	 * - Reactive filtering with $derived() for visibility toggles
 	 * - Component composition for maintainable, skinny page files
 	 */
-	import { onMount } from 'svelte';
-	import Hero from '$lib/components/Hero.svelte';
-	import ChartFilters from '$lib/components/ChartFilters.svelte';
-	import ChartSection from '$lib/components/ChartSection.svelte';
-	import ChartSettingsSidebar from '$lib/components/ChartSettingsSidebar.svelte';
-	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
-	import BenchmarkResultsTable from '$lib/components/BenchmarkResultsTable.svelte';
-	import { getChartData } from '$lib/remotes/chartData.js';
-	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
-
-	// Axis selector store
+	import GtcChartSection from './_components/GtcChartSection.svelte';
+	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
+	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
+	import ChevronRight from '$lib/components/icons/ChevronRight.svelte';
 	import {
-		axisOptions,
-		getSelectedXAxis,
-		getSelectedYAxis,
-		setSelectedXAxis,
-		setSelectedYAxis,
-		getSystemsData,
-		setSystemsData,
-		getLoading,
-		setLoading,
-		getChartData as getAxisChartData,
-		getChartTitle,
-		getXAxisOption,
-		getYAxisOption,
-		useLogScaleX,
-		useLogScaleY
-	} from '$lib/stores/axisSelector.svelte.js';
+		isSystemVisible,
+		getSelectedBenchmarkModelId,
+		isSystemDisabledByAccelerator
+	} from '$lib/stores/chartSettings.svelte.js';
+	import { getTheme } from '$lib/stores/theme.svelte.js';
 
-	// Data transform for loading
-	import { parseSystemData } from './pareto-charts/_components/dataTransform.js';
-
-	// Route-local components
-	import ChartLoadingState from './_components/ChartLoadingState.svelte';
-	import ParetoChartSection from './_components/ParetoChartSection.svelte';
-	import GpuReliabilitySection from './_components/GpuReliabilitySection.svelte';
-	import SubmissionRequirements from './_components/SubmissionRequirements.svelte';
-	import RoleBasedViewport from './_components/RoleBasedViewport.svelte';
-	import SystemBladesSection from './_components/SystemBladesSection.svelte';
-
-	// $derived() creates a reactive value that automatically updates when getFilters() changes
-	let filters = $derived(getFilters());
-
-	// This promise automatically re-runs whenever filters change, triggering a new API call
-	let chartDataQuery = $derived(
-		getChartData({
-			model: filters.model,
-			islOsl: filters.islOsl,
-			precision: filters.precision,
-			yAxisMetric: filters.yAxisMetric
-		})
-	);
+	// Import normalized benchmark data from local JSON
+	import endpointsData from './endpoints-benchmark-data.json';
 
 	// ============================================================================
-	// AXIS SELECTOR CHART - Using Store
+	// DATA TRANSFORMATION
 	// ============================================================================
 
-	// Container width for responsive chart
-	let axisChartWidth = $state(0);
+	/**
+	 * Build Pareto curves from normalized endpoints data.
+	 * Joins submissions with their systems, models, and runs.
+	 * @param {typeof endpointsData} data - The endpoints benchmark data
+	 * @returns {Array<{id: string, name: string, color: string, system: Object, model: Object, runs: Array}>}
+	 */
+	function buildParetoCurves(data) {
+		return data.submissions.map((submission) => {
+			const system = data.systems.find((s) => s.id === submission.system_id);
+			const model = data.models.find((m) => m.model_id === submission.model_id);
+			const runs = data.runs
+				.filter((r) => r.submission_id === submission.submission_id)
+				.sort((a, b) => a.concurrency - b.concurrency);
 
-	// Reactive getters from store
-	let selectedXAxis = $derived(getSelectedXAxis());
-	let selectedYAxis = $derived(getSelectedYAxis());
-	let axisSelectorLoading = $derived(getLoading());
-	let systemsData = $derived(getSystemsData());
+			return {
+				id: submission.submission_id,
+				systemId: submission.system_id,
+				name: system?.system_name ?? submission.submission_id,
+				color: system?.color ?? '#64748b',
+				system,
+				model,
+				runs
+			};
+		});
+	}
 
-	// Derived chart data from store
-	let axisChartData = $derived(getAxisChartData());
-	let chartTitle = $derived(getChartTitle());
-	let xAxisOption = $derived(getXAxisOption());
-	let yAxisOption = $derived(getYAxisOption());
-	let logScaleX = $derived(useLogScaleX());
-	let logScaleY = $derived(useLogScaleY());
+	// Build all Pareto curves from the data
+	const paretoCurves = buildParetoCurves(endpointsData);
 
-	// Chart dimensions
-	let axisChartHeight = $derived(Math.max(280, (axisChartWidth || 400) * 0.65));
+	/**
+	 * Get the most recent submissions sorted by submission date.
+	 * @param {typeof endpointsData} data - The endpoints benchmark data
+	 * @param {number} limit - Maximum number of submissions to return
+	 * @returns {Array} - Recent submissions sorted by date descending
+	 */
+	function getRecentSubmissions(data, limit = 10) {
+		return [...data.submissions]
+			.sort((a, b) => new Date(b.submission_date) - new Date(a.submission_date))
+			.slice(0, limit);
+	}
+
+	/**
+	 * Format a date string to a human-readable format.
+	 * @param {string} dateStr - ISO date string (e.g., "2026-01-21")
+	 * @returns {string} - Formatted date (e.g., "January 21, 2026")
+	 */
+	function formatDate(dateStr) {
+		return new Date(dateStr).toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+	}
+
+	// Get recent submissions for the carousel
+	const recentSubmissions = getRecentSubmissions(endpointsData);
 
 	// ============================================================================
-	// USER ROLE SELECTOR
+	// SUBMISSION CARD CHART TOGGLE
 	// ============================================================================
 
-	const userRoleOptions = [
-		{ id: 'endpoints-user', label: 'Endpoints User' },
-		{ id: 'enterprise-buyer', label: 'Enterprise & Institutional Buyers' },
-		{ id: 'neo-cloud', label: 'Neo-Cloud & Cloud Service Providers' },
-		{ id: 'infra-engineer', label: 'Infra Engineer' },
-		{ id: 'it-buyer', label: 'IT Buyer' },
-		{ id: 'hardware-mfg', label: 'Hardware Manufacturer' },
-		{ id: 'model-developer', label: 'Model Developer' },
-		{ id: 'baas-user', label: 'BaaS User' },
-		{ id: 'investor', label: 'Investor' },
-		{ id: 'journalist', label: 'Journalist' }
-	];
+	/** @type {'ttft' | 'throughput'} */
+	let cardChartType = $state('ttft');
 
-	let selectedUserRole = $state('endpoints-user');
+	/**
+	 * Get runs for a specific submission.
+	 * @param {string} submissionId - The submission ID
+	 * @returns {Array} - Runs sorted by concurrency
+	 */
+	function getRunsForSubmission(submissionId) {
+		return endpointsData.runs
+			.filter((r) => r.submission_id === submissionId)
+			.sort((a, b) => a.concurrency - b.concurrency);
+	}
 
-	// Load system data on mount
-	onMount(async () => {
-		try {
-			const response = await fetch('/db.json');
-			if (response.ok) {
-				const rawData = await response.json();
-				const parsedData = parseSystemData(rawData);
-				setSystemsData(parsedData);
+	/**
+	 * Get the system color for a submission.
+	 * @param {string} systemId - The system ID
+	 * @returns {string} - Hex color
+	 */
+	function getSystemColor(systemId) {
+		const system = endpointsData.systems.find((s) => s.id === systemId);
+		return system?.color ?? '#64748b';
+	}
+
+	/**
+	 * Get the accent color for charts based on current theme.
+	 * @returns {string} - Hex color for light or dark theme
+	 */
+	let accentColor = $derived(getTheme() === 'dark' ? '#726528' : '#CCEBD4');
+
+	/**
+	 * Generate an SVG path for a mini sparkline chart.
+	 * Normalizes data to fit within the viewBox.
+	 * @param {Array} runs - Array of run data
+	 * @param {'ttft' | 'throughput'} chartType - Which chart type to render
+	 * @returns {{ path: string, points: Array<{x: number, y: number}> }}
+	 */
+	function generateSparklinePath(runs, chartType) {
+		if (!runs || runs.length < 2) return { path: '', points: [] };
+
+		// Get x and y values based on chart type
+		const points = runs.map((run) => {
+			if (chartType === 'ttft') {
+				// TTFT chart: X = ttft, Y = system_tps
+				return { x: run.ttft, y: run.system_tps };
+			} else {
+				// Throughput vs Interactivity: X = tps_per_user, Y = system_tps
+				return { x: run.tps_per_user, y: run.system_tps };
 			}
-		} catch (err) {
-			console.error('Error loading axis selector data:', err);
-		} finally {
-			setLoading(false);
+		});
+
+		// Sort by x value for proper line drawing
+		points.sort((a, b) => a.x - b.x);
+
+		// Find min/max for normalization
+		const xMin = Math.min(...points.map((p) => p.x));
+		const xMax = Math.max(...points.map((p) => p.x));
+		const yMin = Math.min(...points.map((p) => p.y));
+		const yMax = Math.max(...points.map((p) => p.y));
+
+		// Avoid division by zero
+		const xRange = xMax - xMin || 1;
+		const yRange = yMax - yMin || 1;
+
+		// Normalize to viewBox (0-100 with padding)
+		const padding = 5;
+		const width = 100 - padding * 2;
+		const height = 100 - padding * 2;
+
+		const normalizedPoints = points.map((p) => ({
+			x: padding + ((p.x - xMin) / xRange) * width,
+			y: padding + height - ((p.y - yMin) / yRange) * height // Flip Y axis
+		}));
+
+		// Generate SVG path
+		const path = normalizedPoints
+			.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
+			.join(' ');
+
+		return { path, points: normalizedPoints };
+	}
+
+	/**
+	 * Filter pareto curves by selected benchmark model.
+	 * When a specific model is selected, only submissions for that model are shown.
+	 * This prevents duplicate curves when a system has multiple submissions (one per model).
+	 */
+	let filteredParetoCurves = $derived.by(() => {
+		const selectedModelId = getSelectedBenchmarkModelId();
+		if (selectedModelId === 'all') {
+			return paretoCurves;
 		}
+		return paretoCurves.filter((curve) => curve.model?.model_id === selectedModelId);
+	});
+
+	// ============================================================================
+	// CHART DATA STRUCTURES
+	// ============================================================================
+
+	/**
+	 * Check if a system should be displayed on charts.
+	 * Must be visible AND not disabled by accelerator filter.
+	 * @param {Object} curve - The pareto curve object
+	 * @returns {boolean}
+	 */
+	function isSystemDisplayed(curve) {
+		return isSystemVisible(curve.systemId) &&
+			!isSystemDisabledByAccelerator(curve.system?.accelerator_model_name);
+	}
+
+	/**
+	 * Chart 1: System Throughput vs Interactivity
+	 * X = tps_per_user (Tokens/s/user), Y = system_tps (Tokens/s)
+	 */
+	let throughputVsInteractivityChart = $derived({
+		title: 'System Throughput vs Interactivity',
+		subtitle: 'Trade-off between total system capacity and per-user token delivery speed.',
+		xLabel: 'Tokens/s/user',
+		yLabel: 'Tokens/s',
+		xScale: 'log',
+		yScale: 'linear',
+		models: filteredParetoCurves
+			.filter((curve) => isSystemDisplayed(curve))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.tps_per_user,
+					y: run.system_tps,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
+				}))
+			}))
 	});
 
 	/**
-	 * Handle X-axis selection change
-	 * @param {Event} e
+	 * Chart 2: Throughput vs Concurrency
+	 * X = concurrency (Concurrent Clients), Y = system_tps (Total System Throughput)
 	 */
-	function handleXAxisChange(e) {
-		const target = /** @type {HTMLSelectElement} */ (e.target);
-		setSelectedXAxis(/** @type {any} */ (target.value));
-	}
+	let throughputVsConcurrencyChart = $derived({
+		title: 'Throughput vs Concurrency',
+		subtitle: 'How total system throughput scales with increasing concurrent clients.',
+		xLabel: 'Concurrent Clients',
+		yLabel: 'Total System Throughput (Tok/s)',
+		xScale: 'log',
+		yScale: 'linear',
+		models: filteredParetoCurves
+			.filter((curve) => isSystemDisplayed(curve))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.system_tps,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
+				}))
+			}))
+	});
 
 	/**
-	 * Handle Y-axis selection change
-	 * @param {Event} e
+	 * Chart 3: Capacity Utilization
+	 * X = concurrency (Concurrent Users), Y = utilization (Utilization of Max Sys Throughput)
 	 */
-	function handleYAxisChange(e) {
-		const target = /** @type {HTMLSelectElement} */ (e.target);
-		setSelectedYAxis(/** @type {any} */ (target.value));
-	}
-
-	// ============================================================================
-	// DEMO BENCHMARK RESULTS DATA
-	// ============================================================================
+	let capacityUtilizationChart = $derived({
+		title: 'Capacity Utilization',
+		subtitle: 'Concurrent user capacity at different system utilization levels.',
+		xLabel: 'Concurrent Users',
+		yLabel: 'Utilization of Max Sys Throughput',
+		xScale: 'log',
+		yScale: 'linear',
+		models: filteredParetoCurves
+			.filter((curve) => isSystemDisplayed(curve))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.utilization,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
+				}))
+			}))
+	});
 
 	/**
-	 * Demo data for the BenchmarkResultsTable component.
-	 * Shows 4 representative systems with realistic benchmark metrics.
+	 * Chart 4: Per-User Performance
+	 * X = concurrency (Concurrent Clients), Y = tps_per_user (Interactivity Tokens/s/user)
 	 */
-	const demoBenchmarkSystems = [
-		{
-			systemId: 'demo-nvidia-b200',
-			systemName: 'NVIDIA DGX B200',
-			systemColor: '#76B900',
-			organization: 'NVIDIA',
-			accelerator: 'B200-SXM-180GB',
-			acceleratorCount: 8,
-			models: [
-				{
-					id: 'demo-nvidia-b200-llama',
-					modelId: 1,
-					modelName: 'Llama 2 70B',
-					division: 'Closed',
-					runCount: 5,
-					maxConcurrency: 64,
-					peakThroughput: 28500,
-					peakThroughputRun: { concurrency: 64, ttft: 0.045 },
-					minTtft: 0.012,
-					lowLatencyRun: { concurrency: 1, system_tps: 4200 },
-					runs: [
-						{ run_id: 'r1', concurrency: 1, system_tps: 4200, ttft: 0.012, tps_per_user: 4200, run_date: '2026-01-15T10:00:00Z' },
-						{ run_id: 'r2', concurrency: 8, system_tps: 15800, ttft: 0.018, tps_per_user: 1975, run_date: '2026-01-15T11:00:00Z' },
-						{ run_id: 'r3', concurrency: 32, system_tps: 24200, ttft: 0.032, tps_per_user: 756, run_date: '2026-01-15T12:00:00Z' },
-						{ run_id: 'r4', concurrency: 64, system_tps: 28500, ttft: 0.045, tps_per_user: 445, run_date: '2026-01-15T13:00:00Z' }
-					]
-				}
-			]
-		},
-		{
-			systemId: 'demo-nvidia-h100',
-			systemName: 'NVIDIA DGX H100',
-			systemColor: '#76B900',
-			organization: 'NVIDIA',
-			accelerator: 'H100-SXM-80GB',
-			acceleratorCount: 8,
-			models: [
-				{
-					id: 'demo-nvidia-h100-llama',
-					modelId: 1,
-					modelName: 'Llama 2 70B',
-					division: 'Closed',
-					runCount: 5,
-					maxConcurrency: 64,
-					peakThroughput: 18200,
-					peakThroughputRun: { concurrency: 64, ttft: 0.058 },
-					minTtft: 0.015,
-					lowLatencyRun: { concurrency: 1, system_tps: 3100 },
-					runs: [
-						{ run_id: 'r5', concurrency: 1, system_tps: 3100, ttft: 0.015, tps_per_user: 3100, run_date: '2026-01-14T10:00:00Z' },
-						{ run_id: 'r6', concurrency: 8, system_tps: 11200, ttft: 0.022, tps_per_user: 1400, run_date: '2026-01-14T11:00:00Z' },
-						{ run_id: 'r7', concurrency: 32, system_tps: 16800, ttft: 0.042, tps_per_user: 525, run_date: '2026-01-14T12:00:00Z' },
-						{ run_id: 'r8', concurrency: 64, system_tps: 18200, ttft: 0.058, tps_per_user: 284, run_date: '2026-01-14T13:00:00Z' }
-					]
-				}
-			]
-		},
-		{
-			systemId: 'demo-amd-mi300x',
-			systemName: 'AMD Instinct MI300X',
-			systemColor: '#ED1C24',
-			organization: 'AMD',
-			accelerator: 'MI300X',
-			acceleratorCount: 8,
-			models: [
-				{
-					id: 'demo-amd-mi300x-llama',
-					modelId: 1,
-					modelName: 'Llama 2 70B',
-					division: 'Closed',
-					runCount: 4,
-					maxConcurrency: 64,
-					peakThroughput: 16800,
-					peakThroughputRun: { concurrency: 64, ttft: 0.065 },
-					minTtft: 0.018,
-					lowLatencyRun: { concurrency: 1, system_tps: 2800 },
-					runs: [
-						{ run_id: 'r9', concurrency: 1, system_tps: 2800, ttft: 0.018, tps_per_user: 2800, run_date: '2026-01-13T10:00:00Z' },
-						{ run_id: 'r10', concurrency: 8, system_tps: 9800, ttft: 0.028, tps_per_user: 1225, run_date: '2026-01-13T11:00:00Z' },
-						{ run_id: 'r11', concurrency: 32, system_tps: 14500, ttft: 0.048, tps_per_user: 453, run_date: '2026-01-13T12:00:00Z' },
-						{ run_id: 'r12', concurrency: 64, system_tps: 16800, ttft: 0.065, tps_per_user: 262, run_date: '2026-01-13T13:00:00Z' }
-					]
-				}
-			]
-		},
-		{
-			systemId: 'demo-google-tpu',
-			systemName: 'Google TPU v5p',
-			systemColor: '#4285F4',
-			organization: 'Google',
-			accelerator: 'TPU v5p',
-			acceleratorCount: 8,
-			models: [
-				{
-					id: 'demo-google-tpu-llama',
-					modelId: 1,
-					modelName: 'Llama 2 70B',
-					division: 'Closed',
-					runCount: 4,
-					maxConcurrency: 64,
-					peakThroughput: 14200,
-					peakThroughputRun: { concurrency: 64, ttft: 0.072 },
-					minTtft: 0.022,
-					lowLatencyRun: { concurrency: 1, system_tps: 2400 },
-					runs: [
-						{ run_id: 'r13', concurrency: 1, system_tps: 2400, ttft: 0.022, tps_per_user: 2400, run_date: '2026-01-12T10:00:00Z' },
-						{ run_id: 'r14', concurrency: 8, system_tps: 8200, ttft: 0.035, tps_per_user: 1025, run_date: '2026-01-12T11:00:00Z' },
-						{ run_id: 'r15', concurrency: 32, system_tps: 12100, ttft: 0.055, tps_per_user: 378, run_date: '2026-01-12T12:00:00Z' },
-						{ run_id: 'r16', concurrency: 64, system_tps: 14200, ttft: 0.072, tps_per_user: 221, run_date: '2026-01-12T13:00:00Z' }
-					]
-				}
-			]
-		}
-	];
+	let perUserPerformanceChart = $derived({
+		title: 'Per-User Performance',
+		subtitle: 'How per-user token delivery speed changes with concurrent load.',
+		xLabel: 'Concurrent Clients',
+		yLabel: 'Interactivity (Tokens/s/user)',
+		xScale: 'log',
+		yScale: 'log',
+		models: filteredParetoCurves
+			.filter((curve) => isSystemDisplayed(curve))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.tps_per_user,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
+				}))
+			}))
+	});
 </script>
 
-<Hero />
-
-{#await chartDataQuery}
-	<ChartLoadingState />
-{:then chartData}
-	<!-- Charts rendered from API data -->
-	<ChartFilters />
-
-	<div class="bg-pattern-container relative w-full md:pt-6 pb-12">
-		<div class="relative z-10 mx-auto flex max-w-7xl flex-col gap-6 px-3">
-			<ChartSection chart={chartData.latencyChart} layout="side-by-side" useTimelineRange={true} />
-		</div>
-	</div>
-
-	<div class="bg-slate-950">
-		<ParetoChartSection />
-	</div>
-
-	<!-- Role-Based Benchmark Section -->
-	<div class="w-full bg-slate-50 py-8 sm:py-12 dark:bg-slate-900/50">
-		<div class="mx-auto max-w-7xl px-3">
-			<!-- User Role Selector -->
-			<div class="flex items-center gap-3 mx-auto w-full text-center justify-center mb-12">
-				<label
-					for="user-role-select"
-					class="font-medium text-slate-700 dark:text-slate-300 text-xl"
+<!-- Side-by-side layout with filters sidebar and charts -->
+<div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9">
+	<div class="flex flex-col gap-6 lg:flex-row">
+		<!-- Charts area -->
+		<div class="min-w-0 flex-1">
+			<!-- Small page hero -->
+			<header class="mb-12 flex flex-col md:mb-12 md:flex-row" aria-label="Page introduction">
+				<h1
+					class="instrument-serif-regular-italic mt-8 text-4xl font-bold text-balance text-slate-700 md:mt-0 md:text-5xl dark:text-white"
 				>
-					From the viewpoint of:
-				</label>
-				<select
-					id="user-role-select"
-					bind:value={selectedUserRole}
-					class="h-9 max-w-xs flex-1 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+					MLCommons <br />
+					<span class="mr-1 mb-2 inline-block h-7 w-7 rounded-full bg-[#CCEBD4]"></span>
+					Benchmarks
+				</h1>
+				<p
+					class="font-instrument-sans text-md mt-2 ml-3 max-w-lg border-l-4 border-l-[#ccead463] pl-3 leading-relaxed text-pretty text-slate-600 md:ml-6 md:pl-6 md:text-balance dark:text-slate-400"
 				>
-					{#each userRoleOptions as option (option.id)}
-						<option value={option.id}>{option.label}</option>
-					{/each}
-				</select>
-			</div>
+					MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations
+					that reveal performance trade-offs at a glance. Compare systems, understand what you're
+					acquiring, and make confident infrastructure decisions.
+				</p>
+			</header>
 
-			<!-- Dynamic Role-Based Content -->
-			<RoleBasedViewport
-				selectedRole={selectedUserRole}
-				roleOptions={userRoleOptions}
-				{axisChartWidth}
-				{axisChartHeight}
-				{axisSelectorLoading}
-				{systemsData}
-				{axisChartData}
-				{chartTitle}
-				{xAxisOption}
-				{yAxisOption}
-				{logScaleX}
-				{logScaleY}
-				onXAxisChange={handleXAxisChange}
-				onYAxisChange={handleYAxisChange}
-				{selectedXAxis}
-				{selectedYAxis}
-				{axisOptions}
-			/>
+			<!-- Main content area - 2x2 grid layout -->
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<!-- Chart 1: System Throughput vs Interactivity -->
+				<GtcChartSection chart={throughputVsInteractivityChart} lineType="step" />
+
+				<!-- Chart 2: Throughput vs Concurrency -->
+				<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
+				<!-- Chart 4: Per-User Performance -->
+				<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
+
+				<!-- Chart 3: Capacity Utilization -->
+				<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
+			</div>
 		</div>
+
+		<!-- Chart Filters Sidebar (hidden on mobile) -->
+		<GtcChartFiltersSidebar />
 	</div>
 
-	<!-- <GpuReliabilitySection chart={chartData.gpuReliabilityChart} /> -->
+	<!-- Most Recent Submissions Carousel -->
+	<section class="mt-12 border-t border-slate-200 pt-8 dark:border-slate-700" aria-label="Most recent submissions">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="text-xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
+			<div class="flex items-center gap-4">
+				<!-- Chart type toggle -->
+				<div class="flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-600" role="group" aria-label="Chart type">
+					<button
+						type="button"
+						onclick={() => cardChartType = 'ttft'}
+						class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors {cardChartType === 'ttft' ? 'bg-[#CCEBD4] text-slate-800 dark:bg-[#736628] dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'}"
+					>
+						TTFT
+					</button>
+					<button
+						type="button"
+						onclick={() => cardChartType = 'throughput'}
+						class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors {cardChartType === 'throughput' ? 'bg-[#CCEBD4] text-slate-800 dark:bg-[#736628] dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'}"
+					>
+						Throughput vs Interactivity
+					</button>
+				</div>
 
-	<div class="mx-auto max-w-7xl px-3 pt-12">
-		<SubmissionRequirements />
-
-		<!-- Interactivity Chart with Settings Sidebar -->
-		<div class="flex flex-col gap-6 lg:flex-row">
-			<div class="min-w-0 flex-1">
-				<ChartSection chart={chartData.interactivityChart} useTimelineRange={true} />
-			</div>
-
-			<!-- Quick Settings Sidebar (hidden on mobile) -->
-			<div class="sticky top-4 hidden w-56 shrink-0 lg:block">
-				<ChartSettingsSidebar />
+				<!-- Navigation arrows -->
+				<div class="flex gap-1">
+					<button
+						type="button"
+						class="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+						aria-label="Scroll left"
+					>
+						<ChevronLeft class="h-5 w-5" />
+					</button>
+					<button
+						type="button"
+						class="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+						aria-label="Scroll right"
+					>
+						<ChevronRight class="h-5 w-5" />
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<!-- System Blades Grid -->
-		<div class="mt-12 pb-12">
-			<SystemBladesSection />
-		</div>
+		<div class="relative">
+			<!-- Carousel container -->
+			<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+			{#each recentSubmissions as submission (submission.submission_id)}
+				{@const runs = getRunsForSubmission(submission.submission_id)}
+				{@const sparkline = generateSparklinePath(runs, cardChartType)}
+				<a
+					href="/benchmarks/gtc/report?submission={submission.submission_id}"
+					class="group relative flex min-w-[340px] shrink-0 overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
+				>
+					<!-- Mini chart background -->
+					<div class="absolute inset-0">
+						<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
+							<!-- Gradient fill under the line -->
+							<defs>
+								<linearGradient id="cardGradient-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+									<stop offset="0%" style="stop-color: {accentColor}; stop-opacity: 0.15" />
+									<stop offset="100%" style="stop-color: {accentColor}; stop-opacity: 0.02" />
+								</linearGradient>
+							</defs>
+							{#if sparkline.path}
+								<!-- Area fill -->
+								<path
+									d="{sparkline.path} L 100 100 L 0 100 Z"
+									fill="url(#cardGradient-{submission.submission_id})"
+									style="transition: d 500ms ease-out"
+								/>
+								<!-- Line -->
+								<path
+									d={sparkline.path}
+									fill="none"
+									stroke={accentColor}
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									vector-effect="non-scaling-stroke"
+									style="transition: d 500ms ease-out"
+								/>
+							{/if}
+						</svg>
+					</div>
 
-		<!-- Demo Benchmark Results Table -->
-		<section class="pb-12">
-			<BenchmarkResultsTable
-				systems={demoBenchmarkSystems}
-				title="Featured Benchmark Results"
-				subtitle="Performance comparison across leading AI accelerator platforms"
-			/>
-		</section>
-	</div>
-{:catch error}
-	<ErrorBanner message={error?.message} />
-{/await}
+					<!-- Content overlay -->
+					<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/80 via-white/50 to-transparent p-4 dark:from-slate-800/80 dark:via-slate-800/50">
+						<div class="flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitter</span>
+							<span class="font-semibold text-slate-800 dark:text-white">{submission.submitter_org_names}</span>
+						</div>
+
+						<div class="mt-3 flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submission Date</span>
+							<span class="text-sm text-slate-700 dark:text-slate-300">{formatDate(submission.submission_date)}</span>
+						</div>
+
+						<div class="mt-3 flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Model</span>
+							<span class="text-sm text-slate-700 dark:text-slate-300">{submission.model_name}</span>
+						</div>
+					</div>
+
+					<!-- Color accent bar -->
+					<div
+						class="absolute bottom-0 left-0 h-1 w-full"
+						style="background-color: {accentColor}"
+					></div>
+				</a>
+			{/each}
+			</div>
+		</div>
+	</section>
+</div>

@@ -4,6 +4,7 @@
 	 * Supports step and line chart types with configurable scale types
 	 */
 	import GtcChart from './GtcChart.svelte';
+	import { getShowComparison } from '$lib/stores/chartSettings.svelte.js';
 
 	/**
 	 * @typedef {Object} ChartConfig
@@ -23,6 +24,9 @@
 	 */
 	/** @type {Props} */
 	let { chart, lineType = 'line' } = $props();
+
+	// Get comparison mode from global store
+	let showComparison = $derived(getShowComparison());
 
 	// Reactive container width for fluid chart sizing
 	let containerWidth = $state(0);
@@ -50,6 +54,7 @@
 				width={containerWidth}
 				height={Math.max(300, containerWidth * 0.6)}
 				{lineType}
+				{showComparison}
 			/>
 		{/if}
 	</div>

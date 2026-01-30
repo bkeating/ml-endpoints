@@ -3,21 +3,21 @@
 	let email = $state('');
 </script>
 
-<footer class="font-instrument-sans mt-12 bg-slate-900 dark:bg-slate-950">
+<footer class="font-instrument-sans mt-12 bg-slate-50 dark:bg-slate-950/30">
 	<!-- Main Footer Content -->
 	<div class="mx-auto max-w-7xl px-3 py-12 md:py-16">
 		<div class="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 			<!-- Logo & Newsletter Section -->
 			<div class="lg:col-span-2">
-				<img src="/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="mb-6 h-10" />
-				<p class="mb-6 max-w-md text-sm leading-relaxed text-slate-400">
+				<img src="/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="mb-6 h-10 invert dark:invert-0" />
+				<p class="mb-6 max-w-md text-sm leading-relaxed text-slate-700 dark:text-slate-400">
 					MLCommons is an open engineering consortium with a mission to make machine learning better
 					for everyone. We provide industry-standard benchmarks, datasets, and best practices.
 				</p>
 
 				<!-- Newsletter Subscription -->
 				<div class="mb-6">
-					<h3 class="mb-3 text-sm font-semibold tracking-wider text-white uppercase">
+					<h3 class="mb-3 text-sm font-semibold tracking-wider text-slate-900 dark:text-white uppercase">
 						Stay Updated
 					</h3>
 					<form class="flex flex-col gap-3 sm:flex-row" onsubmit={(e) => e.preventDefault()}>
@@ -25,7 +25,7 @@
 							type="email"
 							bind:value={email}
 							placeholder="Enter your email"
-							class="h-12 flex-1 rounded-lg border border-slate-700 bg-slate-800 px-4 text-white transition-all duration-200 placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+							class="h-12 flex-1 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 text-slate-900 dark:text-white transition-all duration-200 placeholder:text-slate-500 dark:placeholder:text-slate-500 focus:border-transparent focus:ring-2 focus:ring-emerald-500 focus:outline-none"
 							aria-label="Email address for newsletter"
 						/>
 						<button
@@ -40,13 +40,13 @@
 
 			<!-- Resources Links -->
 			<div>
-				<h3 class="mb-4 text-sm font-semibold tracking-wider text-white uppercase">Resources</h3>
+				<h3 class="mb-4 text-sm font-semibold tracking-wider text-slate-900 dark:text-white uppercase">Resources</h3>
 				<ul class="space-y-3">
 					<li>
 						<a
 							href="https://mlcommons.org/benchmarks/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Benchmarks
 						</a>
@@ -55,7 +55,7 @@
 						<a
 							href="https://mlcommons.org/datasets/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Datasets
 						</a>
@@ -64,7 +64,7 @@
 						<a
 							href="https://mlcommons.org/best-practices/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Best Practices
 						</a>
@@ -73,7 +73,7 @@
 						<a
 							href="https://github.com/mlcommons"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							GitHub
 						</a>
@@ -83,13 +83,13 @@
 
 			<!-- Community Links -->
 			<div>
-				<h3 class="mb-4 text-sm font-semibold tracking-wider text-white uppercase">Community</h3>
+				<h3 class="mb-4 text-sm font-semibold tracking-wider text-slate-900 dark:text-white uppercase">Community</h3>
 				<ul class="space-y-3">
 					<li>
 						<a
 							href="https://mlcommons.org/get-involved/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Get Involved
 						</a>
@@ -98,7 +98,7 @@
 						<a
 							href="https://mlcommons.org/membership/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Membership
 						</a>
@@ -107,7 +107,7 @@
 						<a
 							href="https://mlcommons.org/events/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							Events
 						</a>
@@ -116,7 +116,7 @@
 						<a
 							href="https://mlcommons.org/news/"
 							target="_blank"
-							class="text-sm text-slate-400 transition-colors duration-200 hover:text-white"
+							class="text-sm text-slate-700 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
 						>
 							News
 						</a>
@@ -127,12 +127,12 @@
 	</div>
 
 	<!-- Bottom Bar -->
-	<div class="border-t border-slate-800">
+	<div class="border-t border-slate-300 dark:border-slate-800">
 		<div class="mx-auto max-w-7xl px-3 py-6">
 			<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
 				<!-- Copyright & Trademark -->
 				<div class="text-center md:text-left">
-					<p class="text-xs leading-relaxed text-slate-500">
+					<p class="text-xs leading-relaxed text-slate-600 dark:text-slate-500">
 						&copy; 2026 MLCommons. MLCommons, MLPerf and MLCube are registered trademarks of
 						MLCommons Association.
 					</p>
@@ -143,15 +143,15 @@
 					<a
 						href="https://mlcommons.org/privacy/"
 						target="_blank"
-						class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
+						class="text-slate-600 dark:text-slate-500 transition-colors duration-200 hover:text-slate-900 dark:hover:text-slate-300"
 					>
 						Privacy Policy
 					</a>
-					<span class="text-slate-700">|</span>
+					<span class="text-slate-400 dark:text-slate-700">|</span>
 					<a
 						href="https://mlcommons.org/policies/"
 						target="_blank"
-						class="text-slate-500 transition-colors duration-200 hover:text-slate-300"
+						class="text-slate-600 dark:text-slate-500 transition-colors duration-200 hover:text-slate-900 dark:hover:text-slate-300"
 					>
 						Policies
 					</a>

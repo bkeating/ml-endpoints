@@ -8,7 +8,7 @@ import { paretoSeries } from '$lib/data/paretoData.js';
 import { allGpuConfigs } from '$lib/data/placeholders.js';
 
 // Import endpoints data for system IDs
-import endpointsData from '../../routes/benchmarks/gtc/endpoints-benchmark-data.json';
+import endpointsData from '../../routes/endpoints-benchmark-data.json';
 
 /**
  * @typedef {Object} ChartSettings
@@ -53,6 +53,9 @@ let hoveredRunId = $state(null);
 
 /** @type {{ modelName: string, modelColor: string } | null} */
 let hoveredRunInfo = $state(null);
+
+/** @type {boolean} - Whether to show system comparison lines on hover */
+let showComparison = $state(false);
 
 /**
  * Get current chart settings
@@ -291,6 +294,33 @@ export function getHoveredRunInfo() {
 	return hoveredRunInfo;
 }
 
+// ============================================================================
+// SYSTEM COMPARISON MODE
+// ============================================================================
+
+/**
+ * Get the current comparison mode state
+ * @returns {boolean}
+ */
+export function getShowComparison() {
+	return showComparison;
+}
+
+/**
+ * Set the comparison mode state
+ * @param {boolean} value - Whether to show comparison lines
+ */
+export function setShowComparison(value) {
+	showComparison = value;
+}
+
+/**
+ * Toggle the comparison mode
+ */
+export function toggleComparison() {
+	showComparison = !showComparison;
+}
+
 /**
  * Reset all settings to defaults
  */
@@ -302,4 +332,5 @@ export function resetSettings() {
 	selectedAccelerator = 'all';
 	hideNonOptimal = false;
 	hideLabels = false;
+	showComparison = false;
 }
