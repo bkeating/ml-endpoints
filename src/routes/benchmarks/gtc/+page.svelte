@@ -426,6 +426,7 @@
 									<path
 										d="{sparkline.path} L 100 100 L 0 100 Z"
 										fill="url(#cardGradient-{submission.submission_id})"
+										style="transition: d 500ms ease-out"
 									/>
 									<!-- Line -->
 									<path
@@ -436,13 +437,14 @@
 										stroke-linecap="round"
 										stroke-linejoin="round"
 										vector-effect="non-scaling-stroke"
+										style="transition: d 500ms ease-out"
 									/>
 								{/if}
 							</svg>
 						</div>
 
 						<!-- Content overlay -->
-						<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/95 via-white/80 to-transparent p-4 dark:from-slate-800/95 dark:via-slate-800/80">
+						<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/80 via-white/50 to-transparent p-4 dark:from-slate-800/80 dark:via-slate-800/50">
 							<div class="flex flex-col gap-0.5">
 								<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitter</span>
 								<span class="font-semibold text-slate-800 dark:text-white">{submission.submitter_org_names}</span>
