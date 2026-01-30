@@ -414,7 +414,7 @@
 				{@const runs = getRunsForSubmission(submission.submission_id)}
 				{@const sparkline = generateSparklinePath(runs, cardChartType)}
 				<a
-					href="/benchmarks/gtc/report?submission={submission.submission_id}"
+					href="/report?submission={submission.submission_id}"
 					class="group relative flex min-w-[340px] shrink-0 overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
 				>
 					<!-- Mini chart background -->

@@ -317,7 +317,7 @@
 			run: point.meta.run_id ?? ''
 		});
 
-		goto(`/benchmarks/gtc/report?${params.toString()}`);
+		goto(`/report?${params.toString()}`);
 	}
 
 	const clipId = generateClipPathId();

@@ -184,7 +184,7 @@
 			submission: run.submission_id,
 			run: run.run_id
 		});
-		goto(`/benchmarks/gtc/report?${params.toString()}`);
+		goto(`/report?${params.toString()}`);
 	}
 </script>
 
