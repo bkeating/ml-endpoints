@@ -217,7 +217,7 @@
 						step="0.1"
 						value={sliderPercent}
 						oninput={handleSliderInput}
-						class="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]dark:bg-[#d0bd67] [&::-webkit-slider-thumb]:bg-[#4f805b] [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#C41E3A] [&::-moz-range-thumb]:shadow-md"
+						class="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:dark:bg-[#d0bd67] [&::-webkit-slider-thumb]:bg-[#4f805b] [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#C41E3A] [&::-moz-range-thumb]:shadow-md"
 						aria-label="Concurrency slider"
 					/>
 				</div>
@@ -327,7 +327,7 @@
 								y1="0"
 								x2={sliderPercent}
 								y2="100"
-								stroke="#C41E3A"
+								stroke="currentColor"
 								stroke-width="1.5"
 								stroke-dasharray="4 2"
 								vector-effect="non-scaling-stroke"

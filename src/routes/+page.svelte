@@ -324,7 +324,7 @@
 </script>
 
 <!-- Side-by-side layout with filters sidebar and charts -->
-<div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9">
+<div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9 bg-white dark:bg-slate-900 transition-colors duration-200">
 	<div class="flex flex-col gap-6 lg:flex-row">
 		<!-- Charts area -->
 		<div class="min-w-0 flex-1">

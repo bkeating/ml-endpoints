@@ -27,9 +27,9 @@
 
 <!-- Header -->
 <header class="font-instrument-sans sticky top-0 z-40 h-[80px] border-b border-[#ECEEF5] bg-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900">
-	<div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3 md:grid md:grid-cols-[1fr_auto_1fr]">
+	<div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3">
 		<!-- Logo -->
-		<a href={resolve('/')} class="block justify-self-start">
+		<a href={resolve('/')} class="">
 			<img src={isDark ? '/ML-Commons-Logo-Dark.svg' : '/ML-Commons-Logo.svg'} alt="ML Commons" class="h-10" />
 		</a>
 
@@ -46,12 +46,12 @@
 		</nav>
 
 		<!-- Desktop Actions -->
-		<div class="hidden items-center gap-2 justify-self-end md:flex">
+		<div class="hidden items-center gap-2 md:flex">
 			<div class="flex h-10 items-center justify-center rounded-full bg-[#CCEBD4] px-6 text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
-			<button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-800 dark:text-slate-200 transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
+			<!-- <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-800 dark:text-slate-200 transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
 				<Icon name="Search" class="h-[18px] w-[18px]" />
-			</button>
-			<button onclick={toggleTheme} class="text-slate-900 transition-colors duration-200 hover:text-slate-600 dark:text-white dark:hover:text-slate-300" aria-label="Toggle dark mode">
+			</button> -->
+			<button onclick={toggleTheme} class="text-slate-900 transition-colors duration-200 hover:text-slate-600 dark:text-white dark:hover:text-slate-300 cursor-pointer" aria-label="Toggle dark mode">
 				<Icon name={isDark ? 'MoonFilled' : 'Moon'} class="h-6 w-6" />
 			</button>
 		</div>
@@ -102,7 +102,7 @@
 			<Icon name="Search" class="h-5 w-5" />
 			<span>Search</span>
 		</button>
-		<button type="button" onclick={toggleTheme} class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800" aria-label="Toggle theme">
+		<button type="button" onclick={toggleTheme} class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800 cursor-pointer" aria-label="Toggle theme">
 			<Icon name={isDark ? 'MoonFilled' : 'Moon'} class="h-5 w-5" />
 			<span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
 		</button>

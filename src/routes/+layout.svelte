@@ -41,8 +41,21 @@
 {:else}
 	<div class="min-h-screen bg-white transition-colors duration-200 dark:bg-slate-900">
 		<Header {navItems} />
-		<main class="flex-1">
-			{@render children()}
+		<main class="flex-1 relative">
+			<!-- Faint background pattern layer -->
+			<div
+				class="pointer-events-none absolute inset-0 z-0 opacity-70 dark:opacity-[0.02]"
+				aria-hidden="true"
+				style="
+					background-image: url('/bg-pattern-squares.svg');
+					background-position: 50% 0%;
+					background-repeat: repeat;
+				"
+			></div>
+			<!-- Main page content -->
+			<div class="relative z-10">
+				{@render children()}
+			</div>
 		</main>
 		<Footer />
 	</div>

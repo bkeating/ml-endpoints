@@ -216,7 +216,7 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-4 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:block"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-4 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:block"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
