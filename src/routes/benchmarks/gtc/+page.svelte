@@ -348,7 +348,7 @@
 			<!-- Main content area - 2x2 grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Chart 1: System Throughput vs Interactivity -->
-				<GtcChartSection chart={throughputVsInteractivityChart} lineType="line" />
+				<GtcChartSection chart={throughputVsInteractivityChart} lineType="step" />
 
 				<!-- Chart 2: Throughput vs Concurrency -->
 				<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />

@@ -170,6 +170,10 @@
 			: createSmoothLineGenerator(xScale, yScale)
 	);
 
+	// Smooth line generator for dashed overlay on step charts
+	// Shows the "imagined" smooth curve that the step function conservatively approximates
+	let smoothLineGenerator = $derived(createSmoothLineGenerator(xScale, yScale));
+
 	// Tooltip state
 	let tooltipData = $state(null);
 	let tooltipPosition = $state({ x: 0, y: 0 });
@@ -308,7 +312,21 @@
 			<!-- Data (clipped) -->
 			<g clip-path="url(#{clipId})">
 				{#each filteredData as model (model.id)}
-					<!-- Line path -->
+					<!-- Dashed smooth curve (for step charts only) - shows "imagined" interpolation -->
+					{#if lineType === 'step'}
+						<path
+							d={smoothLineGenerator(model.points)}
+							fill="none"
+							stroke={model.color}
+							stroke-width="1.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-dasharray="6,4"
+							opacity="0.6"
+							class="transition-opacity duration-300"
+						/>
+					{/if}
+					<!-- Primary line path (step or smooth based on lineType) -->
 					<path
 						d={lineGenerator(model.points)}
 						fill="none"
