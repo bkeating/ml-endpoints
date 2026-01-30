@@ -17,6 +17,7 @@
 		getSelectedBenchmarkModelId,
 		isSystemDisabledByAccelerator
 	} from '$lib/stores/chartSettings.svelte.js';
+	import { getTheme } from '$lib/stores/theme.svelte.js';
 
 	// Import normalized benchmark data from local JSON
 	import endpointsData from './endpoints-benchmark-data.json';
@@ -109,6 +110,12 @@
 		const system = endpointsData.systems.find((s) => s.id === systemId);
 		return system?.color ?? '#64748b';
 	}
+
+	/**
+	 * Get the accent color for charts based on current theme.
+	 * @returns {string} - Hex color for light or dark theme
+	 */
+	let accentColor = $derived(getTheme() === 'dark' ? '#726528' : '#CCEBD4');
 
 	/**
 	 * Generate an SVG path for a mini sparkline chart.
@@ -403,71 +410,70 @@
 		<div class="relative">
 			<!-- Carousel container -->
 			<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
-				{#each recentSubmissions as submission (submission.submission_id)}
-					{@const runs = getRunsForSubmission(submission.submission_id)}
-					{@const systemColor = getSystemColor(submission.system_id)}
-					{@const sparkline = generateSparklinePath(runs, cardChartType)}
-					<a
-						href="/benchmarks/gtc/report?submission={submission.submission_id}"
-						class="group relative flex min-w-[340px] shrink-0 overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
-					>
-						<!-- Mini chart background -->
-						<div class="absolute inset-0">
-							<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
-								<!-- Gradient fill under the line -->
-								<defs>
-									<linearGradient id="cardGradient-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
-										<stop offset="0%" style="stop-color: {systemColor}; stop-opacity: 0.15" />
-										<stop offset="100%" style="stop-color: {systemColor}; stop-opacity: 0.02" />
-									</linearGradient>
-								</defs>
-								{#if sparkline.path}
-									<!-- Area fill -->
-									<path
-										d="{sparkline.path} L 100 100 L 0 100 Z"
-										fill="url(#cardGradient-{submission.submission_id})"
-										style="transition: d 500ms ease-out"
-									/>
-									<!-- Line -->
-									<path
-										d={sparkline.path}
-										fill="none"
-										stroke={systemColor}
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-										vector-effect="non-scaling-stroke"
-										style="transition: d 500ms ease-out"
-									/>
-								{/if}
-							</svg>
+			{#each recentSubmissions as submission (submission.submission_id)}
+				{@const runs = getRunsForSubmission(submission.submission_id)}
+				{@const sparkline = generateSparklinePath(runs, cardChartType)}
+				<a
+					href="/benchmarks/gtc/report?submission={submission.submission_id}"
+					class="group relative flex min-w-[340px] shrink-0 overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
+				>
+					<!-- Mini chart background -->
+					<div class="absolute inset-0">
+						<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
+							<!-- Gradient fill under the line -->
+							<defs>
+								<linearGradient id="cardGradient-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+									<stop offset="0%" style="stop-color: {accentColor}; stop-opacity: 0.15" />
+									<stop offset="100%" style="stop-color: {accentColor}; stop-opacity: 0.02" />
+								</linearGradient>
+							</defs>
+							{#if sparkline.path}
+								<!-- Area fill -->
+								<path
+									d="{sparkline.path} L 100 100 L 0 100 Z"
+									fill="url(#cardGradient-{submission.submission_id})"
+									style="transition: d 500ms ease-out"
+								/>
+								<!-- Line -->
+								<path
+									d={sparkline.path}
+									fill="none"
+									stroke={accentColor}
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									vector-effect="non-scaling-stroke"
+									style="transition: d 500ms ease-out"
+								/>
+							{/if}
+						</svg>
+					</div>
+
+					<!-- Content overlay -->
+					<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/80 via-white/50 to-transparent p-4 dark:from-slate-800/80 dark:via-slate-800/50">
+						<div class="flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitter</span>
+							<span class="font-semibold text-slate-800 dark:text-white">{submission.submitter_org_names}</span>
 						</div>
 
-						<!-- Content overlay -->
-						<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/80 via-white/50 to-transparent p-4 dark:from-slate-800/80 dark:via-slate-800/50">
-							<div class="flex flex-col gap-0.5">
-								<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitter</span>
-								<span class="font-semibold text-slate-800 dark:text-white">{submission.submitter_org_names}</span>
-							</div>
-
-							<div class="mt-3 flex flex-col gap-0.5">
-								<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submission Date</span>
-								<span class="text-sm text-slate-700 dark:text-slate-300">{formatDate(submission.submission_date)}</span>
-							</div>
-
-							<div class="mt-3 flex flex-col gap-0.5">
-								<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Model</span>
-								<span class="text-sm text-slate-700 dark:text-slate-300">{submission.model_name}</span>
-							</div>
+						<div class="mt-3 flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submission Date</span>
+							<span class="text-sm text-slate-700 dark:text-slate-300">{formatDate(submission.submission_date)}</span>
 						</div>
 
-						<!-- Color accent bar -->
-						<div
-							class="absolute bottom-0 left-0 h-1 w-full"
-							style="background-color: {systemColor}"
-						></div>
-					</a>
-				{/each}
+						<div class="mt-3 flex flex-col gap-0.5">
+							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Model</span>
+							<span class="text-sm text-slate-700 dark:text-slate-300">{submission.model_name}</span>
+						</div>
+					</div>
+
+					<!-- Color accent bar -->
+					<div
+						class="absolute bottom-0 left-0 h-1 w-full"
+						style="background-color: {accentColor}"
+					></div>
+				</a>
+			{/each}
 			</div>
 		</div>
 	</section>

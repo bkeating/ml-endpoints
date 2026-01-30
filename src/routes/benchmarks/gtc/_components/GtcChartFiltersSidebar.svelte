@@ -213,7 +213,7 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-700 bg-slate-800/90 p-4 shadow-lg backdrop-blur-sm lg:block"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-4 shadow-lg backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:block"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
@@ -221,7 +221,7 @@
 		<div class="flex flex-col gap-1.5">
 			<label
 				for="model-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
 			>
 				Model
 			</label>
@@ -229,7 +229,7 @@
 				id="model-select"
 				value={selectedModel}
 				onchange={(e) => setSelectedBenchmarkModelId(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
 				aria-label="Select benchmark model"
 			>
 				{#each modelOptions as option (option.id)}
@@ -242,14 +242,14 @@
 		<div class="flex flex-col gap-1.5">
 			<label
 				for="processor-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
 			>
 				Processor
 			</label>
 			<select
 				id="processor-select"
 				bind:value={selectedProcessor}
-				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
 				aria-label="Select processor"
 			>
 				{#each processorOptions as option (option.id)}
@@ -262,7 +262,7 @@
 		<div class="flex flex-col gap-1.5">
 			<label
 				for="accelerator-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
 			>
 				Accelerator
 			</label>
@@ -270,7 +270,7 @@
 				id="accelerator-select"
 				value={selectedAccelerator}
 				onchange={(e) => setSelectedAccelerator(e.target.value)}
-				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
 				aria-label="Select accelerator"
 			>
 				{#each acceleratorOptions as option (option.id)}
@@ -283,14 +283,14 @@
 		<div class="flex flex-col gap-1.5">
 			<label
 				for="organization-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-400 uppercase"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
 			>
 				Organization
 			</label>
 			<select
 				id="organization-select"
 				bind:value={selectedOrganization}
-				class="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-slate-200 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
 				aria-label="Select organization"
 			>
 				{#each organizationOptions as option (option.id)}
@@ -302,7 +302,7 @@
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
 		<h4
-			class="mb-2 text-[10px] font-bold tracking-widest text-slate-400 uppercase"
+			class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
 		>
 			Systems
 		</h4>
@@ -312,23 +312,23 @@
 				{@const disabled = hw.disabledByFilter}
 				{@const expanded = isExpanded(hw.id, visible) && !disabled}
 				<div
-					class="rounded-lg transition-all duration-200 {expanded ? 'border border-slate-600' : ''} {disabled ? 'opacity-40' : ''}"
+					class="rounded-lg transition-all duration-200 {expanded ? 'border border-slate-300 dark:border-slate-600' : ''} {disabled ? 'opacity-40' : ''}"
 				>
 					<!-- Legend Row with Toggle and Expand Controls -->
-					<div class="flex w-full items-center rounded-lg transition-all duration-200 {expanded ? '' : disabled ? '' : 'hover:bg-slate-700'}">
+					<div class="flex w-full items-center rounded-lg transition-all duration-200 {expanded ? '' : disabled ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}">
 						<!-- Expand/Collapse Button (left of colored circle) - always visible unless disabled -->
 						{#if hw.system}
 							<button
 								type="button"
 								onclick={() => !disabled && handleExpandClick(hw.id)}
-								class="ml-1 p-1 rounded transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-600'}"
+								class="ml-1 p-1 rounded transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-200 dark:hover:bg-slate-600'}"
 								aria-expanded={expanded}
 								aria-label="{expanded ? 'Collapse' : 'Expand'} {hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
 								aria-disabled={disabled}
 							>
 								<Icon
 									name={expanded ? 'Minus' : 'Plus'}
-									class="h-3.5 w-3.5 text-slate-400"
+									class="h-3.5 w-3.5 text-slate-500 dark:text-slate-400"
 								/>
 							</button>
 						{:else}
@@ -351,8 +351,8 @@
 							></span>
 							<span
 								class="flex-1 text-sm font-medium transition-opacity duration-200 {visible && !disabled
-									? 'text-slate-200'
-									: 'text-slate-500 line-through'}"
+									? 'text-slate-800 dark:text-slate-200'
+									: 'text-slate-500 dark:text-slate-500 line-through'}"
 							>
 								{hw.name}
 							</span>
@@ -381,10 +381,10 @@
 										>
 											<!-- System Header -->
 											<div class="mb-2">
-												<p class="font-semibold text-slate-200 leading-tight text-[11px]">
+												<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
 													{hw.system.system_name}
 												</p>
-												<p class="text-slate-400 text-[10px]">
+												<p class="text-slate-500 dark:text-slate-400 text-[10px]">
 													{hw.system.submitter_org_names} / {hw.system.division}
 												</p>
 											</div>
@@ -393,35 +393,35 @@
 											<dl class="space-y-1.5 text-[11px]">
 												<!-- Framework -->
 												<div>
-													<dt class="font-medium text-slate-400">Framework</dt>
-													<dd class="text-slate-200">{hw.system.framework}</dd>
+													<dt class="font-medium text-slate-500 dark:text-slate-400">Framework</dt>
+													<dd class="text-slate-800 dark:text-slate-200">{hw.system.framework}</dd>
 												</div>
 
 												<!-- Accelerator -->
 												<div>
-													<dt class="font-medium text-slate-400">Accelerator</dt>
-													<dd class="text-slate-200">
+													<dt class="font-medium text-slate-500 dark:text-slate-400">Accelerator</dt>
+													<dd class="text-slate-800 dark:text-slate-200">
 														{hw.system.accelerators_per_node}x {hw.system.accelerator_model_name}
 													</dd>
-													<dd class="text-slate-400 text-[10px]">
+													<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
 														{hw.system.accelerator_memory_capacity} {hw.system.accelerator_memory_type}
 													</dd>
 												</div>
 
 												<!-- Host -->
 												<div>
-													<dt class="font-medium text-slate-400">Host</dt>
-													<dd class="text-slate-200">
+													<dt class="font-medium text-slate-500 dark:text-slate-400">Host</dt>
+													<dd class="text-slate-800 dark:text-slate-200">
 														{hw.system.host_processors_per_node}x {hw.system.host_processor_model_name}
 													</dd>
 												</div>
 
 												<!-- Category & Status -->
 												<div>
-													<dt class="font-medium text-slate-400">Category</dt>
-													<dd class="text-slate-200">
+													<dt class="font-medium text-slate-500 dark:text-slate-400">Category</dt>
+													<dd class="text-slate-800 dark:text-slate-200">
 														{hw.system.system_category}
-														<span class="ml-1 text-slate-400">({hw.system.system_availability_status})</span>
+														<span class="ml-1 text-slate-500 dark:text-slate-400">({hw.system.system_availability_status})</span>
 													</dd>
 												</div>
 											</dl>
@@ -447,13 +447,13 @@
 										>
 											<!-- Edit Header -->
 											<div class="mb-3 flex items-center justify-between">
-												<p class="font-semibold text-slate-200 text-[11px]">
+												<p class="font-semibold text-slate-800 dark:text-slate-200 text-[11px]">
 													System Configuration
 												</p>
 												<button
 													type="button"
 													onclick={() => toggleEditMode(hw.id)}
-													class="text-slate-400 hover:text-slate-200 transition-colors"
+													class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
 													aria-label="Close configuration"
 												>
 													<Icon name="Close" class="h-4 w-4" />
@@ -464,42 +464,42 @@
 											<form class="space-y-3" onsubmit={(e) => e.preventDefault()}>
 												<!-- System Name -->
 												<div class="flex flex-col gap-1">
-													<label for="system-name-{hw.id}" class="text-[10px] font-medium text-slate-400">
+													<label for="system-name-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">
 														System Name
 													</label>
 													<input
 														id="system-name-{hw.id}"
 														type="text"
 														value={hw.system.system_name}
-														class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1.5 text-[11px] text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+														class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500"
 														aria-label="System name"
 													/>
 												</div>
 
 												<!-- Accelerator Config -->
-												<fieldset class="space-y-2 rounded border border-slate-700 p-2">
-													<legend class="px-1 text-[10px] font-medium text-slate-400">Accelerator</legend>
+												<fieldset class="space-y-2 rounded border border-slate-200 p-2 dark:border-slate-700">
+													<legend class="px-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">Accelerator</legend>
 
 													<div class="flex gap-2">
 														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-count-{hw.id}" class="text-[10px] text-slate-500">Count</label>
+															<label for="accel-count-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Count</label>
 															<input
 																id="accel-count-{hw.id}"
 																type="number"
 																min="1"
 																max="64"
 																value={hw.system.accelerators_per_node}
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Accelerators per node"
 															/>
 														</div>
 														<div class="flex flex-col gap-1 flex-2">
-															<label for="accel-model-{hw.id}" class="text-[10px] text-slate-500">Model</label>
+															<label for="accel-model-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Model</label>
 															<input
 																id="accel-model-{hw.id}"
 																type="text"
 																value={hw.system.accelerator_model_name}
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Accelerator model"
 															/>
 														</div>
@@ -507,20 +507,20 @@
 
 													<div class="flex gap-2">
 														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-mem-{hw.id}" class="text-[10px] text-slate-500">Memory</label>
+															<label for="accel-mem-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Memory</label>
 															<input
 																id="accel-mem-{hw.id}"
 																type="text"
 																value={hw.system.accelerator_memory_capacity}
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Accelerator memory"
 															/>
 														</div>
 														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-mem-type-{hw.id}" class="text-[10px] text-slate-500">Type</label>
+															<label for="accel-mem-type-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Type</label>
 															<select
 																id="accel-mem-type-{hw.id}"
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Memory type"
 															>
 																<option value="HBM3e" selected={hw.system.accelerator_memory_configuration === 'HBM3e'}>HBM3e</option>
@@ -533,42 +533,42 @@
 												</fieldset>
 
 												<!-- Host Config -->
-												<fieldset class="space-y-2 rounded border border-slate-700 p-2">
-													<legend class="px-1 text-[10px] font-medium text-slate-400">Host</legend>
+												<fieldset class="space-y-2 rounded border border-slate-200 p-2 dark:border-slate-700">
+													<legend class="px-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">Host</legend>
 
 													<div class="flex gap-2">
 														<div class="flex flex-col gap-1 flex-1">
-															<label for="host-count-{hw.id}" class="text-[10px] text-slate-500">CPUs</label>
+															<label for="host-count-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">CPUs</label>
 															<input
 																id="host-count-{hw.id}"
 																type="number"
 																min="1"
 																max="8"
 																value={hw.system.host_processors_per_node}
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Host processors per node"
 															/>
 														</div>
 														<div class="flex flex-col gap-1 flex-2">
-															<label for="host-model-{hw.id}" class="text-[10px] text-slate-500">Processor</label>
+															<label for="host-model-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Processor</label>
 															<input
 																id="host-model-{hw.id}"
 																type="text"
 																value={hw.system.host_processor_model_name}
-																class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 																aria-label="Host processor model"
 															/>
 														</div>
 													</div>
 
 													<div class="flex flex-col gap-1">
-														<label for="host-mem-{hw.id}" class="text-[10px] text-slate-500">Memory Capacity</label>
+														<label for="host-mem-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Memory Capacity</label>
 														<input
 															id="host-mem-{hw.id}"
 															type="text"
 															value={hw.system.host_memory_capacity ?? ''}
 															placeholder="e.g., 2 TB"
-															class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1 text-[11px] text-slate-200 placeholder-slate-500 focus:border-emerald-500 focus:outline-none"
+															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500"
 															aria-label="Host memory capacity"
 														/>
 													</div>
@@ -576,14 +576,14 @@
 
 												<!-- Software Stack -->
 												<div class="flex flex-col gap-1">
-													<label for="framework-{hw.id}" class="text-[10px] font-medium text-slate-400">
+													<label for="framework-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">
 														Framework / Software
 													</label>
 													<input
 														id="framework-{hw.id}"
 														type="text"
 														value={hw.system.framework}
-														class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1.5 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+														class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 														aria-label="Framework"
 													/>
 												</div>
@@ -591,10 +591,10 @@
 												<!-- Cooling & Status -->
 												<div class="flex gap-2">
 													<div class="flex flex-col gap-1 flex-1">
-														<label for="cooling-{hw.id}" class="text-[10px] font-medium text-slate-400">Cooling</label>
+														<label for="cooling-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Cooling</label>
 														<select
 															id="cooling-{hw.id}"
-															class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1.5 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 															aria-label="Cooling type"
 														>
 															<option value="Air-cooled">Air-cooled</option>
@@ -603,10 +603,10 @@
 														</select>
 													</div>
 													<div class="flex flex-col gap-1 flex-1">
-														<label for="status-{hw.id}" class="text-[10px] font-medium text-slate-400">Status</label>
+														<label for="status-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Status</label>
 														<select
 															id="status-{hw.id}"
-															class="w-full rounded border border-slate-600 bg-slate-700 px-2 py-1.5 text-[11px] text-slate-200 focus:border-emerald-500 focus:outline-none"
+															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
 															aria-label="Availability status"
 														>
 															<option value="available" selected={hw.system.system_availability_status === 'available'}>Available</option>
@@ -621,7 +621,7 @@
 													<button
 														type="button"
 														onclick={() => toggleEditMode(hw.id)}
-														class="flex-1 rounded-md border border-slate-600 px-3 py-1.5 text-[11px] font-medium text-slate-300 transition-colors hover:bg-slate-700"
+														class="flex-1 rounded-md border border-slate-300 px-3 py-1.5 text-[11px] font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
 													>
 														Cancel
 													</button>

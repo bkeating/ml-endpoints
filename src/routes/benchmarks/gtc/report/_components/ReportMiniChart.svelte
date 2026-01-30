@@ -2,6 +2,7 @@
 	/**
 	 * ReportMiniChart - A compact chart for the report page sidebar.
 	 * Shows a single submission's data with the current run highlighted.
+	 * Supports synchronized crosshairs across multiple charts.
 	 */
 	import { scaleLinear } from 'd3-scale';
 	import { line, curveMonotoneX } from 'd3-shape';
@@ -14,15 +15,23 @@
 	 */
 
 	/**
+	 * @typedef {Object} CrosshairPosition
+	 * @property {number} x - Normalized X position (0-1)
+	 * @property {number} y - Normalized Y position (0-1)
+	 */
+
+	/**
 	 * @type {{
 	 *   title: string,
 	 *   xLabel: string,
 	 *   yLabel: string,
 	 *   color: string,
-	 *   points: ChartPoint[]
+	 *   points: ChartPoint[],
+	 *   crosshairPosition?: CrosshairPosition | null,
+	 *   onCrosshairMove?: (position: CrosshairPosition | null) => void
 	 * }}
 	 */
-	let { title, xLabel, yLabel, color, points } = $props();
+	let { title, xLabel, yLabel, color, points, crosshairPosition = null, onCrosshairMove } = $props();
 
 	// Chart dimensions
 	const width = 320;
@@ -82,6 +91,44 @@
 
 	// Find the highlighted point
 	let highlightedPoint = $derived(points.find((p) => p.isHighlighted));
+
+	/** @type {SVGSVGElement | null} */
+	let svgElement = $state(null);
+
+	/**
+	 * Handle mouse move on chart area - calculate normalized position and notify parent
+	 * @param {MouseEvent} event
+	 */
+	function handleMouseMove(event) {
+		if (!svgElement || !onCrosshairMove) return;
+
+		const rect = svgElement.getBoundingClientRect();
+		const scaleX = width / rect.width;
+		const scaleY = height / rect.height;
+
+		// Calculate position relative to the inner chart area
+		const mouseX = (event.clientX - rect.left) * scaleX - margin.left;
+		const mouseY = (event.clientY - rect.top) * scaleY - margin.top;
+
+		// Normalize to 0-1 range within the chart area
+		const normalizedX = Math.max(0, Math.min(1, mouseX / innerWidth));
+		const normalizedY = Math.max(0, Math.min(1, mouseY / innerHeight));
+
+		onCrosshairMove({ x: normalizedX, y: normalizedY });
+	}
+
+	/**
+	 * Handle mouse leaving the chart
+	 */
+	function handleMouseLeave() {
+		if (onCrosshairMove) {
+			onCrosshairMove(null);
+		}
+	}
+
+	// Calculate crosshair pixel positions from normalized coordinates
+	let crosshairX = $derived(crosshairPosition ? crosshairPosition.x * innerWidth : null);
+	let crosshairY = $derived(crosshairPosition ? crosshairPosition.y * innerHeight : null);
 </script>
 
 <div class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
@@ -92,7 +139,15 @@
 
 	<!-- SVG Chart -->
 	<div class="p-2">
-		<svg viewBox="0 0 {width} {height}" class="h-auto w-full">
+		<svg
+			bind:this={svgElement}
+			viewBox="0 0 {width} {height}"
+			class="h-auto w-full"
+			onmousemove={handleMouseMove}
+			onmouseleave={handleMouseLeave}
+			role="img"
+			aria-label="{title} chart"
+		>
 			<!-- Background -->
 			<rect
 				x={margin.left}
@@ -153,6 +208,43 @@
 							class="animate-ping"
 						/>
 					</g>
+				{/if}
+
+				<!-- Synchronized Crosshairs -->
+				{#if crosshairPosition && crosshairX !== null && crosshairY !== null}
+					<!-- Vertical crosshair line -->
+					<line
+						x1={crosshairX}
+						x2={crosshairX}
+						y1="0"
+						y2={innerHeight}
+						stroke="#475569"
+						stroke-width="1"
+						stroke-dasharray="4,3"
+						opacity="0.7"
+						pointer-events="none"
+					/>
+					<!-- Horizontal crosshair line -->
+					<line
+						x1="0"
+						x2={innerWidth}
+						y1={crosshairY}
+						y2={crosshairY}
+						stroke="#475569"
+						stroke-width="1"
+						stroke-dasharray="4,3"
+						opacity="0.7"
+						pointer-events="none"
+					/>
+					<!-- Center dot at crosshair intersection -->
+					<circle
+						cx={crosshairX}
+						cy={crosshairY}
+						r="3"
+						fill="#475569"
+						opacity="0.7"
+						pointer-events="none"
+					/>
 				{/if}
 
 				<!-- Y-axis -->

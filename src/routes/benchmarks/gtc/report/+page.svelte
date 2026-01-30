@@ -241,6 +241,27 @@
 			}))
 		};
 	});
+
+	// ============================================================================
+	// SYNCHRONIZED CROSSHAIRS
+	// ============================================================================
+
+	/**
+	 * @typedef {Object} CrosshairPosition
+	 * @property {number} x - Normalized X position (0-1)
+	 * @property {number} y - Normalized Y position (0-1)
+	 */
+
+	/** @type {CrosshairPosition | null} */
+	let sharedCrosshairPosition = $state(null);
+
+	/**
+	 * Handle crosshair position updates from any chart
+	 * @param {CrosshairPosition | null} position
+	 */
+	function handleCrosshairMove(position) {
+		sharedCrosshairPosition = position;
+	}
 </script>
 
 <!-- Report Page Layout -->
@@ -691,6 +712,8 @@
 							yLabel={ttftChartData.yLabel}
 							color={ttftChartData.color}
 							points={ttftChartData.points}
+							crosshairPosition={sharedCrosshairPosition}
+							onCrosshairMove={handleCrosshairMove}
 						/>
 					{/if}
 
@@ -702,6 +725,8 @@
 							yLabel={throughputChartData.yLabel}
 							color={throughputChartData.color}
 							points={throughputChartData.points}
+							crosshairPosition={sharedCrosshairPosition}
+							onCrosshairMove={handleCrosshairMove}
 						/>
 					{/if}
 
@@ -713,6 +738,8 @@
 							yLabel={concurrencyThroughputData.yLabel}
 							color={concurrencyThroughputData.color}
 							points={concurrencyThroughputData.points}
+							crosshairPosition={sharedCrosshairPosition}
+							onCrosshairMove={handleCrosshairMove}
 						/>
 					{/if}
 
@@ -724,6 +751,8 @@
 							yLabel={utilizationChartData.yLabel}
 							color={utilizationChartData.color}
 							points={utilizationChartData.points}
+							crosshairPosition={sharedCrosshairPosition}
+							onCrosshairMove={handleCrosshairMove}
 						/>
 					{/if}
 				</div>
@@ -741,13 +770,13 @@
 
 
 			<!-- Throughput RT Chart -->
-			<section class="mt-6">
+			<!-- <section class="mt-6">
 				<ThroughputRTChart
 					criticalJops={throughputRTData.criticalJops}
 					maxJops={throughputRTData.maxJops}
 					dataPoints={throughputRTData.dataPoints}
 				/>
-			</section>
+			</section> -->
 		{:else}
 			<!-- Loading/Error State -->
 			<div class="rounded-lg border border-slate-200 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-800">
