@@ -10,6 +10,7 @@
 	 */
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
+	import ConcurrencyHighlightCharts from './_components/ConcurrencyHighlightCharts.svelte';
 	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
 	import ChevronRight from '$lib/components/icons/ChevronRight.svelte';
 	import {
@@ -364,6 +365,9 @@
 		<GtcChartFiltersSidebar />
 	</div>
 
+  <ConcurrencyHighlightCharts curves={filteredParetoCurves.filter((curve) => isSystemDisplayed(curve))} />
+
+
 	<!-- Most Recent Submissions Carousel -->
 	<section class="mt-12 border-t border-slate-200 pt-8 dark:border-slate-700" aria-label="Most recent submissions">
 		<div class="mb-6 flex items-center justify-between">
@@ -477,4 +481,6 @@
 			</div>
 		</div>
 	</section>
+
+	<!-- Concurrency Highlight Charts -->
 </div>
