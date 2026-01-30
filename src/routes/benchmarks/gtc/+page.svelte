@@ -10,8 +10,11 @@
 	 */
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
-	import GtcResultsTable from './_components/GtcResultsTable.svelte';
-	import { isSystemVisible, getSelectedBenchmarkModelId } from '$lib/stores/chartSettings.svelte.js';
+	import {
+		isSystemVisible,
+		getSelectedBenchmarkModelId,
+		isSystemDisabledByAccelerator
+	} from '$lib/stores/chartSettings.svelte.js';
 
 	// Import normalized benchmark data from local JSON
 	import endpointsData from './endpoints-benchmark-data.json';
@@ -49,9 +52,6 @@
 	// Build all Pareto curves from the data
 	const paretoCurves = buildParetoCurves(endpointsData);
 
-	// Chart configurations from meta
-	const chartConfigs = endpointsData.meta.charts;
-
 	/**
 	 * Filter pareto curves by selected benchmark model.
 	 * When a specific model is selected, only submissions for that model are shown.
@@ -70,49 +70,29 @@
 	// ============================================================================
 
 	/**
-	 * Chart 1: Concurrency vs TTFT (End-to-end Latency)
-	 * X = concurrency, Y = ttft (P99 in seconds)
+	 * Check if a system should be displayed on charts.
+	 * Must be visible AND not disabled by accelerator filter.
+	 * @param {Object} curve - The pareto curve object
+	 * @returns {boolean}
 	 */
-	let concurrencyVsTtftChart = $derived({
-		title: 'End-to-End Latency',
-		subtitle: 'How quickly users receive their first response as concurrent load increases. Lower curves indicate better responsiveness under load.',
-		xLabel: chartConfigs.pareto_concurrency_ttft.x_axis.label,
-		yLabel: chartConfigs.pareto_concurrency_ttft.y_axis.label,
-		xScale: chartConfigs.pareto_concurrency_ttft.x_axis.scale,
-		yScale: chartConfigs.pareto_concurrency_ttft.y_axis.scale,
-		models: filteredParetoCurves
-			.filter((curve) => isSystemVisible(curve.systemId))
-			.map((curve) => ({
-				id: curve.id,
-				name: curve.name,
-				color: curve.color,
-				points: curve.runs.map((run) => ({
-					x: run.concurrency,
-					y: run.ttft,
-					meta: {
-						systemId: curve.systemId,
-						runId: run.run_id,
-						system: curve.system,
-						model: curve.model,
-						...run
-					}
-				}))
-			}))
-	});
+	function isSystemDisplayed(curve) {
+		return isSystemVisible(curve.systemId) &&
+			!isSystemDisabledByAccelerator(curve.system?.accelerator_model_name);
+	}
 
 	/**
-	 * Chart 2: Time Per Output Token (TPOT)
-	 * X = tps_per_user (interactivity), Y = system_tps
+	 * Chart 1: System Throughput vs Interactivity
+	 * X = tps_per_user (Tokens/s/user), Y = system_tps (Tokens/s)
 	 */
 	let throughputVsInteractivityChart = $derived({
-		title: 'Time Per Output Token (TPOT)',
-		subtitle: 'Trade-off between system capacity and per-user token delivery speed. Upper-right positioning indicates superior throughput-interactivity balance.',
-		xLabel: chartConfigs.pareto_throughput_interactivity.x_axis.label,
-		yLabel: chartConfigs.pareto_throughput_interactivity.y_axis.label,
-		xScale: chartConfigs.pareto_throughput_interactivity.x_axis.scale,
-		yScale: chartConfigs.pareto_throughput_interactivity.y_axis.scale,
+		title: 'System Throughput vs Interactivity',
+		subtitle: 'Trade-off between total system capacity and per-user token delivery speed.',
+		xLabel: 'Tokens/s/user',
+		yLabel: 'Tokens/s',
+		xScale: 'log',
+		yScale: 'linear',
 		models: filteredParetoCurves
-			.filter((curve) => isSystemVisible(curve.systemId))
+			.filter((curve) => isSystemDisplayed(curve))
 			.map((curve) => ({
 				id: curve.id,
 				name: curve.name,
@@ -132,18 +112,18 @@
 	});
 
 	/**
-	 * Chart 3: System Throughput Scaling
-	 * X = concurrency, Y = system_tps
+	 * Chart 2: Throughput vs Concurrency
+	 * X = concurrency (Concurrent Clients), Y = system_tps (Total System Throughput)
 	 */
-	let concurrencyVsThroughputChart = $derived({
-		title: 'Throughput Scaling',
-		subtitle: 'How system throughput scales with concurrent users. Flatter elevated curves demonstrate better scaling under load.',
-		xLabel: chartConfigs.pareto_concurrency_throughput.x_axis.label,
-		yLabel: chartConfigs.pareto_concurrency_throughput.y_axis.label,
-		xScale: chartConfigs.pareto_concurrency_throughput.x_axis.scale,
-		yScale: chartConfigs.pareto_concurrency_throughput.y_axis.scale,
+	let throughputVsConcurrencyChart = $derived({
+		title: 'Throughput vs Concurrency',
+		subtitle: 'How total system throughput scales with increasing concurrent clients.',
+		xLabel: 'Concurrent Clients',
+		yLabel: 'Total System Throughput (Tok/s)',
+		xScale: 'log',
+		yScale: 'linear',
 		models: filteredParetoCurves
-			.filter((curve) => isSystemVisible(curve.systemId))
+			.filter((curve) => isSystemDisplayed(curve))
 			.map((curve) => ({
 				id: curve.id,
 				name: curve.name,
@@ -163,25 +143,56 @@
 	});
 
 	/**
-	 * Chart 4: Time to First Token (TTFT)
-	 * X = ttft, Y = system_tps
+	 * Chart 3: Capacity Utilization
+	 * X = concurrency (Concurrent Users), Y = utilization (Utilization of Max Sys Throughput)
 	 */
-	let throughputVsTtftChart = $derived({
-		title: 'Time to First Token (TTFT)',
-		subtitle: 'Balancing throughput against initial response time. The Pareto frontier highlights optimal configurations.',
-		xLabel: chartConfigs.pareto_throughput_ttft.x_axis.label,
-		yLabel: chartConfigs.pareto_throughput_ttft.y_axis.label,
-		xScale: chartConfigs.pareto_throughput_ttft.x_axis.scale,
-		yScale: chartConfigs.pareto_throughput_ttft.y_axis.scale,
+	let capacityUtilizationChart = $derived({
+		title: 'Capacity Utilization',
+		subtitle: 'Concurrent user capacity at different system utilization levels.',
+		xLabel: 'Concurrent Users',
+		yLabel: 'Utilization of Max Sys Throughput',
+		xScale: 'log',
+		yScale: 'linear',
 		models: filteredParetoCurves
-			.filter((curve) => isSystemVisible(curve.systemId))
+			.filter((curve) => isSystemDisplayed(curve))
 			.map((curve) => ({
 				id: curve.id,
 				name: curve.name,
 				color: curve.color,
 				points: curve.runs.map((run) => ({
-					x: run.ttft,
-					y: run.system_tps,
+					x: run.concurrency,
+					y: run.utilization,
+					meta: {
+						systemId: curve.systemId,
+						runId: run.run_id,
+						system: curve.system,
+						model: curve.model,
+						...run
+					}
+				}))
+			}))
+	});
+
+	/**
+	 * Chart 4: Per-User Performance
+	 * X = concurrency (Concurrent Clients), Y = tps_per_user (Interactivity Tokens/s/user)
+	 */
+	let perUserPerformanceChart = $derived({
+		title: 'Per-User Performance',
+		subtitle: 'How per-user token delivery speed changes with concurrent load.',
+		xLabel: 'Concurrent Clients',
+		yLabel: 'Interactivity (Tokens/s/user)',
+		xScale: 'log',
+		yScale: 'log',
+		models: filteredParetoCurves
+			.filter((curve) => isSystemDisplayed(curve))
+			.map((curve) => ({
+				id: curve.id,
+				name: curve.name,
+				color: curve.color,
+				points: curve.runs.map((run) => ({
+					x: run.concurrency,
+					y: run.tps_per_user,
 					meta: {
 						systemId: curve.systemId,
 						runId: run.run_id,
@@ -195,45 +206,41 @@
 </script>
 
 <!-- Side-by-side layout with filters sidebar and charts -->
-<div class="mx-auto max-w-7xl pb-3 md:pt-9 px-3">
+<div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9">
 	<div class="flex flex-col gap-6 lg:flex-row">
 		<!-- Charts area -->
 		<div class="min-w-0 flex-1">
 			<!-- Small page hero -->
-			<header class="mb-12 md:mb-12" aria-label="Page introduction">
+			<header class="mb-12 flex flex-col md:mb-12 md:flex-row" aria-label="Page introduction">
 				<h1
-				class="instrument-serif-regular-italic mt-8 text-4xl md:text-5xl font-bold text-balance text-slate-700 dark:text-white md:mt-0"
-			>
-      MLCommons <br />
-				<span class="mr-1 mb-2 inline-block h-7 w-7 rounded-full bg-[#CCEBD4]"></span>
-				Benchmarks
-			</h1>
-				<p
-					class="border-l-4 border-l-[#ccead463] ml-3 pl-3 font-instrument-sans mt-2 max-w-lg leading-relaxed text-slate-600 dark:text-slate-400 text-md text-pretty md:text-balance"
+					class="instrument-serif-regular-italic mt-8 text-4xl font-bold text-balance text-slate-700 md:mt-0 md:text-5xl dark:text-white"
 				>
-        MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations that reveal performance trade-offs at a glance. Compare systems, understand what you're acquiring, and make confident infrastructure decisions.
-      </p>
+					MLCommons <br />
+					<span class="mr-1 mb-2 inline-block h-7 w-7 rounded-full bg-[#CCEBD4]"></span>
+					Benchmarks
+				</h1>
+				<p
+					class="font-instrument-sans text-md mt-2 ml-3 max-w-lg border-l-4 border-l-[#ccead463] pl-3 leading-relaxed text-pretty text-slate-600 md:ml-6 md:pl-6 md:text-balance dark:text-slate-400"
+				>
+					MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations
+					that reveal performance trade-offs at a glance. Compare systems, understand what you're
+					acquiring, and make confident infrastructure decisions.
+				</p>
 			</header>
 
 			<!-- Main content area - 2x2 grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-				<!-- Chart 1: Concurrency vs TTFT -->
-				<GtcChartSection chart={concurrencyVsTtftChart} lineType="step" />
-
-				<!-- Chart 2: System Throughput vs Interactivity -->
+				<!-- Chart 1: System Throughput vs Interactivity -->
 				<GtcChartSection chart={throughputVsInteractivityChart} lineType="line" />
 
-				<!-- Chart 3: Concurrency vs System Throughput -->
-				<GtcChartSection chart={concurrencyVsThroughputChart} lineType="step" />
+				<!-- Chart 2: Throughput vs Concurrency -->
+				<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
+				<!-- Chart 4: Per-User Performance -->
+				<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
 
-				<!-- Chart 4: System Throughput vs TTFT -->
-				<GtcChartSection chart={throughputVsTtftChart} lineType="line" />
+				<!-- Chart 3: Capacity Utilization -->
+				<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
 			</div>
-
-			<!-- Results Table Section -->
-			<section class="mt-8">
-				<GtcResultsTable />
-			</section>
 		</div>
 
 		<!-- Chart Filters Sidebar (hidden on mobile) -->

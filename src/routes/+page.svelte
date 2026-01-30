@@ -8,11 +8,12 @@
 	 * - Component composition for maintainable, skinny page files
 	 */
 	import { onMount } from 'svelte';
-  import Hero from '$lib/components/Hero.svelte';
-  import ChartFilters from '$lib/components/ChartFilters.svelte';
+	import Hero from '$lib/components/Hero.svelte';
+	import ChartFilters from '$lib/components/ChartFilters.svelte';
 	import ChartSection from '$lib/components/ChartSection.svelte';
 	import ChartSettingsSidebar from '$lib/components/ChartSettingsSidebar.svelte';
 	import ErrorBanner from '$lib/components/ErrorBanner.svelte';
+	import BenchmarkResultsTable from '$lib/components/BenchmarkResultsTable.svelte';
 	import { getChartData } from '$lib/remotes/chartData.js';
 	import { getFilters } from '$lib/stores/chartFilters.svelte.js';
 
@@ -135,6 +136,129 @@
 		const target = /** @type {HTMLSelectElement} */ (e.target);
 		setSelectedYAxis(/** @type {any} */ (target.value));
 	}
+
+	// ============================================================================
+	// DEMO BENCHMARK RESULTS DATA
+	// ============================================================================
+
+	/**
+	 * Demo data for the BenchmarkResultsTable component.
+	 * Shows 4 representative systems with realistic benchmark metrics.
+	 */
+	const demoBenchmarkSystems = [
+		{
+			systemId: 'demo-nvidia-b200',
+			systemName: 'NVIDIA DGX B200',
+			systemColor: '#76B900',
+			organization: 'NVIDIA',
+			accelerator: 'B200-SXM-180GB',
+			acceleratorCount: 8,
+			models: [
+				{
+					id: 'demo-nvidia-b200-llama',
+					modelId: 1,
+					modelName: 'Llama 2 70B',
+					division: 'Closed',
+					runCount: 5,
+					maxConcurrency: 64,
+					peakThroughput: 28500,
+					peakThroughputRun: { concurrency: 64, ttft: 0.045 },
+					minTtft: 0.012,
+					lowLatencyRun: { concurrency: 1, system_tps: 4200 },
+					runs: [
+						{ run_id: 'r1', concurrency: 1, system_tps: 4200, ttft: 0.012, tps_per_user: 4200, run_date: '2026-01-15T10:00:00Z' },
+						{ run_id: 'r2', concurrency: 8, system_tps: 15800, ttft: 0.018, tps_per_user: 1975, run_date: '2026-01-15T11:00:00Z' },
+						{ run_id: 'r3', concurrency: 32, system_tps: 24200, ttft: 0.032, tps_per_user: 756, run_date: '2026-01-15T12:00:00Z' },
+						{ run_id: 'r4', concurrency: 64, system_tps: 28500, ttft: 0.045, tps_per_user: 445, run_date: '2026-01-15T13:00:00Z' }
+					]
+				}
+			]
+		},
+		{
+			systemId: 'demo-nvidia-h100',
+			systemName: 'NVIDIA DGX H100',
+			systemColor: '#76B900',
+			organization: 'NVIDIA',
+			accelerator: 'H100-SXM-80GB',
+			acceleratorCount: 8,
+			models: [
+				{
+					id: 'demo-nvidia-h100-llama',
+					modelId: 1,
+					modelName: 'Llama 2 70B',
+					division: 'Closed',
+					runCount: 5,
+					maxConcurrency: 64,
+					peakThroughput: 18200,
+					peakThroughputRun: { concurrency: 64, ttft: 0.058 },
+					minTtft: 0.015,
+					lowLatencyRun: { concurrency: 1, system_tps: 3100 },
+					runs: [
+						{ run_id: 'r5', concurrency: 1, system_tps: 3100, ttft: 0.015, tps_per_user: 3100, run_date: '2026-01-14T10:00:00Z' },
+						{ run_id: 'r6', concurrency: 8, system_tps: 11200, ttft: 0.022, tps_per_user: 1400, run_date: '2026-01-14T11:00:00Z' },
+						{ run_id: 'r7', concurrency: 32, system_tps: 16800, ttft: 0.042, tps_per_user: 525, run_date: '2026-01-14T12:00:00Z' },
+						{ run_id: 'r8', concurrency: 64, system_tps: 18200, ttft: 0.058, tps_per_user: 284, run_date: '2026-01-14T13:00:00Z' }
+					]
+				}
+			]
+		},
+		{
+			systemId: 'demo-amd-mi300x',
+			systemName: 'AMD Instinct MI300X',
+			systemColor: '#ED1C24',
+			organization: 'AMD',
+			accelerator: 'MI300X',
+			acceleratorCount: 8,
+			models: [
+				{
+					id: 'demo-amd-mi300x-llama',
+					modelId: 1,
+					modelName: 'Llama 2 70B',
+					division: 'Closed',
+					runCount: 4,
+					maxConcurrency: 64,
+					peakThroughput: 16800,
+					peakThroughputRun: { concurrency: 64, ttft: 0.065 },
+					minTtft: 0.018,
+					lowLatencyRun: { concurrency: 1, system_tps: 2800 },
+					runs: [
+						{ run_id: 'r9', concurrency: 1, system_tps: 2800, ttft: 0.018, tps_per_user: 2800, run_date: '2026-01-13T10:00:00Z' },
+						{ run_id: 'r10', concurrency: 8, system_tps: 9800, ttft: 0.028, tps_per_user: 1225, run_date: '2026-01-13T11:00:00Z' },
+						{ run_id: 'r11', concurrency: 32, system_tps: 14500, ttft: 0.048, tps_per_user: 453, run_date: '2026-01-13T12:00:00Z' },
+						{ run_id: 'r12', concurrency: 64, system_tps: 16800, ttft: 0.065, tps_per_user: 262, run_date: '2026-01-13T13:00:00Z' }
+					]
+				}
+			]
+		},
+		{
+			systemId: 'demo-google-tpu',
+			systemName: 'Google TPU v5p',
+			systemColor: '#4285F4',
+			organization: 'Google',
+			accelerator: 'TPU v5p',
+			acceleratorCount: 8,
+			models: [
+				{
+					id: 'demo-google-tpu-llama',
+					modelId: 1,
+					modelName: 'Llama 2 70B',
+					division: 'Closed',
+					runCount: 4,
+					maxConcurrency: 64,
+					peakThroughput: 14200,
+					peakThroughputRun: { concurrency: 64, ttft: 0.072 },
+					minTtft: 0.022,
+					lowLatencyRun: { concurrency: 1, system_tps: 2400 },
+					runs: [
+						{ run_id: 'r13', concurrency: 1, system_tps: 2400, ttft: 0.022, tps_per_user: 2400, run_date: '2026-01-12T10:00:00Z' },
+						{ run_id: 'r14', concurrency: 8, system_tps: 8200, ttft: 0.035, tps_per_user: 1025, run_date: '2026-01-12T11:00:00Z' },
+						{ run_id: 'r15', concurrency: 32, system_tps: 12100, ttft: 0.055, tps_per_user: 378, run_date: '2026-01-12T12:00:00Z' },
+						{ run_id: 'r16', concurrency: 64, system_tps: 14200, ttft: 0.072, tps_per_user: 221, run_date: '2026-01-12T13:00:00Z' }
+					]
+				}
+			]
+		}
+	];
 </script>
 
 <Hero />
@@ -221,6 +345,15 @@
 		<div class="mt-12 pb-12">
 			<SystemBladesSection />
 		</div>
+
+		<!-- Demo Benchmark Results Table -->
+		<section class="pb-12">
+			<BenchmarkResultsTable
+				systems={demoBenchmarkSystems}
+				title="Featured Benchmark Results"
+				subtitle="Performance comparison across leading AI accelerator platforms"
+			/>
+		</section>
 	</div>
 {:catch error}
 	<ErrorBanner message={error?.message} />

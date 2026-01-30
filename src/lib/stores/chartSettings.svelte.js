@@ -158,6 +158,52 @@ export function setSelectedBenchmarkModelId(modelId) {
 	selectedBenchmarkModelId = modelId;
 }
 
+// ============================================================================
+// ACCELERATOR FILTER (for filtering systems by accelerator type)
+// ============================================================================
+
+/** @type {string} - Selected accelerator model name or 'all' for no filter */
+let selectedAccelerator = $state('all');
+
+/**
+ * Get the currently selected accelerator filter
+ * @returns {string}
+ */
+export function getSelectedAccelerator() {
+	return selectedAccelerator;
+}
+
+/**
+ * Set the selected accelerator filter
+ * @param {string} accelerator - Accelerator model name or 'all'
+ */
+export function setSelectedAccelerator(accelerator) {
+	selectedAccelerator = accelerator;
+}
+
+/**
+ * Check if a system is disabled by the accelerator filter
+ * @param {string} acceleratorModelName - The system's accelerator model name
+ * @returns {boolean} - True if the system should be disabled/hidden
+ */
+export function isSystemDisabledByAccelerator(acceleratorModelName) {
+	if (selectedAccelerator === 'all') return false;
+	return acceleratorModelName !== selectedAccelerator;
+}
+
+/**
+ * Get system IDs that match the current accelerator filter
+ * @returns {string[]} - Array of system IDs that match the filter
+ */
+export function getAcceleratorFilteredSystemIds() {
+	if (selectedAccelerator === 'all') {
+		return endpointsData.systems.map((s) => s.id);
+	}
+	return endpointsData.systems
+		.filter((s) => s.accelerator_model_name === selectedAccelerator)
+		.map((s) => s.id);
+}
+
 /**
  * Toggle visibility for a specific system
  * @param {string} systemId - System UUID
@@ -253,6 +299,7 @@ export function resetSettings() {
 	paretoVisibility = { ...initialParetoVisibility };
 	systemVisibility = { ...initialSystemVisibility };
 	selectedBenchmarkModelId = endpointsData.models[0]?.model_id ?? 'all';
+	selectedAccelerator = 'all';
 	hideNonOptimal = false;
 	hideLabels = false;
 }
