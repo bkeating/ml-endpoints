@@ -1,60 +1,45 @@
-# Redirect www to non-www (HTTP→HTTPS handled automatically)
-www.mlendpoints.bulletpages.com {
-  redir https://mlendpoints.bulletpages.com{uri} permanent
-}
-
-# Main site
 mlendpoints.bulletpages.com {
-  # Document root for static files
-  root * /var/www/ml-endpoints/static
+	encode zstd gzip
+	root * /var/www/ml-endpoints/static
 
-  # Basic auth to protect the site from unauthorized access
-  basicauth * {
-    # Generate hashed password with: `caddy hash-password`
-    # Format: username hashed_password
-    ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
-  }
+	basicauth * {
+		# Generate hashed password with: `caddy hash-password`
+		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
+	}
 
-  # Enable compression (gzip and zstd)
-  encode zstd gzip
+	header {
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
 
-  # Security headers
-  header {
-    Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
-    Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-    X-Content-Type-Options "nosniff"
-    X-Frame-Options "DENY"
-    Referrer-Policy "strict-origin-when-cross-origin"
-  }
+	# Try static files first, then proxy to Node/Bun server
+	@static file
+	handle @static {
+		file_server
+	}
 
-  # Try static files first, then proxy to Node/Bun server
-  @static file
-  handle @static {
-    file_server
-  }
+	# Proxy everything else to the Bun server
+	handle {
+		reverse_proxy localhost:3000 {
+			# Forward headers to SvelteKit
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+		}
+	}
 
-  # Proxy everything else to the Bun server
-  handle {
-    reverse_proxy localhost:3000 {
-      # Health check for SvelteKit availability
-      health_uri /
-      health_interval 30s
-      health_timeout 5s
-
-      # Forward headers to SvelteKit
-      header_up Host {host}
-      header_up X-Real-IP {remote_host}
-      header_up X-Forwarded-For {remote_host}
-      header_up X-Forwarded-Proto {scheme}
-      header_up X-Forwarded-Host {host}
-    }
-  }
-
-  # Logging - using stdout for systemd/journald integration
-  # If you prefer file logging, set up logrotate (see notes below)
-  log {
-    output stdout
-    format json
-    level INFO
-  }
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 100mb
+			roll_keep 10
+			roll_keep_for 720h
+		}
+		format json
+		level INFO
+	}
 }
