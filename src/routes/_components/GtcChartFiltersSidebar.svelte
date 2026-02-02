@@ -241,26 +241,6 @@
 			</select>
 		</div>
 
-		<!-- Processor Select -->
-		<div class="flex flex-col gap-1.5">
-			<label
-				for="processor-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-			>
-				Processor
-			</label>
-			<select
-				id="processor-select"
-				bind:value={selectedProcessor}
-				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
-				aria-label="Select processor"
-			>
-				{#each processorOptions as option (option.id)}
-					<option value={option.id}>{option.label}</option>
-				{/each}
-			</select>
-		</div>
-
 		<!-- Accelerator Select -->
 		<div class="flex flex-col gap-1.5">
 			<label
@@ -277,6 +257,26 @@
 				aria-label="Select accelerator"
 			>
 				{#each acceleratorOptions as option (option.id)}
+					<option value={option.id}>{option.label}</option>
+				{/each}
+			</select>
+		</div>
+
+		<!-- Processor Select -->
+		<div class="flex flex-col gap-1.5">
+			<label
+				for="processor-select"
+				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
+			>
+				Processor
+			</label>
+			<select
+				id="processor-select"
+				bind:value={selectedProcessor}
+				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
+				aria-label="Select processor"
+			>
+				{#each processorOptions as option (option.id)}
 					<option value={option.id}>{option.label}</option>
 				{/each}
 			</select>
