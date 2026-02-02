@@ -265,38 +265,80 @@
 </script>
 
 <!-- Report Page Layout -->
-<div class="min-h-screen bg-white">
+<div class="min-h-screen bg-white dark:bg-slate-900">
 	<!-- Header -->
-	<header class="border-b border-slate-200 px-6 py-4">
-		<div class="flex items-start justify-between">
-			<!-- Left: Report Title -->
-			<h1 class="text-lg font-semibold text-slate-800">
-				Report Name: {reportData?.system?.system_name ?? 'Name of the submission'}
-			</h1>
+	<header class="border-b border-slate-200 px-6 py-4 dark:border-slate-700">
+		<div class="mx-auto flex max-w-7xl items-center justify-between">
+			<!-- Left: Navigation & Report Title -->
+			<div class="flex items-center gap-3">
+				<!-- Prev/Next Navigation -->
+				<div class="flex items-center gap-1">
+					{#if prevSubmission}
+						<a
+							href="/report?submission={prevSubmission.submission_id}"
+							class="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+							aria-label="Previous report"
+						>
+							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+							</svg>
+						</a>
+					{:else}
+						<span class="rounded p-1.5 text-slate-200 dark:text-slate-600">
+							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+							</svg>
+						</span>
+					{/if}
+
+					{#if nextSubmission}
+						<a
+							href="/report?submission={nextSubmission.submission_id}"
+							class="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
+							aria-label="Next report"
+						>
+							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+							</svg>
+						</a>
+					{:else}
+						<span class="rounded p-1.5 text-slate-200 dark:text-slate-600">
+							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+							</svg>
+						</span>
+					{/if}
+				</div>
+
+				<!-- Report Title -->
+				<h1 class="text-lg font-semibold text-slate-800 dark:text-white">
+					Report Name: {reportData?.system?.system_name ?? 'Name of the submission'}
+				</h1>
+			</div>
 
 			<!-- Right: Submission Metadata -->
-			<div class="flex items-start gap-12 text-sm">
+			<div class="hidden items-center gap-8 text-sm md:flex">
 				<div>
-					<span class="text-slate-500">Submitter</span>
-					<span class="ml-2 font-medium text-slate-800"
+					<span class="text-slate-500 dark:text-slate-400">Submitter</span>
+					<span class="ml-2 font-medium text-slate-800 dark:text-slate-200"
 						>{reportData?.submission?.submitter_org_names ?? 'NVIDIA; Dell + Broadcom'}</span
 					>
 				</div>
 				<div>
-					<div class="text-slate-500">Submission ID</div>
-					<div class="font-medium text-blue-600"
+					<div class="text-slate-500 dark:text-slate-400">Submission ID</div>
+					<div class="font-medium text-blue-600 dark:text-blue-400"
 						>{reportData?.submission?.submission_id?.slice(0, 24) ?? '42cf4c09-e67b-4546-88fe-'}...</div
 					>
 				</div>
 				<div>
-					<div class="text-slate-500">Submission Date</div>
-					<div class="font-medium text-slate-800"
+					<div class="text-slate-500 dark:text-slate-400">Submission Date</div>
+					<div class="font-medium text-slate-800 dark:text-slate-200"
 						>{reportData?.submission?.submission_date ?? '20260121-1117'}</div
 					>
 				</div>
 				<div>
-					<div class="text-slate-500">Publication Date</div>
-					<div class="font-medium text-slate-800"
+					<div class="text-slate-500 dark:text-slate-400">Publication Date</div>
+					<div class="font-medium text-slate-800 dark:text-slate-200"
 						>{reportData?.submission?.publish_date ?? 'March 16, 2026'}</div
 					>
 				</div>
@@ -305,106 +347,106 @@
 	</header>
 
 	<!-- Main Content -->
-	<main class="px-6 py-6">
+	<main class="mx-auto max-w-7xl px-6 py-6">
 		{#if reportData}
 			<!-- Report Details Section -->
-			<h2 class="mb-4 text-base font-semibold text-slate-800">Report Details</h2>
+			<h2 class="mb-4 text-base font-semibold text-slate-800 dark:text-white">Report Details</h2>
 
 			<!-- Row 1: SUT Summary + Model + Datasets (3 columns) -->
 			<div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
 				<!-- SUT Summary Card -->
-				<section class="overflow-hidden rounded border border-slate-300 bg-white">
-					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+				<section class="overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-700">
 						SUT Summary
 					</header>
 					<div class="space-y-1.5 p-3 text-xs">
 						<div class="flex gap-2">
-							<span class="w-28 shrink-0 text-slate-500">System Name</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-28 shrink-0 text-slate-500 dark:text-slate-400">System Name</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.system?.system_name ?? 'NVIDIA DGX B200 (8x B200-SXM-180GB, TensorRT)'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-28 shrink-0 text-slate-500">System Category</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-28 shrink-0 text-slate-500 dark:text-slate-400">System Category</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.system?.system_category ?? 'Datacenter'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-28 shrink-0 text-slate-500">System Type Detail</span>
-							<span class="font-medium text-slate-800">Cloud</span>
+							<span class="w-28 shrink-0 text-slate-500 dark:text-slate-400">System Type Detail</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">Cloud</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-28 shrink-0 text-slate-500">System Availability</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-28 shrink-0 text-slate-500 dark:text-slate-400">System Availability</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.system?.system_availability_status ?? 'Available'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-28 shrink-0 text-slate-500">System Size</span>
-							<span class="font-medium text-slate-800">8x GB300 Decode + 12x GB300 Pre-fill</span>
+							<span class="w-28 shrink-0 text-slate-500 dark:text-slate-400">System Size</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">8x GB300 Decode + 12x GB300 Pre-fill</span>
 						</div>
 					</div>
 				</section>
 
 				<!-- Model Card -->
-				<section class="overflow-hidden rounded border border-slate-300 bg-white">
-					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">Model</header>
+				<section class="overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-700">Model</header>
 					<div class="space-y-1.5 p-3 text-xs">
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Division</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Division</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.submission?.division ?? 'Closed'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Model Name</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Model Name</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.model?.model_name ?? 'GPT-OSS 120B'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Model Link</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Model Link</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Model Transformation Link</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Model Transformation Link</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Model Notes</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Model Notes</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 					</div>
 				</section>
 
 				<!-- Datasets Card -->
-				<section class="overflow-hidden rounded border border-slate-300 bg-white">
-					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+				<section class="overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-700">
 						Datasets
 					</header>
 					<div class="space-y-1.5 p-3 text-xs">
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Dataset ID</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Dataset ID</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Dataset Name</span>
-							<span class="font-medium text-slate-800"
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Dataset Name</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200"
 								>{reportData.submission?.dataset_name ?? 'OpenOrca'}</span
 							>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Dataset Type</span>
-							<span class="font-medium text-slate-800">Both</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Dataset Type</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">Both</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Dataset Link</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Dataset Link</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 						<div class="flex gap-2">
-							<span class="w-36 shrink-0 text-slate-500">Measured Accuracy Score</span>
-							<span class="font-medium text-slate-800">—</span>
+							<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Measured Accuracy Score</span>
+							<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 						</div>
 					</div>
 				</section>
@@ -414,7 +456,7 @@
 			<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				<!-- Chart 1: TTFT -->
 				{#if ttftChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={ttftChartData.title}
 							xLabel={ttftChartData.xLabel}
@@ -426,14 +468,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
 				<!-- Chart 2: Throughput -->
 				{#if throughputChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={throughputChartData.title}
 							xLabel={throughputChartData.xLabel}
@@ -445,14 +487,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
 				<!-- Chart 3: Concurrency vs Throughput -->
 				{#if concurrencyThroughputData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={concurrencyThroughputData.title}
 							xLabel={concurrencyThroughputData.xLabel}
@@ -464,14 +506,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
 				<!-- Chart 4: GPU Utilization -->
 				{#if utilizationChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={utilizationChartData.title}
 							xLabel={utilizationChartData.xLabel}
@@ -483,35 +525,35 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 			</div>
 
 			<!-- Row 3: Node Summary Bar -->
-			<section class="mb-4 overflow-hidden rounded border border-slate-300 bg-white">
-				<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+			<section class="mb-4 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+				<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-700">
 					Node
 				</header>
 				<div class="grid grid-cols-4 gap-4 p-3 text-xs">
 					<div class="flex gap-2">
-						<span class="text-slate-500">Types of Nodes</span>
-						<span class="font-medium text-slate-800">—</span>
+						<span class="text-slate-500 dark:text-slate-400">Types of Nodes</span>
+						<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 					</div>
 					<div class="flex gap-2">
-						<span class="text-slate-500">Total Node Count</span>
-						<span class="font-medium text-slate-800"
+						<span class="text-slate-500 dark:text-slate-400">Total Node Count</span>
+						<span class="font-medium text-slate-800 dark:text-slate-200"
 							>{reportData.system?.number_of_nodes ?? '—'}</span
 						>
 					</div>
 					<div class="flex gap-2">
-						<span class="text-slate-500">Node Type ID</span>
-						<span class="font-medium text-slate-800">—</span>
+						<span class="text-slate-500 dark:text-slate-400">Node Type ID</span>
+						<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 					</div>
 					<div class="flex gap-2">
-						<span class="text-slate-500">Node Count</span>
-						<span class="font-medium text-slate-800"
+						<span class="text-slate-500 dark:text-slate-400">Node Count</span>
+						<span class="font-medium text-slate-800 dark:text-slate-200"
 							>{reportData.system?.number_of_nodes ?? '—'}</span
 						>
 					</div>
@@ -523,156 +565,156 @@
 				{#each Array(2) as _, nodeIndex (nodeIndex)}
 					{@const isNode2 = nodeIndex === 1}
 					<!-- Node Card -->
-					<section class="overflow-hidden rounded border border-slate-300 bg-white">
-						<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white">
+					<section class="overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+						<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-600">
 							Node {nodeIndex + 1}
 						</header>
 
 						<!-- Hardware Section -->
-						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white">
+						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white dark:bg-slate-600">
 							Hardware
 						</div>
 						<div class="space-y-3 p-3">
 							<!-- Processor -->
 							<div>
-								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline dark:text-slate-300">
 									Processor
 								</h4>
 								<div class="space-y-0.5 text-xs">
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Processor Model Name</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Processor Model Name</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>{reportData.system?.host_processor_model_name ?? 'Intel(R) Xeon(R) Platinum 8570'}</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Processors per Node</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Processors per Node</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>{reportData.system?.host_processors_per_node ?? '2'}</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Cores Per Processor</span>
-										<span class="font-medium text-slate-800">56</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Cores Per Processor</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">56</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">VCPUs Per Processor</span>
-										<span class="font-medium text-slate-800">8</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">VCPUs Per Processor</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">8</span>
 									</div>
 								</div>
 							</div>
 
 							<!-- Accelerator -->
 							<div>
-								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline dark:text-slate-300">
 									Accelerator
 								</h4>
 								<div class="space-y-0.5 text-xs">
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Accelerator Model Name</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Accelerator Model Name</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>{reportData.system?.accelerator_model_name ?? 'NVIDIA B200-SXM-180GB'}</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Accelerators per Node</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Accelerators per Node</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>{reportData.system?.accelerators_per_node ?? '8'}</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Interconnect</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Interconnect</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>18x 5th Gen NVLink, 14.4 TB/s aggregated bandwidth</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Memory</span>
-										<span class="font-medium text-slate-800">HBM3e 180 GB</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Memory</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">HBM3e 180 GB</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Host Accelerator Interconnect</span>
-										<span class="font-medium text-slate-800">PCIe Gen5 x16</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Host Accelerator Interconnect</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">PCIe Gen5 x16</span>
 									</div>
 								</div>
 							</div>
 
 							<!-- Section Title (Additional Hardware) -->
 							<div>
-								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline dark:text-slate-300">
 									Section Title
 								</h4>
 								<div class="space-y-0.5 text-xs">
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Host Memory Capacity</span>
-										<span class="font-medium text-slate-800">{isNode2 ? '180 GB' : '2 TB'}</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Host Memory Capacity</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">{isNode2 ? '180 GB' : '2 TB'}</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Memory Configuration</span>
-										<span class="font-medium text-slate-800">32x 64GB HMCG94AGBRA179N</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Memory Configuration</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">32x 64GB HMCG94AGBRA179N</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Network Interfaces</span>
-										<span class="font-medium text-slate-800">10x 400Gbe Infiniband</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Network Interfaces</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">10x 400Gbe Infiniband</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Network Details</span>
-										<span class="font-medium text-slate-800"
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Network Details</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200"
 											>Infiniband; Data bandwidth for GPU-PCIe: 504GB/s; PCIe-NIC: 500GB/s</span
 										>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Storage Capacity</span>
-										<span class="font-medium text-slate-800">2 TB SSD, 5 TB CIFS</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Storage Capacity</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">2 TB SSD, 5 TB CIFS</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Storage Details</span>
-										<span class="font-medium text-slate-800">NVMe SSD, CIFS mounted disk storage</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Storage Details</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">NVMe SSD, CIFS mounted disk storage</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Other Hardware</span>
-										<span class="font-medium text-slate-800">—</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Other Hardware</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Cooling</span>
-										<span class="font-medium text-slate-800">Air-cooled</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Cooling</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">Air-cooled</span>
 									</div>
 									<div class="flex gap-2">
-										<span class="w-36 shrink-0 text-slate-500">Hardware Notes</span>
-										<span class="font-medium text-slate-800">B200 TGP 1000W</span>
+										<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Hardware Notes</span>
+										<span class="font-medium text-slate-800 dark:text-slate-200">B200 TGP 1000W</span>
 									</div>
 								</div>
 							</div>
 						</div>
 
 						<!-- Software Section -->
-						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white">
+						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white dark:bg-slate-600">
 							Software
 						</div>
 						<div class="space-y-0.5 p-3 text-xs">
 							<div class="flex gap-2">
-								<span class="w-36 shrink-0 text-slate-500">Framework</span>
-								<span class="font-medium text-slate-800"
+								<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Framework</span>
+								<span class="font-medium text-slate-800 dark:text-slate-200"
 									>{reportData.system?.framework ?? 'TensorRT 10.11, CUDA 12.9'}</span
 								>
 							</div>
 							<div class="flex gap-2">
-								<span class="w-36 shrink-0 text-slate-500">Operating System</span>
-								<span class="font-medium text-slate-800">Ubuntu 24.04</span>
+								<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Operating System</span>
+								<span class="font-medium text-slate-800 dark:text-slate-200">Ubuntu 24.04</span>
 							</div>
 							<div class="flex gap-2">
-								<span class="w-36 shrink-0 text-slate-500">Filesystem</span>
-								<span class="font-medium text-slate-800">—</span>
+								<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Filesystem</span>
+								<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 							</div>
 							<div class="flex gap-2">
-								<span class="w-36 shrink-0 text-slate-500">Other Software</span>
-								<span class="font-medium text-slate-800"
+								<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Other Software</span>
+								<span class="font-medium text-slate-800 dark:text-slate-200"
 									>TensorRT 10.11, CUDA 12.9, cuDNN 9.10, Driver 570.148</span
 								>
 							</div>
 							<div class="flex gap-2">
-								<span class="w-36 shrink-0 text-slate-500">Software Notes</span>
-								<span class="font-medium text-slate-800">—</span>
+								<span class="w-36 shrink-0 text-slate-500 dark:text-slate-400">Software Notes</span>
+								<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
 							</div>
 						</div>
 					</section>
@@ -680,61 +722,61 @@
 			</div>
 
 			<!-- Run Data Table -->
-			<section class="overflow-hidden rounded border border-slate-300 bg-white">
-				<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white">
+			<section class="overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+				<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white dark:bg-slate-600">
 					Run Data
 				</header>
 				<div class="overflow-x-auto">
 					<table class="w-full text-xs">
 						<thead>
-							<tr class="border-b border-slate-200 bg-slate-50">
-								<th class="px-3 py-2 text-left font-semibold text-slate-700">Field Name</th>
+							<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700">
+								<th class="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Field Name</th>
 								{#each Array(11) as _, i (i)}
-									<th class="px-3 py-2 text-center font-semibold text-slate-700">Run {i + 1}</th>
+									<th class="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Run {i + 1}</th>
 								{/each}
 							</tr>
 						</thead>
-						<tbody class="divide-y divide-slate-100">
-							<tr><td class="px-3 py-1.5 text-slate-600">Run Date</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Concurrency</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">System Tokens/Second</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">System Tokens/Second per User</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Queries/sec</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Tokens/sec Utilization</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Total Output Tokens</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Total Duration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Total Requests</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">TBD by DK</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Configuration Summary</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Link to Full Configuration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Link to Run Logs</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+						<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Run Date</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Concurrency</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second per User</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Queries/sec</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Tokens/sec Utilization</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Output Tokens</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Duration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Requests</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">TBD by DK</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Configuration Summary</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Full Configuration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Run Logs</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
 							<!-- TTFT Section -->
-							<tr class="bg-slate-50"><td class="px-3 py-1.5 font-semibold text-slate-700">TTFT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Minimum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Average</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TTFT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Minimum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Average</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
 							<!-- TPOT Section -->
-							<tr class="bg-slate-50"><td class="px-3 py-1.5 font-semibold text-slate-700">TPOT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
-							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TPOT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
 						</tbody>
 					</table>
 				</div>
 			</section>
 		{:else}
 			<!-- Loading/Error State -->
-			<div class="rounded-lg border border-slate-200 bg-white p-12 text-center">
-				<p class="text-slate-500">
+			<div class="rounded-lg border border-slate-200 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-800">
+				<p class="text-slate-500 dark:text-slate-400">
 					{#if submissionId}
 						Report not found for submission: {submissionId}
 					{:else}
