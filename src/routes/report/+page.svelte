@@ -265,99 +265,39 @@
 </script>
 
 <!-- Report Page Layout -->
-<div class="min-h-screen bg-slate-50 dark:bg-slate-900">
-	<!-- Header Navigation -->
-	<header
-		class="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-800"
-	>
-		<div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
-			<!-- Left: Navigation & Title -->
-			<div class="flex min-w-0 items-center gap-3">
-				<!-- Prev/Next Navigation -->
-				<div class="flex items-center gap-1">
-					{#if prevSubmission}
-						<a
-							href="/report?submission={prevSubmission.submission_id}"
-							class="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
-							aria-label="Previous report"
-						>
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-							</svg>
-						</a>
-					{:else}
-						<span class="rounded p-1.5 text-slate-200 dark:text-slate-600">
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-							</svg>
-						</span>
-					{/if}
+<div class="min-h-screen bg-white">
+	<!-- Header -->
+	<header class="border-b border-slate-200 px-6 py-4">
+		<div class="flex items-start justify-between">
+			<!-- Left: Report Title -->
+			<h1 class="text-lg font-semibold text-slate-800">
+				Report Name: {reportData?.system?.system_name ?? 'Name of the submission'}
+			</h1>
 
-					<!-- Mini chart thumbnail placeholder -->
-					<div
-						class="hidden h-10 w-16 rounded border border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700 sm:block"
-					>
-						<svg class="h-full w-full p-1 text-slate-300 dark:text-slate-500" viewBox="0 0 64 40">
-							<polyline
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								points="4,32 16,24 28,28 40,16 52,20 60,8"
-							/>
-						</svg>
-					</div>
-
-					{#if nextSubmission}
-						<a
-							href="/report?submission={nextSubmission.submission_id}"
-							class="rounded p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300"
-							aria-label="Next report"
-						>
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-							</svg>
-						</a>
-					{:else}
-						<span class="rounded p-1.5 text-slate-200 dark:text-slate-600">
-							<svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-							</svg>
-						</span>
-					{/if}
-				</div>
-
-				<!-- Report Title -->
-				<div class="min-w-0 flex flex-col">
-					<h1 class="truncate text-base font-semibold text-slate-800 dark:text-white sm:text-lg">
-						Report Name: {reportData?.system?.system_name ?? 'Loading...'}
-					</h1>
-				</div>
-			</div>
-
-			<!-- Right: Submission Metadata (horizontal layout matching mockup) -->
-			<div class="hidden items-center gap-8 text-sm md:flex">
+			<!-- Right: Submission Metadata -->
+			<div class="flex items-start gap-12 text-sm">
 				<div>
-					<span class="text-slate-400">Submitter</span>
-					<span class="ml-2 font-medium text-slate-700 dark:text-slate-200"
-						>{reportData?.submission?.submitter_org_names ?? '—'}</span
+					<span class="text-slate-500">Submitter</span>
+					<span class="ml-2 font-medium text-slate-800"
+						>{reportData?.submission?.submitter_org_names ?? 'NVIDIA; Dell + Broadcom'}</span
 					>
 				</div>
 				<div>
-					<span class="text-slate-400">Submission ID</span>
-					<span class="ml-2 font-medium text-blue-600 dark:text-blue-400"
-						>{reportData?.submission?.submission_id?.slice(0, 20) ?? '—'}...</span
+					<div class="text-slate-500">Submission ID</div>
+					<div class="font-medium text-blue-600"
+						>{reportData?.submission?.submission_id?.slice(0, 24) ?? '42cf4c09-e67b-4546-88fe-'}...</div
 					>
 				</div>
 				<div>
-					<span class="text-slate-400">Submission Date</span>
-					<span class="ml-2 font-medium text-slate-700 dark:text-slate-200"
-						>{reportData?.submission?.submission_date ?? '—'}</span
+					<div class="text-slate-500">Submission Date</div>
+					<div class="font-medium text-slate-800"
+						>{reportData?.submission?.submission_date ?? '20260121-1117'}</div
 					>
 				</div>
 				<div>
-					<span class="text-slate-400">Publication Date</span>
-					<span class="ml-2 font-medium text-slate-700 dark:text-slate-200"
-						>{reportData?.submission?.publish_date ?? '—'}</span
+					<div class="text-slate-500">Publication Date</div>
+					<div class="font-medium text-slate-800"
+						>{reportData?.submission?.publish_date ?? 'March 16, 2026'}</div
 					>
 				</div>
 			</div>
@@ -365,347 +305,116 @@
 	</header>
 
 	<!-- Main Content -->
-	<main class="mx-auto max-w-7xl px-4 py-6">
+	<main class="px-6 py-6">
 		{#if reportData}
-			<!-- Back to Benchmarks link -->
-			<a
-				href="/"
-				class="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-			>
-				<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-				</svg>
-				Back to Benchmarks
-			</a>
-
 			<!-- Report Details Section -->
-			<h2 class="mb-4 text-lg font-semibold text-slate-800 dark:text-white">Report Details</h2>
+			<h2 class="mb-4 text-base font-semibold text-slate-800">Report Details</h2>
 
-			<!-- Two-column layout: Details + Charts -->
-			<div class="grid gap-6 lg:grid-cols-4">
-				<!-- Left Column: Report Details (3/4 width on desktop) -->
-				<div class="space-y-4 lg:col-span-3">
-					<!-- Row 1: SUT Summary + Node -->
-					<div class="grid gap-4 md:grid-cols-2">
-						<!-- SUT Summary Card -->
-						<section class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-							<header class="bg-slate-600 px-4 py-2 text-sm font-semibold text-white">
-								SUT Summary
-							</header>
-							<div class="space-y-2 p-4 text-sm">
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">System Name</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.system?.system_name ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">System Category</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.system?.system_category ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">System Type Detail</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">Cloud</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">System Availability</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.system?.system_availability_status ?? '—'}</span
-									>
-								</div>
-							</div>
-						</section>
-
-						<!-- Node Card -->
-						<section class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-							<header class="bg-slate-600 px-4 py-2 text-sm font-semibold text-white">
-								Node
-							</header>
-							<div class="space-y-2 p-4 text-sm">
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">Types of Nodes</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">Total Node Count</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.system?.number_of_nodes ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">Node Type ID</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-32 shrink-0 text-slate-500 dark:text-slate-400">Node Count</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.system?.number_of_nodes ?? '—'}</span
-									>
-								</div>
-							</div>
-						</section>
+			<!-- Row 1: SUT Summary + Model + Datasets (3 columns) -->
+			<div class="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+				<!-- SUT Summary Card -->
+				<section class="overflow-hidden rounded border border-slate-300 bg-white">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+						SUT Summary
+					</header>
+					<div class="space-y-1.5 p-3 text-xs">
+						<div class="flex gap-2">
+							<span class="w-28 shrink-0 text-slate-500">System Name</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.system?.system_name ?? 'NVIDIA DGX B200 (8x B200-SXM-180GB, TensorRT)'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-28 shrink-0 text-slate-500">System Category</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.system?.system_category ?? 'Datacenter'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-28 shrink-0 text-slate-500">System Type Detail</span>
+							<span class="font-medium text-slate-800">Cloud</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-28 shrink-0 text-slate-500">System Availability</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.system?.system_availability_status ?? 'Available'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-28 shrink-0 text-slate-500">System Size</span>
+							<span class="font-medium text-slate-800">8x GB300 Decode + 12x GB300 Pre-fill</span>
+						</div>
 					</div>
+				</section>
 
-					<!-- Row 2: Model + Datasets -->
-					<div class="grid gap-4 md:grid-cols-2">
-						<!-- Model Card -->
-						<section class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-							<header class="bg-slate-600 px-4 py-2 text-sm font-semibold text-white">Model</header>
-							<div class="space-y-2 p-4 text-sm">
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Division</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.submission?.division ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Model Name</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.model?.model_name ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Model Link</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Model Transformation Link</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Model Notes</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-							</div>
-						</section>
-
-						<!-- Datasets Card -->
-						<section class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-							<header class="bg-slate-600 px-4 py-2 text-sm font-semibold text-white">
-								Datasets
-							</header>
-							<div class="space-y-2 p-4 text-sm">
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Dataset ID</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Dataset Name</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200"
-										>{reportData.submission?.dataset_name ?? '—'}</span
-									>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Dataset Type</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">Both</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Dataset Link</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-								<div class="flex gap-2">
-									<span class="w-44 shrink-0 text-slate-500 dark:text-slate-400">Measured Accuracy Score</span>
-									<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-								</div>
-							</div>
-						</section>
+				<!-- Model Card -->
+				<section class="overflow-hidden rounded border border-slate-300 bg-white">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">Model</header>
+					<div class="space-y-1.5 p-3 text-xs">
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Division</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.submission?.division ?? 'Closed'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Model Name</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.model?.model_name ?? 'GPT-OSS 120B'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Model Link</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Model Transformation Link</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Model Notes</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
 					</div>
+				</section>
 
-					<!-- Row 3: Node Cards (Node 1, Node 2, etc.) -->
-					<!-- Display 2 nodes to match mockup - in production this would come from actual node data -->
-					<div class="grid gap-4 md:grid-cols-2">
-						{#each Array(2) as _, nodeIndex (nodeIndex)}
-							{@const isNode2 = nodeIndex === 1}
-							<!-- Node Card -->
-							<section class="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
-								<header class="bg-slate-700 px-4 py-2 text-sm font-semibold text-white">
-									Node {nodeIndex + 1}
-								</header>
-
-								<!-- Hardware Section -->
-								<div class="bg-slate-500 px-4 py-1.5 text-xs font-semibold text-white">
-									Hardware
-								</div>
-								<div class="space-y-4 p-4">
-									<!-- Processor -->
-									<div>
-										<h4 class="mb-2 text-sm font-semibold text-slate-700 underline dark:text-slate-300">
-											Processor
-										</h4>
-										<div class="space-y-1 text-sm">
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Processor Model Name</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{reportData.system?.host_processor_model_name ?? '—'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Processors per Node</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{reportData.system?.host_processors_per_node ?? '—'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Cores Per Processor</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '48' : '56'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">VCPUs Per Processor</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '4' : '8'}</span
-												>
-											</div>
-										</div>
-									</div>
-
-									<!-- Accelerator -->
-									<div>
-										<h4 class="mb-2 text-sm font-semibold text-slate-700 underline dark:text-slate-300">
-											Accelerator
-										</h4>
-										<div class="space-y-1 text-sm">
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Accelerator Model Name</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{reportData.system?.accelerator_model_name ?? '—'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Accelerators per Node</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '4' : reportData.system?.accelerators_per_node ?? '—'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Interconnect</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '9x 5th Gen NVLink, 7.2 TB/s aggregated bandwidth' : '18x 5th Gen NVLink, 14.4 TB/s aggregated bandwidth'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Memory</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{reportData.system?.accelerator_memory_type ?? '—'} {isNode2 ? '96 GB' : reportData.system?.accelerator_memory_capacity ?? ''}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Host Accelerator Interconnect</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? 'PCIe Gen4 x16' : 'PCIe Gen5 x16'}</span
-												>
-											</div>
-										</div>
-									</div>
-
-									<!-- Section Title (Additional Hardware) -->
-									<div>
-										<h4 class="mb-2 text-sm font-semibold text-slate-700 underline dark:text-slate-300">
-											Section Title
-										</h4>
-										<div class="space-y-1 text-sm">
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Host Memory Capacity</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '512 GB' : '2 TB'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Memory Configuration</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '16x 32GB HMCG94AGBRA179N' : '32x 64GB HMCG94AGBRA179N'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Network Interfaces</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '4x 200Gbe Infiniband' : '10x 400Gbe Infiniband'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Network Details</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? 'Infiniband; Data bandwidth for GPU-PCIe: 252GB/s; PCIe-NIC: 250GB/s' : 'Infiniband; Data bandwidth for GPU-PCIe: 504GB/s; PCIe-NIC: 500GB/s'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Storage Capacity</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? '1 TB SSD, 2 TB CIFS' : '2 TB SSD, 5 TB CIFS'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Storage Details</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>NVMe SSD, CIFS mounted disk storage</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Other Hardware</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Cooling</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? 'Liquid-cooled' : 'Air-cooled'}</span
-												>
-											</div>
-											<div class="flex gap-2">
-												<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Hardware Notes</span>
-												<span class="font-medium text-slate-800 dark:text-slate-200"
-													>{isNode2 ? 'B200 TGP 700W' : 'B200 TGP 1000W'}</span
-												>
-											</div>
-										</div>
-									</div>
-								</div>
-
-								<!-- Software Section -->
-								<div class="bg-slate-500 px-4 py-1.5 text-xs font-semibold text-white">
-									Software
-								</div>
-								<div class="space-y-2 p-4 text-sm">
-									<div class="flex gap-2">
-										<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Framework</span>
-										<span class="font-medium text-slate-800 dark:text-slate-200"
-											>{reportData.system?.framework ?? '—'}</span
-										>
-									</div>
-									<div class="flex gap-2">
-										<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Operating System</span>
-										<span class="font-medium text-slate-800 dark:text-slate-200"
-											>{isNode2 ? 'Ubuntu 22.04' : 'Ubuntu 24.04'}</span
-										>
-									</div>
-									<div class="flex gap-2">
-										<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Filesystem</span>
-										<span class="font-medium text-slate-800 dark:text-slate-200"
-											>{isNode2 ? 'ext4' : '—'}</span
-										>
-									</div>
-									<div class="flex gap-2">
-										<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Other Software</span>
-										<span class="font-medium text-slate-800 dark:text-slate-200"
-											>{isNode2 ? 'TensorRT 10.8, CUDA 12.6, cuDNN 9.8, Driver 565.57' : 'TensorRT 10.11, CUDA 12.9, cuDNN 9.10, Driver 570.148'}</span
-										>
-									</div>
-									<div class="flex gap-2">
-										<span class="w-40 shrink-0 text-slate-500 dark:text-slate-400">Software Notes</span>
-										<span class="font-medium text-slate-800 dark:text-slate-200">—</span>
-									</div>
-								</div>
-							</section>
-						{/each}
+				<!-- Datasets Card -->
+				<section class="overflow-hidden rounded border border-slate-300 bg-white">
+					<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+						Datasets
+					</header>
+					<div class="space-y-1.5 p-3 text-xs">
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Dataset ID</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Dataset Name</span>
+							<span class="font-medium text-slate-800"
+								>{reportData.submission?.dataset_name ?? 'OpenOrca'}</span
+							>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Dataset Type</span>
+							<span class="font-medium text-slate-800">Both</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Dataset Link</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
+						<div class="flex gap-2">
+							<span class="w-36 shrink-0 text-slate-500">Measured Accuracy Score</span>
+							<span class="font-medium text-slate-800">—</span>
+						</div>
 					</div>
-				</div>
+				</section>
+			</div>
 
-				<!-- Right Column: Charts (1/4 width on desktop) -->
-				<div class="space-y-4">
-					<!-- Chart 1: TTFT -->
-					{#if ttftChartData}
+			<!-- Row 2: 4 Charts in a row -->
+			<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+				<!-- Chart 1: TTFT -->
+				{#if ttftChartData}
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
 						<ReportMiniChart
 							title={ttftChartData.title}
 							xLabel={ttftChartData.xLabel}
@@ -715,10 +424,16 @@
 							crosshairPosition={sharedCrosshairPosition}
 							onCrosshairMove={handleCrosshairMove}
 						/>
-					{/if}
+					</div>
+				{:else}
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+						<span class="text-sm text-slate-400">Chart</span>
+					</div>
+				{/if}
 
-					<!-- Chart 2: Throughput -->
-					{#if throughputChartData}
+				<!-- Chart 2: Throughput -->
+				{#if throughputChartData}
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
 						<ReportMiniChart
 							title={throughputChartData.title}
 							xLabel={throughputChartData.xLabel}
@@ -728,10 +443,16 @@
 							crosshairPosition={sharedCrosshairPosition}
 							onCrosshairMove={handleCrosshairMove}
 						/>
-					{/if}
+					</div>
+				{:else}
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+						<span class="text-sm text-slate-400">Chart</span>
+					</div>
+				{/if}
 
-					<!-- Chart 3: Concurrency vs Throughput -->
-					{#if concurrencyThroughputData}
+				<!-- Chart 3: Concurrency vs Throughput -->
+				{#if concurrencyThroughputData}
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
 						<ReportMiniChart
 							title={concurrencyThroughputData.title}
 							xLabel={concurrencyThroughputData.xLabel}
@@ -741,10 +462,16 @@
 							crosshairPosition={sharedCrosshairPosition}
 							onCrosshairMove={handleCrosshairMove}
 						/>
-					{/if}
+					</div>
+				{:else}
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+						<span class="text-sm text-slate-400">Chart</span>
+					</div>
+				{/if}
 
-					<!-- Chart 4: GPU Utilization -->
-					{#if utilizationChartData}
+				<!-- Chart 4: GPU Utilization -->
+				{#if utilizationChartData}
+					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white">
 						<ReportMiniChart
 							title={utilizationChartData.title}
 							xLabel={utilizationChartData.xLabel}
@@ -754,33 +481,260 @@
 							crosshairPosition={sharedCrosshairPosition}
 							onCrosshairMove={handleCrosshairMove}
 						/>
-					{/if}
-				</div>
+					</div>
+				{:else}
+					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50">
+						<span class="text-sm text-slate-400">Chart</span>
+					</div>
+				{/if}
 			</div>
 
-
-			<!-- Bottom: Full-width Benchmark Runs Table -->
-			<section class="mt-6">
-				<ReportRunsTable
-					runs={reportData.runs}
-					currentRunId={reportData.currentRun?.run_id ?? ''}
-					systemColor={reportData.system?.color ?? '#64748b'}
-				/>
+			<!-- Row 3: Node Summary Bar -->
+			<section class="mb-4 overflow-hidden rounded border border-slate-300 bg-white">
+				<header class="bg-slate-600 px-3 py-1.5 text-sm font-semibold text-white">
+					Node
+				</header>
+				<div class="grid grid-cols-4 gap-4 p-3 text-xs">
+					<div class="flex gap-2">
+						<span class="text-slate-500">Types of Nodes</span>
+						<span class="font-medium text-slate-800">—</span>
+					</div>
+					<div class="flex gap-2">
+						<span class="text-slate-500">Total Node Count</span>
+						<span class="font-medium text-slate-800"
+							>{reportData.system?.number_of_nodes ?? '—'}</span
+						>
+					</div>
+					<div class="flex gap-2">
+						<span class="text-slate-500">Node Type ID</span>
+						<span class="font-medium text-slate-800">—</span>
+					</div>
+					<div class="flex gap-2">
+						<span class="text-slate-500">Node Count</span>
+						<span class="font-medium text-slate-800"
+							>{reportData.system?.number_of_nodes ?? '—'}</span
+						>
+					</div>
+				</div>
 			</section>
 
+			<!-- Row 4: Node 1 and Node 2 side by side -->
+			<div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+				{#each Array(2) as _, nodeIndex (nodeIndex)}
+					{@const isNode2 = nodeIndex === 1}
+					<!-- Node Card -->
+					<section class="overflow-hidden rounded border border-slate-300 bg-white">
+						<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white">
+							Node {nodeIndex + 1}
+						</header>
 
-			<!-- Throughput RT Chart -->
-			<!-- <section class="mt-6">
-				<ThroughputRTChart
-					criticalJops={throughputRTData.criticalJops}
-					maxJops={throughputRTData.maxJops}
-					dataPoints={throughputRTData.dataPoints}
-				/>
-			</section> -->
+						<!-- Hardware Section -->
+						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white">
+							Hardware
+						</div>
+						<div class="space-y-3 p-3">
+							<!-- Processor -->
+							<div>
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+									Processor
+								</h4>
+								<div class="space-y-0.5 text-xs">
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Processor Model Name</span>
+										<span class="font-medium text-slate-800"
+											>{reportData.system?.host_processor_model_name ?? 'Intel(R) Xeon(R) Platinum 8570'}</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Processors per Node</span>
+										<span class="font-medium text-slate-800"
+											>{reportData.system?.host_processors_per_node ?? '2'}</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Cores Per Processor</span>
+										<span class="font-medium text-slate-800">56</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">VCPUs Per Processor</span>
+										<span class="font-medium text-slate-800">8</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Accelerator -->
+							<div>
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+									Accelerator
+								</h4>
+								<div class="space-y-0.5 text-xs">
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Accelerator Model Name</span>
+										<span class="font-medium text-slate-800"
+											>{reportData.system?.accelerator_model_name ?? 'NVIDIA B200-SXM-180GB'}</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Accelerators per Node</span>
+										<span class="font-medium text-slate-800"
+											>{reportData.system?.accelerators_per_node ?? '8'}</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Interconnect</span>
+										<span class="font-medium text-slate-800"
+											>18x 5th Gen NVLink, 14.4 TB/s aggregated bandwidth</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Memory</span>
+										<span class="font-medium text-slate-800">HBM3e 180 GB</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Host Accelerator Interconnect</span>
+										<span class="font-medium text-slate-800">PCIe Gen5 x16</span>
+									</div>
+								</div>
+							</div>
+
+							<!-- Section Title (Additional Hardware) -->
+							<div>
+								<h4 class="mb-1.5 text-xs font-semibold text-slate-700 underline">
+									Section Title
+								</h4>
+								<div class="space-y-0.5 text-xs">
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Host Memory Capacity</span>
+										<span class="font-medium text-slate-800">{isNode2 ? '180 GB' : '2 TB'}</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Memory Configuration</span>
+										<span class="font-medium text-slate-800">32x 64GB HMCG94AGBRA179N</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Network Interfaces</span>
+										<span class="font-medium text-slate-800">10x 400Gbe Infiniband</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Network Details</span>
+										<span class="font-medium text-slate-800"
+											>Infiniband; Data bandwidth for GPU-PCIe: 504GB/s; PCIe-NIC: 500GB/s</span
+										>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Storage Capacity</span>
+										<span class="font-medium text-slate-800">2 TB SSD, 5 TB CIFS</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Storage Details</span>
+										<span class="font-medium text-slate-800">NVMe SSD, CIFS mounted disk storage</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Other Hardware</span>
+										<span class="font-medium text-slate-800">—</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Cooling</span>
+										<span class="font-medium text-slate-800">Air-cooled</span>
+									</div>
+									<div class="flex gap-2">
+										<span class="w-36 shrink-0 text-slate-500">Hardware Notes</span>
+										<span class="font-medium text-slate-800">B200 TGP 1000W</span>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- Software Section -->
+						<div class="bg-slate-500 px-3 py-1 text-xs font-semibold text-white">
+							Software
+						</div>
+						<div class="space-y-0.5 p-3 text-xs">
+							<div class="flex gap-2">
+								<span class="w-36 shrink-0 text-slate-500">Framework</span>
+								<span class="font-medium text-slate-800"
+									>{reportData.system?.framework ?? 'TensorRT 10.11, CUDA 12.9'}</span
+								>
+							</div>
+							<div class="flex gap-2">
+								<span class="w-36 shrink-0 text-slate-500">Operating System</span>
+								<span class="font-medium text-slate-800">Ubuntu 24.04</span>
+							</div>
+							<div class="flex gap-2">
+								<span class="w-36 shrink-0 text-slate-500">Filesystem</span>
+								<span class="font-medium text-slate-800">—</span>
+							</div>
+							<div class="flex gap-2">
+								<span class="w-36 shrink-0 text-slate-500">Other Software</span>
+								<span class="font-medium text-slate-800"
+									>TensorRT 10.11, CUDA 12.9, cuDNN 9.10, Driver 570.148</span
+								>
+							</div>
+							<div class="flex gap-2">
+								<span class="w-36 shrink-0 text-slate-500">Software Notes</span>
+								<span class="font-medium text-slate-800">—</span>
+							</div>
+						</div>
+					</section>
+				{/each}
+			</div>
+
+			<!-- Run Data Table -->
+			<section class="overflow-hidden rounded border border-slate-300 bg-white">
+				<header class="bg-slate-700 px-3 py-1.5 text-sm font-semibold text-white">
+					Run Data
+				</header>
+				<div class="overflow-x-auto">
+					<table class="w-full text-xs">
+						<thead>
+							<tr class="border-b border-slate-200 bg-slate-50">
+								<th class="px-3 py-2 text-left font-semibold text-slate-700">Field Name</th>
+								{#each Array(11) as _, i (i)}
+									<th class="px-3 py-2 text-center font-semibold text-slate-700">Run {i + 1}</th>
+								{/each}
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-slate-100">
+							<tr><td class="px-3 py-1.5 text-slate-600">Run Date</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Concurrency</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">System Tokens/Second</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">System Tokens/Second per User</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Queries/sec</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Tokens/sec Utilization</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Total Output Tokens</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Total Duration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Total Requests</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">TBD by DK</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Configuration Summary</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Link to Full Configuration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Link to Run Logs</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<!-- TTFT Section -->
+							<tr class="bg-slate-50"><td class="px-3 py-1.5 font-semibold text-slate-700">TTFT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Minimum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Average</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<!-- TPOT Section -->
+							<tr class="bg-slate-50"><td class="px-3 py-1.5 font-semibold text-slate-700">TPOT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time To First Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+							<tr><td class="px-3 py-1.5 text-slate-600">Time Per Output Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800"></td>{/each}</tr>
+						</tbody>
+					</table>
+				</div>
+			</section>
 		{:else}
 			<!-- Loading/Error State -->
-			<div class="rounded-lg border border-slate-200 bg-white p-12 text-center dark:border-slate-700 dark:bg-slate-800">
-				<p class="text-slate-500 dark:text-slate-400">
+			<div class="rounded-lg border border-slate-200 bg-white p-12 text-center">
+				<p class="text-slate-500">
 					{#if submissionId}
 						Report not found for submission: {submissionId}
 					{:else}
