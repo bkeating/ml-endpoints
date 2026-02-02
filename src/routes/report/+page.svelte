@@ -222,7 +222,7 @@
 	});
 
 	/**
-	 * Chart 4: Concurrency vs GPU Utilization - Shows resource efficiency
+	 * Chart 4: Concurrency vs System Utilization - Shows resource efficiency
 	 */
 	let utilizationChartData = $derived.by(() => {
 		if (!reportData) return null;
@@ -230,7 +230,7 @@
 		const sortedRuns = [...runs].sort((a, b) => a.concurrency - b.concurrency);
 
 		return {
-			title: 'GPU Utilization',
+			title: 'System Utilization',
 			xLabel: 'Concurrent Users',
 			yLabel: 'Utilization (%)',
 			color: system?.color ?? '#64748b',
@@ -456,7 +456,7 @@
 			<div class="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				<!-- Chart 1: TTFT -->
 				{#if ttftChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<div class="aspect-square overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={ttftChartData.title}
 							xLabel={ttftChartData.xLabel}
@@ -468,14 +468,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
+					<div class="flex aspect-square items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
 				<!-- Chart 2: Throughput -->
 				{#if throughputChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<div class="aspect-square overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={throughputChartData.title}
 							xLabel={throughputChartData.xLabel}
@@ -487,14 +487,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
+					<div class="flex aspect-square items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
 				<!-- Chart 3: Concurrency vs Throughput -->
 				{#if concurrencyThroughputData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<div class="aspect-square overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={concurrencyThroughputData.title}
 							xLabel={concurrencyThroughputData.xLabel}
@@ -506,14 +506,14 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
+					<div class="flex aspect-square items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
 
-				<!-- Chart 4: GPU Utilization -->
+				<!-- Chart 4: System Utilization -->
 				{#if utilizationChartData}
-					<div class="aspect-4/3 overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
+					<div class="aspect-square overflow-hidden rounded border border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-800">
 						<ReportMiniChart
 							title={utilizationChartData.title}
 							xLabel={utilizationChartData.xLabel}
@@ -525,7 +525,7 @@
 						/>
 					</div>
 				{:else}
-					<div class="flex aspect-4/3 items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
+					<div class="flex aspect-square items-center justify-center rounded border border-slate-300 bg-slate-50 dark:border-slate-600 dark:bg-slate-800">
 						<span class="text-sm text-slate-400">Chart</span>
 					</div>
 				{/if}
