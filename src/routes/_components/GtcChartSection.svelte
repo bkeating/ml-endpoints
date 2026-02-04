@@ -39,7 +39,7 @@
 	>
 		{chart.title}
 	</h2>
-	<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-balance">
+	<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-balance pr-3">
 		{chart.subtitle}
 	</p>
 
