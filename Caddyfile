@@ -1,6 +1,7 @@
 mlendpoints.bulletpages.com {
 	encode zstd gzip
 
+	# This will be removed when the site is ready for production
 	basic_auth * {
 		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
 	}

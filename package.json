@@ -11,6 +11,7 @@
     "format": "bun run --bun prettier --write .",
     "lint": "bun run --bun prettier --check . && bun run --bun eslint .",
     "test:e2e": "bun run --bun playwright test",
+    "test:unit": "bun run --bun vitest",
     "test": "bun run test:e2e"
 	},
 	"devDependencies": {
