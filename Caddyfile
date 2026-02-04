@@ -1,7 +1,7 @@
 mlendpoints.bulletpages.com {
 	encode zstd gzip
 
-	basicauth * {
+	basic_auth * {
 		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
 	}
 
