@@ -38,11 +38,11 @@ jobs:
             /home/ubuntu/.bun/bin/bun run build
 
             echo "Installing bun systemd service..."
-            sudo cp /var/www/ml-endpoints/systemd.service /etc/systemd/system/mlepoints_bun.service
+            sudo cp /var/www/ml-endpoints/systemd.service /etc/systemd/system/mlendpoints_bun.service
             sudo systemctl daemon-reload
 
             echo "Restarting the bun service..."
-            sudo systemctl restart mlepoints_bun
+            sudo systemctl restart mlendpoints_bun
 
             echo "Updating Caddyfile configuration..."
             sudo cp /var/www/ml-endpoints/Caddyfile /etc/caddy/Caddyfile

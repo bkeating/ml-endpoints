@@ -4,9 +4,9 @@
 # Architecture: Caddy → Unix Socket → Bun → SvelteKit
 #
 # Commands:
-#   sudo systemctl status mlepoints_bun
-#   sudo journalctl -u mlepoints_bun -f
-#   sudo systemctl restart mlepoints_bun
+#   sudo systemctl status mlendpoints_bun
+#   sudo journalctl -u mlendpoints_bun -f
+#   sudo systemctl restart mlendpoints_bun
 
 [Unit]
 Description=MLEndpoints SvelteKit Project (Bun via Unix Socket)
