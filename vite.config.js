@@ -6,7 +6,6 @@ import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
-
 	resolve: {
 		alias: {
 			'@app-css': path.resolve('./src/routes/app.css'),
@@ -19,30 +18,24 @@ export default defineConfig({
 			}
 		}
 	},
-
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
 			{
 				extends: './vite.config.js',
-
 				test: {
 					name: 'client',
-
 					browser: {
 						enabled: true,
 						provider: playwright(),
 						instances: [{ browser: 'chromium', headless: true }]
 					},
-
 					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
 					exclude: ['src/lib/server/**']
 				}
 			},
-
 			{
 				extends: './vite.config.js',
-
 				test: {
 					name: 'server',
 					environment: 'node',
