@@ -7,7 +7,6 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"start": "bun ./build/index.js",
 		"prepare": "svelte-kit sync || echo ''",
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
