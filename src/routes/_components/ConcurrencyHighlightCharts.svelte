@@ -239,27 +239,27 @@
 					<ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>System Tokens/Second: {metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span>
+							<span>System Tokens/Second: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Time To First Token P99: {metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span>
+							<span>Time To First Token P99: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>System Tokens/Second per User: {metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span>
+							<span>System Tokens/Second per User: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Throughput (Tokens/Second): {metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span>
+							<span>Throughput (Tokens/Second): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Latency (Time To First Token P99): {metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span>
+							<span>Latency (Time To First Token P99): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Interactivity (Tokens/Second per User): {metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span>
+							<span>Interactivity (Tokens/Second per User): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
 						</li>
 					</ul>
 				{:else}
@@ -271,9 +271,9 @@
 					<h4 class="mb-2 font-semibold text-slate-800 dark:text-white">Analysis:</h4>
 					<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
 						{#if metricsAtConcurrency}
-							At {sliderValue} concurrent users, the system achieves {metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'} tokens/second
-							with a time to first token of {metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}s.
-							Each user experiences {metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'} tokens/second interactivity.
+							At <span class="font-semibold text-slate-900 dark:text-white">{sliderValue}</span> concurrent users, the system achieves <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span> tokens/second
+							with a time to first token of <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}s</span>.
+							Each user experiences <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span> tokens/second interactivity.
 						{:else}
 							Select a concurrency level to see analysis.
 						{/if}
