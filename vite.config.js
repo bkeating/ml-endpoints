@@ -1,8 +1,8 @@
-import tailwindcss from '@tailwindcss/vite';
+import path from 'path';
 import { defineConfig } from 'vitest/config';
 import { playwright } from '@vitest/browser-playwright';
 import { sveltekit } from '@sveltejs/kit/vite';
-import path from 'path';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
@@ -10,7 +10,6 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			'@app-css': path.resolve('./src/routes/app.css'),
-			svedit: path.resolve('./src/lib/svedit-main/src/lib')
 		}
 	},
 	css: {

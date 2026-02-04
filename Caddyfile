@@ -1,45 +1,17 @@
 mlendpoints.bulletpages.com {
 	encode zstd gzip
-	root * /var/www/ml-endpoints/static
 
 	basicauth * {
-		# Generate hashed password with: `caddy hash-password`
 		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
 	}
 
-	header {
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'"
-		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-		X-Content-Type-Options "nosniff"
-		X-Frame-Options "DENY"
-		Referrer-Policy "strict-origin-when-cross-origin"
-	}
-
-	# Try static files first, then proxy to Node/Bun server
-	@static file
-	handle @static {
-		file_server
-	}
-
-	# Proxy everything else to the Bun server
-	handle {
-		reverse_proxy localhost:3000 {
-			# Forward headers to SvelteKit
-			header_up Host {host}
-			header_up X-Real-IP {remote_host}
-			header_up X-Forwarded-For {remote_host}
-			header_up X-Forwarded-Proto {scheme}
-			header_up X-Forwarded-Host {host}
-		}
-	}
+	reverse_proxy unix//run/bun/mlendpoints_bun.sock
 
 	log {
-		output file /var/log/caddy/access.log {
+		output file /var/log/caddy/mlendpoints.bulletpages.com.log {
 			roll_size 100mb
 			roll_keep 10
-			roll_keep_for 720h
 		}
 		format json
-		level INFO
 	}
 }
