@@ -17,13 +17,12 @@ Type=simple
 
 User=ubuntu
 Group=www-data
+UMask=0002
 WorkingDirectory=/var/www/ml-endpoints
 
 # Loads SOCKET_PATH and other config from .env
 EnvironmentFile=/var/www/ml-endpoints/.env
 Environment="NODE_ENV=production"
-# Explicitly set SOCKET_PATH to ensure it's available (systemd EnvironmentFile can be unreliable)
-Environment="SOCKET_PATH=/run/bun/mlendpoints_bun.sock"
 
 # Creates /run/bun/ owned by ubuntu, cleaned on stop
 RuntimeDirectory=bun

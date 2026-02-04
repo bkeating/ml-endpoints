@@ -402,22 +402,6 @@
 		--accent-color-dark: #887B40;
 	}
 
-	.accent-bg {
-		background-color: rgba(204, 235, 212, 0.2);
-	}
-
-	.accent-text {
-		color: var(--accent-color);
-	}
-
-	:global(.dark) .accent-bg {
-		background-color: rgba(136, 123, 64, 0.2);
-	}
-
-	:global(.dark) .accent-text {
-		color: var(--accent-color-dark);
-	}
-
 	/* Range slider styling with accent color */
 	.slider-accent::-webkit-slider-thumb {
 		-webkit-appearance: none;
