@@ -4,15 +4,14 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
-		"prepare": "svelte-kit sync || echo ''",
-		"format": "prettier --write .",
-		"lint": "prettier --check . && eslint .",
-		"test:unit": "vitest",
-		"test": "npm run test:unit -- --run && npm run test:e2e",
-		"test:e2e": "playwright test"
+    "dev": "bun run --bun vite dev",
+    "build": "bun run --bun vite build",
+    "preview": "bun run --bun vite preview",
+    "prepare": "bun run --bun svelte-kit sync || echo '' && husky",
+    "format": "bun run --bun prettier --write .",
+    "lint": "bun run --bun prettier --check . && bun run --bun eslint .",
+    "test:e2e": "bun run --bun playwright test",
+    "test": "bun run test:e2e"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
