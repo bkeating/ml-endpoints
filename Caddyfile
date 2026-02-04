@@ -5,7 +5,9 @@ mlendpoints.bulletpages.com {
 		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
 	}
 
-	reverse_proxy 127.0.0.1:3000
+	reverse_proxy 127.0.0.1:3000 {
+		header_up True-Client-IP {remote_host}
+	}
 
 	log {
 		output file /var/log/caddy/mlendpoints.bulletpages.com.log {
