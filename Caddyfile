@@ -5,7 +5,7 @@ mlendpoints.bulletpages.com {
 		ben $2a$14$RMfrDvlRosceX4DppxqeN.0WqM0jQ4dl/9g7wrmlaCkE4mnuulYee
 	}
 
-	reverse_proxy unix//run/bun/mlendpoints_bun.sock
+	reverse_proxy 127.0.0.1:3000
 
 	log {
 		output file /var/log/caddy/mlendpoints.bulletpages.com.log {

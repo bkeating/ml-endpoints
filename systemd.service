@@ -1,48 +1,13 @@
-# /etc/systemd/system/mlendpoints_bun.service
-# SvelteKit Project Service (Bun via Unix Socket)
-#
-# Architecture: Caddy → Unix Socket → Bun → SvelteKit
-#
-# Commands:
-#   sudo systemctl status mlendpoints_bun
-#   sudo journalctl -u mlendpoints_bun -f
-#   sudo systemctl restart mlendpoints_bun
-
 [Unit]
-Description=MLEndpoints SvelteKit Project (Bun via Unix Socket)
+Description=ML Endpoints
 After=network.target
 
 [Service]
 Type=simple
-
 User=ubuntu
-Group=www-data
-UMask=0002
 WorkingDirectory=/var/www/ml-endpoints
-
-# Loads SOCKET_PATH and other config from .env
-EnvironmentFile=/var/www/ml-endpoints/.env
-Environment="NODE_ENV=production"
-
-# Creates /run/bun/ owned by ubuntu, cleaned on stop
-RuntimeDirectory=bun
-RuntimeDirectoryMode=0750
-
-ExecStart=/home/ubuntu/.bun/bin/bun run build/index.js
-
-# Restart on crash, 3s delay
+ExecStart=/home/ubuntu/.bun/bin/bun run index.js
 Restart=always
-RestartSec=3
-
-# Memory limits for SvelteKit
-MemoryHigh=512M
-MemoryMax=1G
-
-# Basic security hardening
-NoNewPrivileges=true
-ProtectSystem=strict
-ReadWritePaths=/var/www/ml-endpoints /run/bun
-PrivateTmp=true
 
 [Install]
 WantedBy=multi-user.target
