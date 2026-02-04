@@ -346,23 +346,22 @@
 				</p>
 			</header>
 
-			<!-- Main content area - 2x2 grid layout -->
-			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-				<!-- Chart 1: System Throughput vs Interactivity -->
-				<GtcChartSection chart={throughputVsInteractivityChart} lineType="step" />
-
-				<!-- Chart 2: Throughput vs Concurrency -->
-				<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
-				<!-- Chart 4: Per-User Performance -->
-				<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
-
-				<!-- Chart 3: Capacity Utilization -->
-				<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
-			</div>
+			<!-- Chart 1: System Throughput vs Interactivity - Full width -->
+			<GtcChartSection chart={throughputVsInteractivityChart} lineType="step" />
 		</div>
 
 		<!-- Chart Filters Sidebar (hidden on mobile) -->
 		<GtcChartFiltersSidebar />
+	</div>
+
+	<!-- Remaining 3 charts evenly sized across max-w-7xl - below sidebar section -->
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-3 mt-6">
+		<!-- Chart 2: Throughput vs Concurrency -->
+		<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
+		<!-- Chart 3: Capacity Utilization -->
+		<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
+		<!-- Chart 4: Per-User Performance -->
+		<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
 	</div>
 
   <ConcurrencyHighlightCharts curves={filteredParetoCurves.filter((curve) => isSystemDisplayed(curve))} />
