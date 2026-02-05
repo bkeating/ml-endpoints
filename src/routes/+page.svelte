@@ -11,8 +11,6 @@
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
 	import ConcurrencyHighlightCharts from './_components/ConcurrencyHighlightCharts.svelte';
-	import ChevronLeft from '$lib/components/icons/ChevronLeft.svelte';
-	import ChevronRight from '$lib/components/icons/ChevronRight.svelte';
 	import {
 		isSystemVisible,
 		getSelectedBenchmarkModelId,
@@ -81,15 +79,42 @@
 		});
 	}
 
+	/**
+	 * Get the logo URL for a submission based on its model.
+	 * @param {Object} submission - The submission object
+	 * @returns {string} - Logo URL path
+	 */
+	function getModelLogoUrl(submission) {
+		const model = endpointsData.models.find((m) => m.model_id === submission.model_id);
+		return model?.logo_url ?? null;
+	}
+
+	/**
+	 * Get the hardware logo URL for a submission based on its submitter organization.
+	 * @param {Object} submission - The submission object
+	 * @returns {string|null} - Logo URL path or null if not found
+	 */
+	function getHardwareLogoUrl(submission) {
+		const orgName = submission.submitter_org_names?.toLowerCase() ?? '';
+		if (orgName.includes('nvidia')) {
+			return '/logo-nvidia.svg';
+		}
+		if (orgName.includes('amd')) {
+			return '/logo-amd.png';
+		}
+		if (orgName.includes('intel')) {
+			// Assuming there's an Intel logo, otherwise return null
+			return null;
+		}
+		return null;
+	}
+
 	// Get recent submissions for the carousel
 	const recentSubmissions = getRecentSubmissions(endpointsData);
 
 	// ============================================================================
-	// SUBMISSION CARD CHART TOGGLE
+	// SUBMISSION CARD CHART DATA
 	// ============================================================================
-
-	/** @type {'ttft' | 'throughput'} */
-	let cardChartType = $state('ttft');
 
 	/**
 	 * Get runs for a specific submission.
@@ -113,10 +138,13 @@
 	}
 
 	/**
-	 * Get the accent color for charts based on current theme.
-	 * @returns {string} - Hex color for light or dark theme
+	 * Get colors for both chart types based on current theme.
+	 * @returns {{ ttft: string, throughput: string }} - Colors for light or dark theme
 	 */
-	let accentColor = $derived(getTheme() === 'dark' ? '#726528' : '#CCEBD4');
+	let chartColors = $derived({
+		ttft: getTheme() === 'dark' ? '#00cc88' : '#009966',
+		throughput: getTheme() === 'dark' ? '#5a7bb3' : '#37548A'
+	});
 
 	/**
 	 * Generate an SVG path for a mini sparkline chart.
@@ -142,7 +170,7 @@
 		// Sort by x value for proper line drawing
 		points.sort((a, b) => a.x - b.x);
 
-		// Find min/max for normalization
+		// Find min/max for normalization (each chart normalized independently)
 		const xMin = Math.min(...points.map((p) => p.x));
 		const xMax = Math.max(...points.map((p) => p.x));
 		const yMin = Math.min(...points.map((p) => p.y));
@@ -168,6 +196,19 @@
 			.join(' ');
 
 		return { path, points: normalizedPoints };
+	}
+
+	/**
+	 * Generate sparkline paths for both TTFT and Throughput vs Interactivity charts.
+	 * Each chart is normalized independently to preserve its original shape.
+	 * @param {Array} runs - Array of run data
+	 * @returns {{ ttft: { path: string, points: Array }, throughput: { path: string, points: Array } }}
+	 */
+	function generateDualSparklinePaths(runs) {
+		return {
+			ttft: generateSparklinePath(runs, 'ttft'),
+			throughput: generateSparklinePath(runs, 'throughput')
+		};
 	}
 
 	/**
@@ -367,116 +408,115 @@
   <ConcurrencyHighlightCharts curves={filteredParetoCurves.filter((curve) => isSystemDisplayed(curve))} />
 
 
-	<!-- Most Recent Submissions Carousel -->
+	<!-- Most Recent Submissions -->
 	<section class="mt-12 border-t border-slate-200 pt-8 dark:border-slate-700" aria-label="Most recent submissions">
-		<div class="mb-6 flex items-center justify-between">
-			<h2 class="text-xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
-			<div class="flex items-center gap-4">
-				<!-- Chart type toggle -->
-				<div class="flex rounded-lg border border-slate-200 p-0.5 dark:border-slate-600" role="group" aria-label="Chart type">
-					<button
-						type="button"
-						onclick={() => cardChartType = 'ttft'}
-						class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors {cardChartType === 'ttft' ? 'bg-[#CCEBD4] text-slate-800 dark:bg-[#736628] dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'}"
-					>
-						TTFT
-					</button>
-					<button
-						type="button"
-						onclick={() => cardChartType = 'throughput'}
-						class="rounded-md px-3 py-1.5 text-sm font-medium transition-colors {cardChartType === 'throughput' ? 'bg-[#CCEBD4] text-slate-800 dark:bg-[#736628] dark:text-white' : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'}"
-					>
-						Throughput vs Interactivity
-					</button>
-				</div>
-
-				<!-- Navigation arrows -->
-				<div class="flex gap-1">
-					<button
-						type="button"
-						class="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-						aria-label="Scroll left"
-					>
-						<ChevronLeft class="h-5 w-5" />
-					</button>
-					<button
-						type="button"
-						class="rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-						aria-label="Scroll right"
-					>
-						<ChevronRight class="h-5 w-5" />
-					</button>
+		<div class="flex flex-col gap-6">
+			<!-- Top: Heading and inline legend -->
+			<div class="flex items-center justify-between">
+				<h2 class="text-3xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
+				<!-- Inline legend (just dots and labels) -->
+				<div class="flex items-center gap-4" role="group" aria-label="Chart legend">
+					<div class="flex items-center gap-2">
+						<div
+							class="h-3 w-3 rounded-full"
+							style="background-color: {chartColors.ttft}"
+						></div>
+						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">TTFT</span>
+					</div>
+					<div class="flex items-center gap-2">
+						<div
+							class="h-3 w-3 rounded-full"
+							style="background-color: {chartColors.throughput}"
+						></div>
+						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Throughput vs Interactivity</span>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<div class="relative">
-			<!-- Carousel container -->
-			<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
-			{#each recentSubmissions as submission (submission.submission_id)}
-				{@const runs = getRunsForSubmission(submission.submission_id)}
-				{@const sparkline = generateSparklinePath(runs, cardChartType)}
-				<a
-					href="/report?submission={submission.submission_id}"
-					class="group relative flex min-w-[340px] shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
-				>
-					<!-- Mini chart background -->
-					<div class="absolute inset-0">
-						<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
-							<!-- Gradient fill under the line -->
-							<defs>
-								<linearGradient id="cardGradient-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
-									<stop offset="0%" style="stop-color: {accentColor}; stop-opacity: 0.15" />
-									<stop offset="100%" style="stop-color: {accentColor}; stop-opacity: 0.02" />
-								</linearGradient>
-							</defs>
-							{#if sparkline.path}
-								<!-- Area fill -->
-								<path
-									d="{sparkline.path} L 100 100 L 0 100 Z"
-									fill="url(#cardGradient-{submission.submission_id})"
-									style="transition: d 500ms ease-out"
-								/>
-								<!-- Line -->
-								<path
-									d={sparkline.path}
-									fill="none"
-									stroke={accentColor}
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									vector-effect="non-scaling-stroke"
-									style="transition: d 500ms ease-out"
-								/>
-							{/if}
-						</svg>
-					</div>
+			<!-- Bottom: Four-column grid of cards -->
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+				{#each recentSubmissions as submission (submission.submission_id)}
+						{@const runs = getRunsForSubmission(submission.submission_id)}
+						{@const sparklines = generateDualSparklinePaths(runs)}
+						{@const modelLogoUrl = getModelLogoUrl(submission)}
+						{@const hardwareLogoUrl = getHardwareLogoUrl(submission)}
+						<a
+							href="/report?submission={submission.submission_id}"
+							class="group relative flex flex-col overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
+						>
+							<!-- Mini chart background -->
+							<div class="relative h-24 w-full shrink-0">
+								<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
+									<!-- Gradient fills under the lines -->
+									<defs>
+										<linearGradient id="cardGradientTtft-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+											<stop offset="0%" style="stop-color: {chartColors.ttft}; stop-opacity: 0.15" />
+											<stop offset="100%" style="stop-color: {chartColors.ttft}; stop-opacity: 0.02" />
+										</linearGradient>
+										<linearGradient id="cardGradientThroughput-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
+											<stop offset="0%" style="stop-color: {chartColors.throughput}; stop-opacity: 0.15" />
+											<stop offset="100%" style="stop-color: {chartColors.throughput}; stop-opacity: 0.02" />
+										</linearGradient>
+									</defs>
+									{#if sparklines.ttft.path}
+										<!-- TTFT area fill -->
+										<path
+											d="{sparklines.ttft.path} L 100 100 L 0 100 Z"
+											fill="url(#cardGradientTtft-{submission.submission_id})"
+											style="transition: d 500ms ease-out"
+										/>
+										<!-- TTFT line -->
+										<path
+											d={sparklines.ttft.path}
+											fill="none"
+											stroke={chartColors.ttft}
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											vector-effect="non-scaling-stroke"
+											style="transition: d 500ms ease-out"
+										/>
+									{/if}
+									{#if sparklines.throughput.path}
+										<!-- Throughput vs Interactivity area fill -->
+										<path
+											d="{sparklines.throughput.path} L 100 100 L 0 100 Z"
+											fill="url(#cardGradientThroughput-{submission.submission_id})"
+											style="transition: d 500ms ease-out"
+										/>
+										<!-- Throughput vs Interactivity line -->
+										<path
+											d={sparklines.throughput.path}
+											fill="none"
+											stroke={chartColors.throughput}
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											vector-effect="non-scaling-stroke"
+											style="transition: d 500ms ease-out"
+										/>
+									{/if}
+								</svg>
+							</div>
 
-					<!-- Content overlay -->
-					<div class="relative z-10 flex flex-col justify-between bg-linear-to-r from-white/80 via-white/50 to-transparent p-4 dark:from-slate-800/80 dark:via-slate-800/50">
-						<div class="flex flex-col gap-0.5">
-							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submitter</span>
-							<span class="font-semibold text-slate-800 dark:text-white">{submission.submitter_org_names}</span>
-						</div>
+							<!-- Footer bar -->
+							<div class="relative z-10 bg-white/95 backdrop-blur-sm border-t border-slate-200/50 px-3 py-3 dark:bg-slate-800/95 dark:border-slate-700/50">
+								<div class="flex items-center justify-between mb-2">
+									{#if modelLogoUrl}
+										<img src={modelLogoUrl} alt="Model Logo" class="h-7 dark:invert grayscale" />
+									{/if}
+									{#if hardwareLogoUrl}
+										<img src={hardwareLogoUrl} alt="Hardware Logo" class="max-w-10 h-auto grayscale dark:invert" />
+									{/if}
+								</div>
 
-						<div class="mt-3 flex flex-col gap-0.5">
-							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Submission Date</span>
-							<span class="text-sm text-slate-700 dark:text-slate-300">{formatDate(submission.submission_date)}</span>
-						</div>
-
-						<div class="mt-3 flex flex-col gap-0.5">
-							<span class="text-xs font-medium text-slate-500 dark:text-slate-400">Model</span>
-							<span class="text-sm text-slate-700 dark:text-slate-300">{submission.model_name}</span>
-						</div>
-					</div>
-
-					<!-- Color accent bar -->
-					<div
-						class="absolute bottom-0 left-0 h-1 w-full"
-						style="background-color: {accentColor}"
-					></div>
-				</a>
-			{/each}
+								<div class="flex items-center justify-between">
+									<span class="text-xs text-slate-600 dark:text-slate-400">{formatDate(submission.submission_date)}</span>
+									<span class="text-sm font-medium  dm-mono dark:text-[#e4dcb8]">{submission.model_name}</span>
+								</div>
+							</div>
+						</a>
+				{/each}
 			</div>
 		</div>
 	</section>

@@ -195,7 +195,7 @@
 </script>
 
 <section class="mt-6" aria-label="Concurrency highlight charts">
-	<h2 class="mb-6 text-xl font-semibold text-slate-700 dark:text-white">
+	<h2 class="mb-9 text-3xl font-semibold text-slate-700 dark:text-white">
 		Highlight Concurrency across all charts
 	</h2>
 
@@ -203,7 +203,7 @@
 		<!-- Left column: Slider and metrics -->
 		<div class="lg:w-1/3">
 			<!-- Metrics panel -->
-			<div class="bg-white p-4 dark:bg-slate-800">
+			<div>
 				<!-- Concurrency slider -->
 				<div class="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 pt-3 pb-5 dark:border-slate-600 dark:bg-slate-700/50">
 					<div class="relative h-3 w-full">

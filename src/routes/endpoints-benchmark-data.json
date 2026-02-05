@@ -153,12 +153,14 @@
     {
       "model_id": 1,
       "model_name": "Llama 2 70B",
-      "model_internal": "llama2-70b-99"
+      "model_internal": "llama2-70b-99",
+      "logo_url": "/logo-llama-meta.webp"
     },
     {
       "model_id": 2,
       "model_name": "GPT-J 6B",
-      "model_internal": "gptj-6b-99.9"
+      "model_internal": "gptj-6b-99.9",
+      "logo_url": "/logo-gpt.webp"
     }
   ],
   "submissions": [
