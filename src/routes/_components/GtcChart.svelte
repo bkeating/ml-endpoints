@@ -413,6 +413,28 @@
 				{#if tooltipData && showComparison && comparisonData.length > 0}
 					{@const hoveredX = xScale(tooltipData.point.x)}
 					{@const hoveredY = yScale(tooltipData.point.y)}
+					
+					<!-- Hovered point's Y-value label (right next to the hovered point) -->
+					<g transform="translate({hoveredX + 8}, {hoveredY})">
+						<rect
+							x="-2"
+							y="-10"
+							width="50"
+							height="20"
+							rx="3"
+							class="fill-white dark:fill-slate-800"
+							opacity="0.9"
+						/>
+						<text
+							class="fill-slate-700 dark:fill-slate-200"
+							font-size="11"
+							font-weight="600"
+							dy="4"
+						>
+							{formatValue(tooltipData.point.y, yScaleType)}
+						</text>
+					</g>
+					
 					{#each comparisonData as comparison (comparison.model.id)}
 						{@const compY = yScale(comparison.y)}
 						<!-- Vertical dotted line from hovered point to comparison point -->
@@ -435,10 +457,10 @@
 							stroke={comparison.model.color}
 							stroke-width="2"
 						/>
-						<!-- Y-value label at comparison point -->
-						<g transform="translate({hoveredX + 8}, {compY})">
+						<!-- Y-value label at comparison point (positioned at the actual comparison point) -->
+						<g transform="translate({hoveredX - 8}, {compY})">
 							<rect
-								x="-2"
+								x="-48"
 								y="-10"
 								width="50"
 								height="20"
@@ -451,15 +473,17 @@
 								font-size="11"
 								font-weight="600"
 								dy="4"
+								text-anchor="end"
 							>
 								{formatValue(comparison.y, yScaleType)}
 							</text>
 						</g>
 					{/each}
-					<!-- Ratio badge near the hovered point -->
+					
+					<!-- Ratio badge near the hovered point (if only one comparison) -->
 					{#if comparisonData.length === 1}
 						{@const comp = comparisonData[0]}
-						<g transform="translate({hoveredX + 12}, {(hoveredY + yScale(comp.y)) / 2})">
+						<g transform="translate({hoveredX + 8}, {hoveredY - 25})">
 							<rect
 								x="-4"
 								y="-12"
@@ -605,5 +629,12 @@
 	/* Highlighted point styling for cross-chart hover sync */
 	.ring-highlight {
 		filter: drop-shadow(0 0 4px currentColor);
+	}
+
+	/* Remove focus outline from chart circles */
+	.gtc-chart circle[role="button"]:focus,
+	.gtc-chart circle[role="button"]:focus-visible,
+	.gtc-chart circle[role="button"]:active {
+		outline: none;
 	}
 </style>

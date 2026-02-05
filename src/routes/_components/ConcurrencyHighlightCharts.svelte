@@ -54,7 +54,7 @@
 	];
 
 	// Log scale tick marks for the slider
-	const tickMarks = [0, 1, 5, 10, 50];
+	const tickMarks = [1, 5, 10, 50];
 
 	/**
 	 * Convert slider value to percentage position (log scale)
@@ -77,7 +77,7 @@
 		const minLog = Math.log10(1);
 		const maxLog = Math.log10(50);
 		const valueLog = minLog + (percent / 100) * (maxLog - minLog);
-		return Math.round(Math.pow(10, valueLog));
+		return Math.pow(10, valueLog);
 	}
 
 	// Derived percentage for the slider position
@@ -136,9 +136,12 @@
 	let metricsAtConcurrency = $derived.by(() => {
 		if (curves.length === 0) return null;
 
+		// Round to whole number for snapping behavior
+		const roundedConcurrency = Math.round(sliderValue);
+
 		// Get metrics from first visible curve with data
 		for (const curve of curves) {
-			const metrics = getMetricsAtConcurrency(curve.runs, sliderValue);
+			const metrics = getMetricsAtConcurrency(curve.runs, roundedConcurrency);
 			if (metrics) return metrics;
 		}
 		return null;
@@ -199,40 +202,41 @@
 	<div class="flex flex-col gap-6 lg:flex-row">
 		<!-- Left column: Slider and metrics -->
 		<div class="lg:w-1/3">
-			<!-- Concurrency slider -->
-			<div class="mb-6">
-				<div class="relative h-3 w-full">
-					<!-- Track background -->
-					<div class="absolute inset-0 rounded-full bg-slate-100 dark:bg-slate-700"></div>
-					<!-- Filled track (left of thumb) -->
-					<div
-						class="absolute top-0 left-0 h-full rounded-full bg-[#CCEBD4] dark:bg-[#736628]"
-						style="width: {sliderPercent}%"
-					></div>
-					<!-- Slider input -->
-					<input
-						type="range"
-						min="0"
-						max="100"
-						step="0.1"
-						value={sliderPercent}
-						oninput={handleSliderInput}
-						class="absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:dark:bg-[#d0bd67] [&::-webkit-slider-thumb]:bg-[#4f805b] [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#C41E3A] [&::-moz-range-thumb]:shadow-md"
-						aria-label="Concurrency slider"
-					/>
-				</div>
-				<!-- Tick labels -->
-				<div class="relative mt-2 flex justify-between text-xs text-slate-500 dark:text-slate-400">
-					{#each tickMarks as tick (tick)}
-						<span style="position: absolute; left: {valueToPercent(tick || 1)}%; transform: translateX(-50%)">{tick}</span>
-					{/each}
-				</div>
-			</div>
-
 			<!-- Metrics panel -->
-			<div class="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+			<div class="bg-white p-4 dark:bg-slate-800">
+				<!-- Concurrency slider -->
+				<div class="mb-4 rounded-lg border border-slate-200 bg-slate-50/50 px-4 pt-3 pb-5 dark:border-slate-600 dark:bg-slate-700/50">
+					<div class="relative h-3 w-full">
+						<!-- Track background -->
+						<div class="absolute inset-0 rounded-full bg-slate-100 dark:bg-slate-700"></div>
+						<!-- Filled track (left of thumb) -->
+						<div
+							class="absolute top-0 left-0 h-full rounded-full bg-[#CCEBD4] dark:bg-[#736628]"
+							style="width: {sliderPercent}%"
+						></div>
+						<!-- Slider input -->
+						<input
+							type="range"
+							min="0"
+							max="100"
+							step="0.1"
+							value={sliderPercent}
+							oninput={handleSliderInput}
+							class="concurrency-slider absolute inset-0 h-full w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#4f805b] [&::-webkit-slider-thumb]:shadow-md [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:appearance-none [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#C41E3A] [&::-moz-range-thumb]:shadow-md"
+							aria-label="Concurrency slider"
+						/>
+					</div>
+					<!-- Tick labels -->
+					<div class="relative mt-2 flex justify-between text-xs text-slate-500 dark:text-slate-400">
+						{#each tickMarks as tick (tick)}
+							{@const tickPercent = valueToPercent(tick)}
+							<span style="position: absolute; left: {tickPercent}%; transform: translateX(-50%)">{tick}</span>
+						{/each}
+					</div>
+				</div>
+
 				<h3 class="mb-3 text-lg font-semibold text-slate-800 dark:text-white">
-					At {sliderValue} Users:
+					At {Math.round(sliderValue)} Users:
 				</h3>
 
 				{#if metricsAtConcurrency}
@@ -259,7 +263,7 @@
 					<h4 class="mb-2 font-semibold text-slate-800 dark:text-white">Analysis:</h4>
 					<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
 						{#if metricsAtConcurrency}
-							At <span class="font-semibold text-slate-900 dark:text-white">{sliderValue}</span> concurrent users, the system achieves <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span> tokens/second
+							At <span class="font-semibold text-slate-900 dark:text-white">{Math.round(sliderValue)}</span> concurrent users, the system achieves <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span> tokens/second
 							with a time to first token of <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}s</span>.
 							Each user experiences <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span> tokens/second interactivity.
 						{:else}
@@ -334,3 +338,15 @@
 		</div>
 	</div>
 </section>
+
+<style lang="postcss">
+	@reference "@app-css";
+
+	:global(.dark) .concurrency-slider::-webkit-slider-thumb {
+		background-color: #b5a05c;
+	}
+
+	:global(.dark) .concurrency-slider::-moz-range-thumb {
+		background-color: #b5a05c;
+	}
+</style>

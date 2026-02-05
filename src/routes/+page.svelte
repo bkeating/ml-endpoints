@@ -412,13 +412,13 @@
 
 		<div class="relative">
 			<!-- Carousel container -->
-			<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+			<div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory">
 			{#each recentSubmissions as submission (submission.submission_id)}
 				{@const runs = getRunsForSubmission(submission.submission_id)}
 				{@const sparkline = generateSparklinePath(runs, cardChartType)}
 				<a
 					href="/report?submission={submission.submission_id}"
-					class="group relative flex min-w-[340px] shrink-0 overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
+					class="group relative flex min-w-[340px] shrink-0 snap-start overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
 				>
 					<!-- Mini chart background -->
 					<div class="absolute inset-0">
