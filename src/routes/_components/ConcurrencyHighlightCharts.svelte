@@ -239,18 +239,6 @@
 					<ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>System Tokens/Second: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
-						</li>
-						<li class="flex items-start gap-2">
-							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Time To First Token P99: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
-						</li>
-						<li class="flex items-start gap-2">
-							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>System Tokens/Second per User: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
-						</li>
-						<li class="flex items-start gap-2">
-							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
 							<span>Throughput (Tokens/Second): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
