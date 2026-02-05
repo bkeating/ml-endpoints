@@ -386,7 +386,7 @@
 						stroke-linejoin="round"
 						class="transition-opacity duration-300"
 					/>
-					<!-- Data points -->
+					<!-- Data points (interactive) -->
 					{#each model.points as point, i (i)}
 						{@const isHighlighted = globalHoveredRunId && point.meta?.runId === globalHoveredRunId}
 						<circle
@@ -408,6 +408,60 @@
 						/>
 					{/each}
 				{/each}
+
+				<!-- Local crosshair lines (this chart is the hover source) -->
+				{#if tooltipData}
+					{@const localX = xScale(tooltipData.point.x)}
+					{@const localY = yScale(tooltipData.point.y)}
+					<line
+						x1={localX}
+						y1="0"
+						x2={localX}
+						y2={innerHeight}
+						stroke={tooltipData.model.color}
+						stroke-width="1"
+						stroke-dasharray="4 3"
+						opacity="0.5"
+					/>
+					<line
+						x1="0"
+						y1={localY}
+						x2={innerWidth}
+						y2={localY}
+						stroke={tooltipData.model.color}
+						stroke-width="1"
+						stroke-dasharray="4 3"
+						opacity="0.5"
+					/>
+				{/if}
+
+				<!-- Synced crosshair lines (from another chart's hover) -->
+				{#if syncedTooltipPoint}
+					{@const syncX = xScale(syncedTooltipPoint.point.x)}
+					{@const syncY = yScale(syncedTooltipPoint.point.y)}
+					<!-- Vertical crosshair -->
+					<line
+						x1={syncX}
+						y1="0"
+						x2={syncX}
+						y2={innerHeight}
+						stroke={syncedTooltipPoint.model.color}
+						stroke-width="1"
+						stroke-dasharray="4 3"
+						opacity="0.5"
+					/>
+					<!-- Horizontal crosshair -->
+					<line
+						x1="0"
+						y1={syncY}
+						x2={innerWidth}
+						y2={syncY}
+						stroke={syncedTooltipPoint.model.color}
+						stroke-width="1"
+						stroke-dasharray="4 3"
+						opacity="0.5"
+					/>
+				{/if}
 
 				<!-- Comparison lines between systems (when hovering with comparison mode on) -->
 				{#if tooltipData && showComparison && comparisonData.length > 0}

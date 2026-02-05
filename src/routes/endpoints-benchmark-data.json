@@ -154,7 +154,7 @@
       "model_id": 1,
       "model_name": "Llama 2 70B",
       "model_internal": "llama2-70b-99",
-      "logo_url": "/logo-llama-meta.webp"
+      "logo_url": "/logo-llama.svg"
     },
     {
       "model_id": 2,

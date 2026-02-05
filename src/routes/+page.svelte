@@ -11,6 +11,7 @@
 	import GtcChartSection from './_components/GtcChartSection.svelte';
 	import GtcChartFiltersSidebar from './_components/GtcChartFiltersSidebar.svelte';
 	import ConcurrencyHighlightCharts from './_components/ConcurrencyHighlightCharts.svelte';
+	import SubmissionMiniChart from './_components/SubmissionMiniChart.svelte';
 	import {
 		isSystemVisible,
 		getSelectedBenchmarkModelId,
@@ -100,7 +101,7 @@
 			return '/logo-nvidia.svg';
 		}
 		if (orgName.includes('amd')) {
-			return '/logo-amd.png';
+			return '/logo-amd.svg';
 		}
 		if (orgName.includes('intel')) {
 			// Assuming there's an Intel logo, otherwise return null
@@ -362,6 +363,19 @@
 				}))
 			}))
 	});
+
+	// ============================================================================
+	// MINI CHART VISIBILITY TOGGLES
+	// ============================================================================
+
+	/** Toggle visibility of axis labels on mini sparkline charts */
+	let showAxisLabels = $state(false);
+
+	/** Toggle visibility of TTFT data source on mini charts */
+	let showTtft = $state(true);
+
+	/** Toggle visibility of Throughput vs Interactivity data source on mini charts */
+	let showThroughput = $state(true);
 </script>
 
 <!-- Side-by-side layout with filters sidebar and charts -->
@@ -414,22 +428,47 @@
 			<!-- Top: Heading and inline legend -->
 			<div class="flex items-center justify-between">
 				<h2 class="text-3xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
-				<!-- Inline legend (just dots and labels) -->
+				<!-- Inline legend and axis toggle -->
 				<div class="flex items-center gap-4" role="group" aria-label="Chart legend">
-					<div class="flex items-center gap-2">
+					<button
+						type="button"
+						class="flex items-center gap-2 transition-opacity {showTtft ? 'opacity-100' : 'opacity-40'}"
+						onclick={() => showTtft = !showTtft}
+						aria-pressed={showTtft}
+						aria-label="Toggle TTFT data"
+					>
 						<div
 							class="h-3 w-3 rounded-full"
 							style="background-color: {chartColors.ttft}"
 						></div>
 						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">TTFT</span>
-					</div>
-					<div class="flex items-center gap-2">
+					</button>
+					<button
+						type="button"
+						class="flex items-center gap-2 transition-opacity {showThroughput ? 'opacity-100' : 'opacity-40'}"
+						onclick={() => showThroughput = !showThroughput}
+						aria-pressed={showThroughput}
+						aria-label="Toggle Throughput vs Interactivity data"
+					>
 						<div
 							class="h-3 w-3 rounded-full"
 							style="background-color: {chartColors.throughput}"
 						></div>
-						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Throughput vs Interactivity</span>
-					</div>
+						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Thru vs Int</span>
+					</button>
+					<!-- Axis labels toggle -->
+					<button
+						type="button"
+						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors cursor-pointer {showAxisLabels ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
+						onclick={() => showAxisLabels = !showAxisLabels}
+						aria-pressed={showAxisLabels}
+						aria-label="Toggle axis labels on charts"
+					>
+						<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10M12 3v18M3 7v10M21 7v10" />
+						</svg>
+						Axes
+					</button>
 				</div>
 			</div>
 
@@ -437,82 +476,35 @@
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
 				{#each recentSubmissions as submission (submission.submission_id)}
 						{@const runs = getRunsForSubmission(submission.submission_id)}
-						{@const sparklines = generateDualSparklinePaths(runs)}
 						{@const modelLogoUrl = getModelLogoUrl(submission)}
 						{@const hardwareLogoUrl = getHardwareLogoUrl(submission)}
 						<a
 							href="/report?submission={submission.submission_id}"
 							class="group relative flex flex-col overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
 						>
-							<!-- Mini chart background -->
-							<div class="relative h-24 w-full shrink-0">
-								<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
-									<!-- Gradient fills under the lines -->
-									<defs>
-										<linearGradient id="cardGradientTtft-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
-											<stop offset="0%" style="stop-color: {chartColors.ttft}; stop-opacity: 0.15" />
-											<stop offset="100%" style="stop-color: {chartColors.ttft}; stop-opacity: 0.02" />
-										</linearGradient>
-										<linearGradient id="cardGradientThroughput-{submission.submission_id}" x1="0%" y1="0%" x2="0%" y2="100%">
-											<stop offset="0%" style="stop-color: {chartColors.throughput}; stop-opacity: 0.15" />
-											<stop offset="100%" style="stop-color: {chartColors.throughput}; stop-opacity: 0.02" />
-										</linearGradient>
-									</defs>
-									{#if sparklines.ttft.path}
-										<!-- TTFT area fill -->
-										<path
-											d="{sparklines.ttft.path} L 100 100 L 0 100 Z"
-											fill="url(#cardGradientTtft-{submission.submission_id})"
-											style="transition: d 500ms ease-out"
-										/>
-										<!-- TTFT line -->
-										<path
-											d={sparklines.ttft.path}
-											fill="none"
-											stroke={chartColors.ttft}
-											stroke-width="2"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											vector-effect="non-scaling-stroke"
-											style="transition: d 500ms ease-out"
-										/>
-									{/if}
-									{#if sparklines.throughput.path}
-										<!-- Throughput vs Interactivity area fill -->
-										<path
-											d="{sparklines.throughput.path} L 100 100 L 0 100 Z"
-											fill="url(#cardGradientThroughput-{submission.submission_id})"
-											style="transition: d 500ms ease-out"
-										/>
-										<!-- Throughput vs Interactivity line -->
-										<path
-											d={sparklines.throughput.path}
-											fill="none"
-											stroke={chartColors.throughput}
-											stroke-width="2"
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											vector-effect="non-scaling-stroke"
-											style="transition: d 500ms ease-out"
-										/>
-									{/if}
-								</svg>
-							</div>
+							<!-- Interactive mini chart with crosshair and tooltip -->
+							<SubmissionMiniChart
+								{runs}
+								submissionId={submission.submission_id}
+								{showTtft}
+								{showThroughput}
+								{chartColors}
+								{showAxisLabels}
+							/>
 
 							<!-- Footer bar -->
 							<div class="relative z-10 bg-white/95 backdrop-blur-sm border-t border-slate-200/50 px-3 py-3 dark:bg-slate-800/95 dark:border-slate-700/50">
-								<div class="flex items-center justify-between mb-2">
-									{#if modelLogoUrl}
-										<img src={modelLogoUrl} alt="Model Logo" class="h-7 dark:invert grayscale" />
-									{/if}
-									{#if hardwareLogoUrl}
-										<img src={hardwareLogoUrl} alt="Hardware Logo" class="max-w-10 h-auto grayscale dark:invert" />
-									{/if}
-								</div>
-
+								<!-- Model Name (left) | Hardware Logo | Model Logo (right) -->
 								<div class="flex items-center justify-between">
-									<span class="text-xs text-slate-600 dark:text-slate-400">{formatDate(submission.submission_date)}</span>
-									<span class="text-sm font-medium  dm-mono dark:text-[#e4dcb8]">{submission.model_name}</span>
+									<span class="text-sm font-medium dm-mono-medium dark:text-[#e4dcb8] bg-purple-600/10 text-purple-600 border-purple-400/50 dark:bg-purple-600/20 border dark:border-purple-400/30 px-2 rounded">{submission.model_name}</span>
+									<div class="flex items-center gap-2">
+										{#if hardwareLogoUrl}
+											<img src={hardwareLogoUrl} alt="Hardware Logo" class="max-w-14 max-h-5 grayscale dark:invert" />
+										{/if}
+										{#if modelLogoUrl}
+											<img src={modelLogoUrl} alt="Model Logo" class="max-w-16 max-h-5 dark:invert grayscale" />
+										{/if}
+									</div>
 								</div>
 							</div>
 						</a>
