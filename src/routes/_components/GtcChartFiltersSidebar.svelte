@@ -19,7 +19,8 @@
 		setSelectedBenchmarkModelId,
 		getSelectedAccelerator,
 		setSelectedAccelerator,
-		isSystemDisabledByAccelerator
+		isSystemDisabledByAccelerator,
+		getVisibleSystemIds
 	} from '$lib/stores/chartSettings.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
@@ -78,6 +79,9 @@
 	// Model and accelerator selection is managed by the store for cross-component reactivity
 	let selectedModel = $derived(getSelectedBenchmarkModelId());
 	let selectedAccelerator = $derived(getSelectedAccelerator());
+
+	/** True when at least one system is visible (for Download button enable/disable) */
+	let hasSelectedSystems = $derived(getVisibleSystemIds().length > 0);
 
 	let selectedProcessor = $state('all');
 	let selectedOrganization = $state('all');
@@ -707,8 +711,12 @@
 		<!-- Download (placeholder) -->
 		<button
 			type="button"
-			class="mt-auto flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+			disabled={!hasSelectedSystems}
+			class="mt-auto flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors {hasSelectedSystems
+				? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
+				: 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400 opacity-60 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-500'}"
 			aria-label="Download chart data"
+			aria-disabled={!hasSelectedSystems}
 		>
 			<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
 				<path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
