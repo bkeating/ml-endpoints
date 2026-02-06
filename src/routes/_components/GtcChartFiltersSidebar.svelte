@@ -249,6 +249,7 @@
 			>
 				Accelerator
 			</label>
+			<p class="text-xs text-slate-500 dark:text-slate-400">GPU or AI chip used for inference (e.g., H100)</p>
 			<select
 				id="accelerator-select"
 				value={selectedAccelerator}
@@ -270,6 +271,7 @@
 			>
 				Processor
 			</label>
+			<p class="text-xs text-slate-500 dark:text-slate-400">Host CPU model paired with the accelerator</p>
 			<select
 				id="processor-select"
 				bind:value={selectedProcessor}
@@ -290,6 +292,7 @@
 			>
 				Organization
 			</label>
+			<p class="text-xs text-slate-500 dark:text-slate-400">Company or institution that submitted results</p>
 			<select
 				id="organization-select"
 				bind:value={selectedOrganization}
