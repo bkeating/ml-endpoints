@@ -164,12 +164,12 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-3 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:absolute lg:right-0 lg:top-0 lg:z-20 lg:block {isSidebarExpanded ? 'shadow-xl' : 'shadow-xs'} transition-all duration-300"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 py-3 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:absolute lg:right-0 lg:top-0 lg:z-20 lg:block {isSidebarExpanded ? 'shadow-xl' : 'shadow-xs'} transition-all duration-300"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
 		<!-- Model Select -->
-		<div class="flex flex-col gap-1.5">
+		<div class="flex flex-col gap-1.5 px-3">
 			<label
 				for="model-select"
 				class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
@@ -192,7 +192,7 @@
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
 			<!-- Systems Header with Filter Icon -->
-			<div class="mb-2 flex items-center justify-between">
+			<div class="mb-2 flex items-center justify-between px-3">
 				<h4
 					class="text-xs font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
 				>
@@ -217,7 +217,7 @@
 			{#if showAdvancedFilters}
 				<div
 					transition:slide={{ duration: 200, easing: cubicOut }}
-					class="mb-3 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-slate-800"
+					class="mb-3 mx-3 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-slate-800"
 				>
 					<!-- Accelerator Select -->
 					<div class="flex flex-col gap-1">
@@ -285,15 +285,19 @@
 				</div>
 			{/if}
 			<div class="flex flex-col gap-0.5">
-			{#each hardwareSystems.slice(0, 9) as hw (hw.id)}
+			{#each hardwareSystems.slice(0, 8) as hw (hw.id)}
 				{@const visible = isSystemVisible(hw.id)}
 				{@const disabled = hw.disabledByFilter}
 				{@const expanded = isExpanded(hw.id, visible) && !disabled}
 				<div
-					class="rounded-lg transition-all duration-200 {disabled ? 'opacity-40' : ''}"
+					class="rounded-none transition-all duration-200 {disabled ? 'opacity-40' : ''}"
 				>
 					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
-					<div class="flex w-full items-center gap-2 rounded-lg transition-all duration-200">
+					<div
+						class="flex w-full items-center gap-2 rounded-none px-3 py-2 transition-all duration-200 {visible && !disabled
+							? 'bg-[#CCEBD4]/50 dark:bg-[#736628]/50'
+							: ''}"
+					>
 						<!-- Checkbox: Toggle system visibility on chart -->
 						<input
 							type="checkbox"
@@ -308,7 +312,7 @@
 						<button
 							type="button"
 							onclick={() => !disabled && toggleSystem(hw.id)}
-							class="group flex flex-1 items-center gap-3 px-2 py-2 text-left {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
+							class="group flex flex-1 items-center gap-3 py-2 text-left {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
 							aria-pressed={visible}
 							aria-label="Toggle {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} visibility{disabled ? ' (disabled by accelerator filter)' : ''}"
 							aria-disabled={disabled}
@@ -320,8 +324,8 @@
 							></span>
 							<span class="flex flex-1 flex-col gap-0.5 text-left">
 								<span
-									class=" font-medium transition-opacity duration-200 {visible && !disabled
-										? 'text-slate-800 dark:text-slate-200'
+									class="font-medium transition-opacity duration-200 {visible && !disabled
+										? 'text-slate-900 dark:text-white'
 										: 'text-slate-500 dark:text-slate-500'}"
 								>
 									{hw.name}
@@ -329,7 +333,7 @@
 								{#if hw.subline}
 									<span
 										class="text-xs font-normal transition-opacity duration-200 {visible && !disabled
-											? 'text-slate-600 dark:text-slate-400'
+											? 'text-slate-700 dark:text-slate-200'
 											: 'text-slate-400 dark:text-slate-500'}"
 									>
 										{hw.subline}
@@ -349,7 +353,9 @@
 							>
 								<Icon
 									name="Settings"
-									class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {expanded ? 'rotate-90' : ''}"
+									class="h-4 w-4 transition-transform duration-200 {visible && !disabled
+										? 'text-slate-700 dark:text-white'
+										: 'text-slate-500 dark:text-slate-400'} {expanded ? 'rotate-90' : ''}"
 								/>
 							</button>
 						{/if}
@@ -357,10 +363,7 @@
 
 						<!-- Accordion Details Panel - Read-only System Specifications -->
 						{#if expanded && hw.system}
-							<div
-								transition:slide={{ duration: 200, easing: cubicOut }}
-								class="px-3 pb-3"
-							>
+							<div transition:slide={{ duration: 200, easing: cubicOut }} class="px-3">
 								<!-- System Specifications Header -->
 								<div class="mb-2">
 									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
@@ -421,7 +424,7 @@
 		<button
 			type="button"
 			disabled={!hasSelectedSystems}
-			class="mt-auto flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors {hasSelectedSystems
+			class="mx-3 mt-auto flex items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-colors {hasSelectedSystems
 				? 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700'
 				: 'cursor-not-allowed border-slate-200 bg-slate-50 text-slate-400 opacity-60 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-500'}"
 			aria-label="Download chart data"
