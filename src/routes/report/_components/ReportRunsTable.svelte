@@ -12,7 +12,7 @@
 	 */
 
 	/** @type {{ run_id: string, concurrency: number, system_tps: number, tps_per_user: number, ttft: number, utilization: number, measured_latency_ttft_p50: number, measured_latency_ttft_p90: number, measured_latency_ttft_p99: number, measured_latency_tpot_p50: number, measured_latency_tpot_p90: number, measured_latency_tpot_p99: number, config_detail: string }[]} */
-	let { runs = [], currentRunId = '', systemColor = '#64748b' } = $props();
+	let { runs = [], currentRunId = '', systemColor = '#535869' } = $props();
 
 	// Sort runs by concurrency
 	let sortedRuns = $derived([...runs].sort((a, b) => a.concurrency - b.concurrency));

@@ -65,7 +65,7 @@
 					systemGroups.set(submission.system_id, {
 						systemId: submission.system_id,
 						systemName: system?.system_name ?? 'Unknown System',
-						systemColor: system?.color ?? '#64748b',
+						systemColor: system?.color ?? '#535869',
 						organization: system?.submitter_org_names ?? 'Unknown',
 						accelerator: system?.accelerator_model_name ?? 'Unknown',
 						acceleratorCount: system?.accelerators_per_node ?? 0,

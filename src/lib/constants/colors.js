@@ -27,13 +27,48 @@ export const tierColors = {
 	Associate: 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
 };
 
-/** Organization colors (for benchmarks) */
+/** Organization colors (for benchmarks) - ML Commons palette */
 export const orgColors = {
-	RedHat: '#e61949',
-	NVIDIA: '#76b900',
-	Intel: '#0071c5',
-	Dell: '#007db8',
-	Qualcomm: '#3253dc'
+	RedHat: '#D49681',
+	NVIDIA: '#62826C',
+	Intel: '#4E6BA1',
+	Dell: '#3D455A',
+	Qualcomm: '#535869'
+};
+
+/**
+ * Chart and system color palette (ML Commons palette)
+ * Used for labels, charts, and system series
+ */
+export const systemChartPalette = [
+	'#535869',
+	'#BED3FB',
+	'#F7CB84',
+	'#F4B6A1',
+	'#62826C',
+	'#CCEBD4',
+	'#4E6BA1',
+	'#3D455A',
+	'#A0B5DD',
+	'#E8B460',
+	'#D49681',
+	'#44644E',
+	'#B3CEBA',
+	'#37548A'
+];
+
+/** Vendor-specific colors for chart labels (ML Commons palette) */
+export const vendorChartColors = {
+	NVIDIA: '#62826C',
+	AMD: '#D49681',
+	Intel: '#4E6BA1',
+	Google: '#37548A',
+	AWS: '#E8B460',
+	Microsoft: '#A0B5DD',
+	Cerebras: '#535869',
+	Qualcomm: '#3D455A',
+	SambaNova: '#44644E',
+	Meta: '#4E6BA1'
 };
 
 /**
@@ -42,5 +77,5 @@ export const orgColors = {
  * @returns {string} Hex color code
  */
 export function getOrgColor(org) {
-	return orgColors[org] || '#64748b';
+	return orgColors[org] || '#535869';
 }

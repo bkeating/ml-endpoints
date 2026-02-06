@@ -44,7 +44,7 @@
 				id: submission.submission_id,
 				systemId: submission.system_id,
 				name: system?.system_name ?? submission.submission_id,
-				color: system?.color ?? '#64748b',
+				color: system?.color ?? '#535869',
 				system,
 				model,
 				runs
@@ -135,16 +135,17 @@
 	 */
 	function getSystemColor(systemId) {
 		const system = endpointsData.systems.find((s) => s.id === systemId);
-		return system?.color ?? '#64748b';
+		return system?.color ?? '#535869';
 	}
 
 	/**
-	 * Get colors for both chart types based on current theme.
-	 * @returns {{ ttft: string, throughput: string }} - Colors for light or dark theme
+	 * Get colors for both chart types and axis labels based on current theme (ML Commons palette).
+	 * @returns {{ ttft: string, throughput: string, sysTps: string }} - Colors for light or dark theme
 	 */
 	let chartColors = $derived({
-		ttft: getTheme() === 'dark' ? '#00cc88' : '#009966',
-		throughput: getTheme() === 'dark' ? '#5a7bb3' : '#37548A'
+		ttft: getTheme() === 'dark' ? '#B3CEBA' : '#62826C',
+		throughput: getTheme() === 'dark' ? '#A0B5DD' : '#37548A',
+		sysTps: getTheme() === 'dark' ? '#BED3FB' : '#535869'
 	});
 
 	/**
@@ -492,7 +493,7 @@
 					<!-- Axis labels toggle -->
 					<button
 						type="button"
-						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium cursor-pointer {showAxisLabels ? 'border-[#009966] bg-[#CCEBD4] text-[#006644] dark:border-[#736628] dark:bg-[#736628]/20 dark:text-[#c9b856]' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
+						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium cursor-pointer {showAxisLabels ? 'border-[#62826C] bg-[#CCEBD4] text-[#44644E] dark:border-[#736628] dark:bg-[#736628]/20 dark:text-[#c9b856]' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
 						onclick={() => showAxisLabels = !showAxisLabels}
 						aria-pressed={showAxisLabels}
 						aria-label="Toggle axis labels on charts"

@@ -100,10 +100,10 @@
 			.curve(d3.curveMonotoneX)
 	);
 
-	// Threshold values (industry standards)
+	// Threshold values (industry standards) - ML Commons palette
 	const thresholds = {
-		warning: { value: 7, label: 'Industry Avg', color: '#f59e0b' },
-		critical: { value: 10, label: 'Critical', color: '#ef4444' }
+		warning: { value: 7, label: 'Industry Avg', color: '#F7CB84' },
+		critical: { value: 10, label: 'Critical', color: '#D49681' }
 	};
 </script>
 

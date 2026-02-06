@@ -309,31 +309,39 @@ export function generateTradeoffView(series) {
 // ============================================================================
 
 /**
- * Vendor-specific color assignments
+ * Vendor-specific color assignments (ML Commons palette)
  * @type {Record<string, string>}
  */
 export const vendorColors = {
-	NVIDIA: '#76b900', // NVIDIA green
-	AMD: '#ed1c24', // AMD red
-	Intel: '#0071c5', // Intel blue
-	Google: '#4285f4', // Google blue
-	Meta: '#0668e1', // Meta blue
-	Microsoft: '#00a4ef' // Microsoft blue
+	NVIDIA: '#62826C',
+	AMD: '#D49681',
+	Intel: '#4E6BA1',
+	Google: '#37548A',
+	Meta: '#4E6BA1',
+	Microsoft: '#A0B5DD',
+	AWS: '#E8B460',
+	Cerebras: '#535869',
+	Qualcomm: '#3D455A',
+	SambaNova: '#44644E'
 };
 
 /**
- * Hardware configuration color palette (extends d3.schemeTableau10)
+ * Hardware configuration color palette (ML Commons palette)
  * @type {string[]}
  */
 export const hardwareColorPalette = [
-	'#2563eb', // blue-600
-	'#16a34a', // green-600
-	'#dc2626', // red-600
-	'#9333ea', // purple-600
-	'#ea580c', // orange-600
-	'#0891b2', // cyan-600
-	'#ca8a04', // yellow-600
-	'#db2777', // pink-600
-	'#4f46e5', // indigo-600
-	'#059669' // emerald-600
+	'#535869',
+	'#BED3FB',
+	'#F7CB84',
+	'#F4B6A1',
+	'#62826C',
+	'#CCEBD4',
+	'#4E6BA1',
+	'#3D455A',
+	'#A0B5DD',
+	'#E8B460',
+	'#D49681',
+	'#44644E',
+	'#B3CEBA',
+	'#37548A'
 ];

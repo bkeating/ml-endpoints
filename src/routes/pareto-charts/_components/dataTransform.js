@@ -128,18 +128,26 @@ export function prepareNormalizedTTFTData(systemData) {
 }
 
 /**
- * Get color for a system (cycle through palette)
+ * Get color for a system (cycle through ML Commons palette)
  * @param {number} index - System index
  * @returns {string} Hex color
  */
 export function getSystemColor(index) {
 	const colors = [
-		'#2563eb', // blue-600
-		'#16a34a', // green-600
-		'#dc2626', // red-600
-		'#9333ea', // purple-600
-		'#ea580c', // orange-600
-		'#0891b2' // cyan-600
+		'#535869',
+		'#BED3FB',
+		'#F7CB84',
+		'#F4B6A1',
+		'#62826C',
+		'#CCEBD4',
+		'#4E6BA1',
+		'#3D455A',
+		'#A0B5DD',
+		'#E8B460',
+		'#D49681',
+		'#44644E',
+		'#B3CEBA',
+		'#37548A'
 	];
 	return colors[index % colors.length];
 }

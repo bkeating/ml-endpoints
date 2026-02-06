@@ -78,7 +78,7 @@
       "host_processors_per_node": 2,
       "framework": "TensorRT 10.11, CUDA 12.9",
       "division": "Closed",
-      "color": "#76B900"
+      "color": "#62826C"
     },
     {
       "id": "2fc15b8c-6edd-47c2-9caf-90243127aa40",
@@ -95,7 +95,7 @@
       "host_processors_per_node": 2,
       "framework": "TensorRT 10.6, CUDA 12.6",
       "division": "Closed",
-      "color": "#76B900"
+      "color": "#62826C"
     },
     {
       "id": "778b0149-ccf2-4ca4-a28d-58e61d6cd3a2",
@@ -112,7 +112,7 @@
       "host_processors_per_node": 2,
       "framework": "ROCm 6.2, vLLM",
       "division": "Closed",
-      "color": "#ED1C24"
+      "color": "#D49681"
     },
     {
       "id": "5e3b9ec0-03db-42c7-94f1-ab98900fde3d",
@@ -129,7 +129,7 @@
       "host_processors_per_node": 2,
       "framework": "Intel Optimum, PyTorch",
       "division": "Closed",
-      "color": "#0071C5"
+      "color": "#4E6BA1"
     },
     {
       "id": "15d35897-b7bb-4c0d-97b2-ed2d270ef60c",
@@ -146,7 +146,7 @@
       "host_processors_per_node": 1,
       "framework": "JAX, MaxText",
       "division": "Closed",
-      "color": "#4285F4"
+      "color": "#37548A"
     },
     {
       "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
@@ -163,7 +163,7 @@
       "host_processors_per_node": 1,
       "framework": "Neuron SDK 2.19, PyTorch",
       "division": "Closed",
-      "color": "#FF9900"
+      "color": "#E8B460"
     },
     {
       "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
@@ -180,7 +180,7 @@
       "host_processors_per_node": 2,
       "framework": "Azure ML, ONNX Runtime",
       "division": "Closed",
-      "color": "#00A4EF"
+      "color": "#A0B5DD"
     },
     {
       "id": "c3d4e5f6-a7b8-4c9d-0e1f-2a3b4c5d6e7f",
@@ -197,7 +197,7 @@
       "host_processors_per_node": 2,
       "framework": "Cerebras SDK 2.3, PyTorch",
       "division": "Closed",
-      "color": "#6B21A8"
+      "color": "#535869"
     },
     {
       "id": "d4e5f6a7-b8c9-4d0e-1f2a-3b4c5d6e7f8a",
@@ -214,7 +214,7 @@
       "host_processors_per_node": 2,
       "framework": "ONNX Runtime, Qualcomm AI Stack",
       "division": "Closed",
-      "color": "#3253DC"
+      "color": "#3D455A"
     },
     {
       "id": "e5f6a7b8-c9d0-4e1f-2a3b-4c5d6e7f8a9b",
@@ -231,7 +231,7 @@
       "host_processors_per_node": 2,
       "framework": "SambaFlow 1.18, PyTorch",
       "division": "Closed",
-      "color": "#00B388"
+      "color": "#44644E"
     }
   ],
   "models": [

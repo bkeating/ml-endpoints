@@ -170,7 +170,7 @@
 			title: 'Time to First Token',
 			xLabel: 'Concurrent Users',
 			yLabel: 'TTFT P99 (s)',
-			color: system?.color ?? '#64748b',
+			color: system?.color ?? '#535869',
 			points: sortedRuns.map((run) => ({
 				x: run.concurrency,
 				y: run.ttft,
@@ -191,7 +191,7 @@
 			title: 'Throughput vs Interactivity',
 			xLabel: 'Interactivity (tok/s/user)',
 			yLabel: 'System TPS',
-			color: system?.color ?? '#64748b',
+			color: system?.color ?? '#535869',
 			points: sortedRuns.map((run) => ({
 				x: run.tps_per_user,
 				y: run.system_tps,
@@ -212,7 +212,7 @@
 			title: 'Concurrency vs Throughput',
 			xLabel: 'Concurrent Users',
 			yLabel: 'System TPS',
-			color: system?.color ?? '#64748b',
+			color: system?.color ?? '#535869',
 			points: sortedRuns.map((run) => ({
 				x: run.concurrency,
 				y: run.system_tps,
@@ -233,7 +233,7 @@
 			title: 'System Utilization',
 			xLabel: 'Concurrent Users',
 			yLabel: 'Utilization (%)',
-			color: system?.color ?? '#64748b',
+			color: system?.color ?? '#535869',
 			points: sortedRuns.map((run) => ({
 				x: run.concurrency,
 				y: run.utilization * 100, // Convert to percentage

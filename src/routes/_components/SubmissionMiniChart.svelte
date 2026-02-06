@@ -12,13 +12,13 @@
 
 	import { setHoveredRunId, getHoveredRunId } from '$lib/stores/chartSettings.svelte.js';
 
-	/** @type {{ runs: Array, submissionId: string, showTtft: boolean, showThroughput: boolean, chartColors: { ttft: string, throughput: string }, showAxisLabels: boolean }} */
+	/** @type {{ runs: Array, submissionId: string, showTtft: boolean, showThroughput: boolean, chartColors: { ttft: string, throughput: string, sysTps?: string }, showAxisLabels: boolean }} */
 	let {
 		runs = [],
 		submissionId = '',
 		showTtft = true,
 		showThroughput = true,
-		chartColors = { ttft: '#009966', throughput: '#37548A' },
+		chartColors = { ttft: '#62826C', throughput: '#37548A', sysTps: '#535869' },
 		showAxisLabels = false
 	} = $props();
 
@@ -409,8 +409,8 @@
 		{#if showTtft || showThroughput}
 			<div class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2">
 				<span
-					class="rounded bg-white/90 px-0.5 text-[7px] font-medium leading-none text-slate-500 dark:bg-slate-800/90 dark:text-slate-400"
-					style="writing-mode: vertical-rl; transform: rotate(180deg);"
+					class="rounded bg-white/90 px-0.5 text-[7px] font-medium leading-none dark:bg-slate-800/90"
+					style="writing-mode: vertical-rl; transform: rotate(180deg); color: {chartColors.sysTps ?? '#535869'};"
 				>
 					Sys TPS
 				</span>

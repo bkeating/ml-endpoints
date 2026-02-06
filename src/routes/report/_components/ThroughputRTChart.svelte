@@ -15,14 +15,14 @@
 	const plotWidth = width - margin.left - margin.right;
 	const plotHeight = height - margin.top - margin.bottom;
 
-	// Series configuration
+	// Series configuration - ML Commons palette
 	const series = [
-		{ key: 'min', label: 'min', color: '#ff6b6b', shape: 'square' },
-		{ key: 'median', label: 'median', color: '#4169e1', shape: 'circle' },
-		{ key: 'p90', label: '90-th percentile', color: '#32cd32', shape: 'triangle' },
-		{ key: 'p95', label: '95-th percentile', color: '#ffff00', shape: 'diamond' },
-		{ key: 'p99', label: '99-th percentile', color: '#ff00ff', shape: 'square' },
-		{ key: 'max', label: 'max', color: '#00ffff', shape: 'triangleDown' }
+		{ key: 'min', label: 'min', color: '#D49681', shape: 'square' },
+		{ key: 'median', label: 'median', color: '#4E6BA1', shape: 'circle' },
+		{ key: 'p90', label: '90-th percentile', color: '#62826C', shape: 'triangle' },
+		{ key: 'p95', label: '95-th percentile', color: '#E8B460', shape: 'diamond' },
+		{ key: 'p99', label: '99-th percentile', color: '#37548A', shape: 'square' },
+		{ key: 'max', label: 'max', color: '#44644E', shape: 'triangleDown' }
 	];
 
 	// Calculate scales

@@ -26,18 +26,18 @@ export const allGpuConfigs = [
 ];
 
 /**
- * GPU configuration color mapping
+ * GPU configuration color mapping (ML Commons palette)
  * @type {Record<string, string>}
  */
 export const gpuColors = {
-	h100_vllm: '#22c55e', // green-500
-	h200_trt: '#f59e0b', // amber-500
-	h200_vllm: '#3b82f6', // blue-500
-	b200_trt: '#ec4899', // pink-500
-	b200_vllm: '#8b5cf6', // violet-500
-	mi300x_vllm: '#06b6d4', // cyan-500
-	mi325x_vllm: '#ef4444', // red-500
-	mi355x_vllm: '#84cc16' // lime-500
+	h100_vllm: '#535869',
+	h200_trt: '#BED3FB',
+	h200_vllm: '#F7CB84',
+	b200_trt: '#F4B6A1',
+	b200_vllm: '#62826C',
+	mi300x_vllm: '#CCEBD4',
+	mi325x_vllm: '#4E6BA1',
+	mi355x_vllm: '#3D455A'
 };
 
 /**
@@ -504,7 +504,7 @@ function generateGpuReliabilityData(filters) {
 		return {
 			id: gpuId,
 			name: gpuNames[gpuId] ?? gpuId,
-			color: gpuColors[gpuId] ?? '#64748b',
+			color: gpuColors[gpuId] ?? '#535869',
 			value: Math.round(finalRate * 10) / 10 // Round to 1 decimal
 		};
 	});
@@ -538,7 +538,7 @@ export function generateChartData(filters) {
 	const models = allGpuConfigs.map((gpuId) => ({
 		id: gpuId,
 		name: gpuNames[gpuId] ?? gpuId,
-		color: gpuColors[gpuId] ?? '#64748b'
+		color: gpuColors[gpuId] ?? '#535869'
 	}));
 
 	// Generate latency chart data with filter-dependent variations

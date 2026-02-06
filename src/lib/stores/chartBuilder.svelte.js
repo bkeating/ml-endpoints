@@ -41,16 +41,22 @@
  * @typedef {'bar' | 'line'} ChartType
  */
 
-// Default color palette for layers
+// Default color palette for layers (ML Commons palette)
 const LAYER_COLORS = [
-	'#22c55e', // green-500
-	'#3b82f6', // blue-500
-	'#f59e0b', // amber-500
-	'#ec4899', // pink-500
-	'#8b5cf6', // violet-500
-	'#06b6d4', // cyan-500
-	'#ef4444', // red-500
-	'#84cc16' // lime-500
+	'#535869',
+	'#BED3FB',
+	'#F7CB84',
+	'#F4B6A1',
+	'#62826C',
+	'#CCEBD4',
+	'#4E6BA1',
+	'#3D455A',
+	'#A0B5DD',
+	'#E8B460',
+	'#D49681',
+	'#44644E',
+	'#B3CEBA',
+	'#37548A'
 ];
 
 /**

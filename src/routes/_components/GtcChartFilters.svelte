@@ -49,7 +49,7 @@
 		allGpuConfigs.map((id) => ({
 			id,
 			name: gpuNames[id] ?? id,
-			color: gpuColors[id] ?? '#64748b'
+			color: gpuColors[id] ?? '#535869'
 		}))
 	);
 </script>
