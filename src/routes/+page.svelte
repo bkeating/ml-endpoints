@@ -369,13 +369,45 @@
 	// ============================================================================
 
 	/** Toggle visibility of axis labels on mini sparkline charts */
-	let showAxisLabels = $state(false);
+	let showAxisLabels = $state(true);
 
 	/** Toggle visibility of TTFT data source on mini charts */
 	let showTtft = $state(true);
 
 	/** Toggle visibility of Throughput vs Interactivity data source on mini charts */
 	let showThroughput = $state(true);
+
+	// ============================================================================
+	// CAROUSEL STATE
+	// ============================================================================
+
+	/** Number of cards to display at once */
+	const CARDS_PER_PAGE = 4;
+
+	/** Current carousel page index */
+	let carouselPage = $state(0);
+
+	/** Total number of carousel pages */
+	let totalPages = $derived(Math.ceil(recentSubmissions.length / CARDS_PER_PAGE));
+
+	/** Calculate the translate X percentage for the carousel */
+	let carouselTranslateX = $derived(-(carouselPage * 100));
+
+	/** Navigate to previous carousel page */
+	function prevPage() {
+		if (carouselPage > 0) carouselPage--;
+	}
+
+	/** Navigate to next carousel page */
+	function nextPage() {
+		if (carouselPage < totalPages - 1) carouselPage++;
+	}
+
+	/** Check if previous button should be disabled */
+	let isPrevDisabled = $derived(carouselPage === 0);
+
+	/** Check if next button should be disabled */
+	let isNextDisabled = $derived(carouselPage >= totalPages - 1);
 </script>
 
 <!-- Side-by-side layout with filters sidebar and charts -->
@@ -427,8 +459,8 @@
 		<div class="flex flex-col gap-6">
 			<!-- Top: Heading and inline legend -->
 			<div class="flex items-center justify-between">
-				<h2 class="text-3xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
-				<!-- Inline legend and axis toggle -->
+				<h2 class="text-2xl font-semibold text-slate-700 dark:text-white">Most Recent Submissions</h2>
+				<!-- Inline legend, axis toggle, and carousel navigation -->
 				<div class="flex items-center gap-4" role="group" aria-label="Chart legend">
 					<button
 						type="button"
@@ -459,7 +491,7 @@
 					<!-- Axis labels toggle -->
 					<button
 						type="button"
-						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors cursor-pointer {showAxisLabels ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
+						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium cursor-pointer {showAxisLabels ? 'border-[#009966] bg-[#CCEBD4] text-[#006644] dark:border-[#736628] dark:bg-[#736628]/20 dark:text-[#c9b856]' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
 						onclick={() => showAxisLabels = !showAxisLabels}
 						aria-pressed={showAxisLabels}
 						aria-label="Toggle axis labels on charts"
@@ -469,46 +501,80 @@
 						</svg>
 						Axes
 					</button>
+					<!-- Carousel navigation -->
+					<div class="ml-2 flex items-center gap-1">
+						<button
+							type="button"
+							class="flex h-7 w-7 items-center justify-center rounded-md border cursor-pointer {isPrevDisabled ? 'border-slate-200 bg-slate-50 text-slate-300 cursor-not-allowed dark:border-slate-700 dark:bg-slate-800 dark:text-slate-600' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
+							onclick={prevPage}
+							disabled={isPrevDisabled}
+							aria-label="Previous submissions"
+						>
+							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+							</svg>
+						</button>
+						<button
+							type="button"
+							class="flex h-7 w-7 items-center justify-center rounded-md border  cursor-pointer {isNextDisabled ? 'border-slate-200 bg-slate-50 text-slate-300 cursor-not-allowed dark:border-slate-700 dark:bg-slate-800 dark:text-slate-600' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
+							onclick={nextPage}
+							disabled={isNextDisabled}
+							aria-label="Next submissions"
+						>
+							<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+							</svg>
+						</button>
+					</div>
 				</div>
 			</div>
 
-			<!-- Bottom: Four-column grid of cards -->
-			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-				{#each recentSubmissions as submission (submission.submission_id)}
-						{@const runs = getRunsForSubmission(submission.submission_id)}
-						{@const modelLogoUrl = getModelLogoUrl(submission)}
-						{@const hardwareLogoUrl = getHardwareLogoUrl(submission)}
-						<a
-							href="/report?submission={submission.submission_id}"
-							class="group relative flex flex-col overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
-						>
-							<!-- Interactive mini chart with crosshair and tooltip -->
-							<SubmissionMiniChart
-								{runs}
-								submissionId={submission.submission_id}
-								{showTtft}
-								{showThroughput}
-								{chartColors}
-								{showAxisLabels}
-							/>
+			<!-- Bottom: Four-column carousel of cards -->
+			<div class="relative overflow-hidden">
+				<div
+					class="flex transition-transform duration-300 ease-out"
+					style="transform: translateX({carouselTranslateX}%)"
+				>
+					{#each { length: totalPages } as _, pageIndex (pageIndex)}
+						<div class="grid w-full shrink-0 grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+							{#each recentSubmissions.slice(pageIndex * CARDS_PER_PAGE, (pageIndex + 1) * CARDS_PER_PAGE) as submission (submission.submission_id)}
+								{@const runs = getRunsForSubmission(submission.submission_id)}
+								{@const modelLogoUrl = getModelLogoUrl(submission)}
+								{@const hardwareLogoUrl = getHardwareLogoUrl(submission)}
+								<a
+									href="/report?submission={submission.submission_id}"
+									class="group relative flex flex-col overflow-hidden rounded-lg border border-slate-200 transition-shadow hover:shadow-lg dark:border-slate-700"
+								>
+									<!-- Interactive mini chart with crosshair and tooltip -->
+									<SubmissionMiniChart
+										{runs}
+										submissionId={submission.submission_id}
+										{showTtft}
+										{showThroughput}
+										{chartColors}
+										{showAxisLabels}
+									/>
 
-							<!-- Footer bar -->
-							<div class="relative z-10 bg-white/95 backdrop-blur-sm border-t border-slate-200/50 px-3 py-3 dark:bg-slate-800/95 dark:border-slate-700/50">
-								<!-- Model Name (left) | Hardware Logo | Model Logo (right) -->
-								<div class="flex items-center justify-between">
-									<span class="text-sm font-medium dm-mono-medium dark:text-[#e4dcb8] bg-purple-600/10 text-purple-600 border-purple-400/50 dark:bg-purple-600/20 border dark:border-purple-400/30 px-2 rounded">{submission.model_name}</span>
-									<div class="flex items-center gap-2">
-										{#if hardwareLogoUrl}
-											<img src={hardwareLogoUrl} alt="Hardware Logo" class="max-w-14 max-h-5 grayscale dark:invert" />
-										{/if}
-										{#if modelLogoUrl}
-											<img src={modelLogoUrl} alt="Model Logo" class="max-w-16 max-h-5 dark:invert grayscale" />
-										{/if}
+									<!-- Footer bar -->
+									<div class="relative z-10 bg-white/95 backdrop-blur-sm border-t border-slate-200/50 px-3 py-3 dark:bg-slate-800/95 dark:border-slate-700/50">
+										<!-- Model Name (left) | Hardware Logo | Model Logo (right) -->
+										<div class="flex items-center justify-between">
+											<span class="text-sm font-medium dm-mono-medium shadow-xs dark:text-[#c9b856] bg-[#CCEBD460] text-[#343b36] border-[#9ebba5] dark:bg-[#736628]/20 border dark:border-[#736628] px-2 rounded">{submission.model_name}</span>
+											<div class="flex items-center gap-2 opacity-75">
+												{#if hardwareLogoUrl}
+													<img src={hardwareLogoUrl} alt="Hardware Logo" class="max-w-14 max-h-5 grayscale dark:invert" />
+												{/if}
+												{#if modelLogoUrl}
+													<img src={modelLogoUrl} alt="Model Logo" class="max-w-16 max-h-5 dark:invert grayscale" />
+												{/if}
+											</div>
+										</div>
 									</div>
-								</div>
-							</div>
-						</a>
-				{/each}
+								</a>
+							{/each}
+						</div>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</section>
