@@ -278,7 +278,7 @@
 						name="Settings"
 						class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {showAdvancedFilters ? 'rotate-90' : ''}"
 					/>
-					<span class="text-[10px] font-medium text-slate-500 uppercase tracking-widest dark:text-slate-400">Configure</span>
+					<span class="text-[10px] font-medium text-slate-500 uppercase tracking-widest dark:text-slate-400">Filter</span>
 				</button>
 			</div>
 
