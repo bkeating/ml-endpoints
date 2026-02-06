@@ -262,6 +262,124 @@
 	function handleCrosshairMove(position) {
 		sharedCrosshairPosition = position;
 	}
+
+	// ============================================================================
+	// RUN DATA TABLE
+	// ============================================================================
+
+	/** Sorted runs for table display (max 11 columns) */
+	let displayRuns = $derived.by(() => {
+		if (!reportData?.runs?.length) return [];
+		return [...reportData.runs]
+			.sort((a, b) => a.concurrency - b.concurrency)
+			.slice(0, 11);
+	});
+
+	/**
+	 * Format run date for display
+	 * @param {string} dateStr - ISO date string
+	 * @returns {string}
+	 */
+	function formatRunDate(dateStr) {
+		if (!dateStr) return '—';
+		try {
+			const d = new Date(dateStr);
+			return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+		} catch {
+			return dateStr;
+		}
+	}
+
+	/**
+	 * Format number with commas
+	 * @param {number} num
+	 * @param {number} [decimals=1]
+	 * @returns {string}
+	 */
+	function formatNum(num, decimals = 1) {
+		if (num == null || Number.isNaN(num)) return '—';
+		return Number(num).toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+	}
+
+	/**
+	 * Format latency in milliseconds
+	 * @param {number} seconds
+	 * @returns {string}
+	 */
+	function formatLatencyMs(seconds) {
+		if (seconds == null || Number.isNaN(seconds)) return '—';
+		return (seconds * 1000).toFixed(1);
+	}
+
+	/**
+	 * Format utilization as percentage
+	 * @param {number} value - 0–1
+	 * @returns {string}
+	 */
+	function formatUtilization(value) {
+		if (value == null || Number.isNaN(value)) return '—';
+		return (value * 100).toFixed(1) + '%';
+	}
+
+	/**
+	 * Get cell value for a run data table row
+	 * @param {string} rowKey - Row identifier
+	 * @param {Object} run - Run object
+	 * @returns {string}
+	 */
+	function getRunTableCell(rowKey, run) {
+		if (!run) return '—';
+		switch (rowKey) {
+			case 'run_date':
+				return formatRunDate(run.run_date);
+			case 'concurrency':
+				return String(run.concurrency);
+			case 'system_tps':
+				return formatNum(run.system_tps);
+			case 'tps_per_user':
+				return formatNum(run.tps_per_user);
+			case 'ttft_p99':
+				return formatLatencyMs(run.ttft ?? run.measured_latency_ttft_p99);
+			case 'utilization':
+				return formatUtilization(run.utilization);
+			case 'config_detail':
+				return run.config_detail ?? '—';
+			case 'ttft_min':
+				return formatLatencyMs(run.measured_latency_ttft_min);
+			case 'ttft_avg':
+				return formatLatencyMs(run.measured_latency_ttft_average);
+			case 'ttft_p50':
+				return formatLatencyMs(run.measured_latency_ttft_p50);
+			case 'ttft_p90':
+				return formatLatencyMs(run.measured_latency_ttft_p90);
+			case 'ttft_p95':
+				return formatLatencyMs(run.measured_latency_ttft_p95);
+			case 'ttft_p99_row':
+				return formatLatencyMs(run.measured_latency_ttft_p99);
+			case 'ttft_p999':
+				return formatLatencyMs(run.measured_latency_ttft_p999);
+			case 'ttft_max':
+				return formatLatencyMs(run.measured_latency_ttft_max);
+			case 'tpot_min':
+				return formatLatencyMs(run.measured_latency_tpot_min);
+			case 'tpot_avg':
+				return formatLatencyMs(run.measured_latency_tpot_average);
+			case 'tpot_p50':
+				return formatLatencyMs(run.measured_latency_tpot_p50);
+			case 'tpot_p90':
+				return formatLatencyMs(run.measured_latency_tpot_p90);
+			case 'tpot_p95':
+				return formatLatencyMs(run.measured_latency_tpot_p95);
+			case 'tpot_p99':
+				return formatLatencyMs(run.measured_latency_tpot_p99);
+			case 'tpot_p999':
+				return formatLatencyMs(run.measured_latency_tpot_p999);
+			case 'tpot_max':
+				return formatLatencyMs(run.measured_latency_tpot_max);
+			default:
+				return '—';
+		}
+	}
 </script>
 
 <!-- Report Page Layout -->
@@ -731,44 +849,45 @@
 						<thead>
 							<tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-600 dark:bg-slate-700">
 								<th class="px-3 py-2 text-left font-semibold text-slate-700 dark:text-slate-200">Field Name</th>
-								{#each Array(11) as _, i (i)}
+								{#each displayRuns as run, i (run.run_id)}
 									<th class="px-3 py-2 text-center font-semibold text-slate-700 dark:text-slate-200">Run {i + 1}</th>
 								{/each}
 							</tr>
 						</thead>
 						<tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Run Date</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Concurrency</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second per User</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Queries/sec</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Tokens/sec Utilization</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Output Tokens</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Duration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Requests</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">TBD by DK</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Configuration Summary</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Full Configuration</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Run Logs</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Run Date</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('run_date', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Concurrency</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('concurrency', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('system_tps', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">System Tokens/Second per User</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tps_per_user', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p99', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Queries/sec</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Tokens/sec Utilization</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('utilization', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Output Tokens</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Duration</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Total Requests</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">TBD by DK</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Configuration Summary</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('config_detail', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Full Configuration</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Link to Run Logs</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">—</td>{/each}</tr>
 							<!-- TTFT Section -->
-							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TTFT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Minimum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Average</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TTFT</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Minimum</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_min', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Average</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_avg', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P50</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p50', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P90</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p90', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P95</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p95', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P99</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p99_row', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token P999</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_p999', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Maximum</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('ttft_max', run)}</td>{/each}</tr>
 							<!-- TPOT Section -->
-							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TPOT</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time To First Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P50</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P90</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P95</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P99</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P999</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
-							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token Maximum</td>{#each Array(11) as _, i (i)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200"></td>{/each}</tr>
+							<tr class="bg-slate-50 dark:bg-slate-700"><td class="px-3 py-1.5 font-semibold text-slate-700 dark:text-slate-200">TPOT</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5"></td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token Minimum</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_min', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P50</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_p50', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P90</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_p90', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P95</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_p95', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P99</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_p99', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token P999</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_p999', run)}</td>{/each}</tr>
+							<tr class="dark:hover:bg-slate-700/50"><td class="px-3 py-1.5 text-slate-600 dark:text-slate-400">Time Per Output Token Maximum</td>{#each displayRuns as run (run.run_id)}<td class="px-3 py-1.5 text-center text-slate-800 dark:text-slate-200">{getRunTableCell('tpot_max', run)}</td>{/each}</tr>
 						</tbody>
 					</table>
 				</div>
