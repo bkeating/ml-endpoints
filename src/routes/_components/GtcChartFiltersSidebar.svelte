@@ -270,14 +270,15 @@
 				<button
 					type="button"
 					onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
-					class="rounded p-1 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
+					class="flex items-center gap-1.5 rounded px-2 py-1 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
 					aria-expanded={showAdvancedFilters}
-					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} advanced filters"
+					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} Configure Systems"
 				>
 					<Icon
 						name="Settings"
 						class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {showAdvancedFilters ? 'rotate-90' : ''}"
 					/>
+					<span class="text-[10px] font-medium text-slate-500 uppercase tracking-widest dark:text-slate-400">Configure</span>
 				</button>
 			</div>
 
