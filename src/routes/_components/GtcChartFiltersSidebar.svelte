@@ -294,7 +294,7 @@
 				>
 					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
 					<div
-						class="flex w-full items-center gap-2 rounded-none px-3 py-2 transition-all duration-200 {visible && !disabled
+						class="flex w-full items-center gap-2 rounded-none px-3 py-1.5 transition-all duration-200 {visible && !disabled
 							? 'bg-[#CCEBD4]/50 dark:bg-[#736628]/50'
 							: ''}"
 					>
@@ -312,7 +312,7 @@
 						<button
 							type="button"
 							onclick={() => !disabled && toggleSystem(hw.id)}
-							class="group flex flex-1 items-center gap-3 py-2 text-left {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
+							class="group flex flex-1 items-center gap-3 py-1.5 text-left {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
 							aria-pressed={visible}
 							aria-label="Toggle {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} visibility{disabled ? ' (disabled by accelerator filter)' : ''}"
 							aria-disabled={disabled}
@@ -363,7 +363,10 @@
 
 						<!-- Accordion Details Panel - Read-only System Specifications -->
 						{#if expanded && hw.system}
-							<div transition:slide={{ duration: 200, easing: cubicOut }} class="px-3">
+							<div
+								transition:slide={{ duration: 200, easing: cubicOut }}
+								class="px-3 pt-3 pb-3 {visible && !disabled ? 'bg-[#CCEBD4]/10 dark:bg-[#736628]/10' : ''}"
+							>
 								<!-- System Specifications Header -->
 								<div class="mb-2">
 									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">

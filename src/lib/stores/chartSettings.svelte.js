@@ -28,8 +28,8 @@ const initialVisibility = { ...benchmarkVisibility, ...gtcVisibility };
 // Initialize pareto series visibility with all series visible
 const initialParetoVisibility = Object.fromEntries(paretoSeries.map((s) => [s.id, true]));
 
-// Initialize system visibility from endpoints data (systems 1, 3, 4 visible by default)
-const defaultVisibleIndices = [0, 2, 3]; // NVIDIA DGX B200, AMD MI300X, Intel Gaudi 3
+// Initialize system visibility from endpoints data (systems 1 and 3 visible by default)
+const defaultVisibleIndices = [0, 2]; // NVIDIA DGX B200, AMD MI300X
 const initialSystemVisibility = Object.fromEntries(
 	endpointsData.systems.map((system, index) => [system.id, defaultVisibleIndices.includes(index)])
 );
