@@ -10,6 +10,7 @@
 	 * @typedef {Object} ChartConfig
 	 * @property {string} title - Chart title
 	 * @property {string} subtitle - Chart description/subtitle
+	 * @property {string} [subline] - Optional subline copy (e.g., "Each line is a single submission")
 	 * @property {string} xLabel - X-axis label
 	 * @property {string} yLabel - Y-axis label
 	 * @property {'linear' | 'log'} [xScale='linear'] - X-axis scale type
@@ -41,6 +42,9 @@
 	</h2>
 	<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-balance pr-3">
 		{chart.subtitle}
+		{#if chart.subline}
+			<span class="block mt-1">{chart.subline}</span>
+		{/if}
 	</p>
 
 	<div class="w-full" bind:clientWidth={containerWidth}>

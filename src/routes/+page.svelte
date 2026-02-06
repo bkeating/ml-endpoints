@@ -247,6 +247,7 @@
 	let throughputVsInteractivityChart = $derived({
 		title: 'System Throughput vs Interactivity',
 		subtitle: 'Trade-off between total system capacity and per-user token delivery speed.',
+		subline: 'Each line is a single submission.',
 		xLabel: 'Tokens/s/user',
 		yLabel: 'Tokens/s',
 		xScale: 'log',

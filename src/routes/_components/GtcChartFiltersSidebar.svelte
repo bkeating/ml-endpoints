@@ -89,63 +89,8 @@
 	// Track which systems have been manually expanded (collapsed by default)
 	let expandedSystems = new SvelteSet();
 
-	// Track which system is currently in edit/config mode (null = none)
-	let editingSystemId = $state(null);
-
 	// Track whether advanced filters are shown (hidden by default to save space)
 	let showAdvancedFilters = $state(false);
-
-	// Track panel heights for FLIP-style height animation
-	let panelHeights = $state({});
-
-	/**
-	 * Svelte action to measure and track element height
-	 * @param {HTMLElement} node - The element to measure
-	 * @param {{ systemId: string, panel: 'read' | 'edit' }} params
-	 */
-	function measureHeight(node, { systemId, panel }) {
-		const updateHeight = () => {
-			const height = node.offsetHeight;
-			if (!panelHeights[systemId]) {
-				panelHeights[systemId] = { read: 0, edit: 0 };
-			}
-			if (panelHeights[systemId][panel] !== height) {
-				panelHeights[systemId][panel] = height;
-			}
-		};
-
-		// Initial measurement
-		updateHeight();
-
-		// Set up ResizeObserver for dynamic content
-		const observer = new ResizeObserver(updateHeight);
-		observer.observe(node);
-
-		return {
-			update({ systemId: newId, panel: newPanel }) {
-				// Update params if they change
-				systemId = newId;
-				panel = newPanel;
-				updateHeight();
-			},
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
-
-	/**
-	 * Get the current height for a system's active panel
-	 * @param {string} systemId - System ID
-	 * @param {boolean} editing - Whether in edit mode
-	 * @returns {number | string} - The height to use
-	 */
-	function getActiveHeight(systemId, editing) {
-		const heights = panelHeights[systemId];
-		if (!heights) return 'auto';
-		const height = editing ? heights.edit : heights.read;
-		return height > 0 ? height : 'auto';
-	}
 
 	/**
 	 * Toggle the expanded state for a system's details
@@ -154,10 +99,6 @@
 	function toggleExpanded(id) {
 		if (expandedSystems.has(id)) {
 			expandedSystems.delete(id);
-			// Reset edit mode when collapsing
-			if (editingSystemId === id) {
-				editingSystemId = null;
-			}
 		} else {
 			expandedSystems.add(id);
 		}
@@ -188,23 +129,6 @@
 	 */
 	function isExpanded(id, visible) {
 		return visible && expandedSystems.has(id);
-	}
-
-	/**
-	 * Toggle edit mode for a system
-	 * @param {string} id - System ID to toggle edit mode
-	 */
-	function toggleEditMode(id) {
-		editingSystemId = editingSystemId === id ? null : id;
-	}
-
-	/**
-	 * Check if a system is in edit mode
-	 * @param {string} id - System ID to check
-	 * @returns {boolean} - True if in edit mode
-	 */
-	function isEditing(id) {
-		return editingSystemId === id;
 	}
 
 	/**
@@ -276,7 +200,7 @@
 					onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
 					class="flex items-center gap-1.5 rounded px-2 py-1 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
 					aria-expanded={showAdvancedFilters}
-					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} Configure Systems"
+					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} system filters"
 				>
 					<Icon
 						name="Settings"
@@ -365,28 +289,19 @@
 				<div
 					class="rounded-lg transition-all duration-200 {expanded ? 'border border-slate-300 dark:border-slate-600' : ''} {disabled ? 'opacity-40' : ''}"
 				>
-					<!-- Legend Row with Toggle and Expand Controls -->
-					<div class="flex w-full items-center rounded-lg transition-all duration-200 {expanded ? '' : disabled ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}">
-						<!-- Expand/Collapse Button (left of colored circle) - always visible unless disabled -->
-						{#if hw.system}
-							<button
-								type="button"
-								onclick={() => !disabled && handleExpandClick(hw.id)}
-								class="ml-1 p-1 rounded transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-200 dark:hover:bg-slate-600'}"
-								aria-expanded={expanded}
-								aria-label="{expanded ? 'Collapse' : 'Expand'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
-								aria-disabled={disabled}
-							>
-								<Icon
-									name={expanded ? 'Minus' : 'Plus'}
-									class="h-3.5 w-3.5 text-slate-500 dark:text-slate-400"
-								/>
-							</button>
-						{:else}
-							<!-- Spacer to maintain alignment when no system data -->
-							<span class="ml-1 w-[22px]"></span>
-						{/if}
-						<!-- Visibility Toggle Button -->
+					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
+					<div class="flex w-full items-center gap-2 rounded-lg transition-all duration-200 {expanded ? '' : disabled ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}">
+						<!-- Checkbox: Toggle system visibility on chart -->
+						<input
+							type="checkbox"
+							checked={visible}
+							onchange={() => !disabled && toggleSystem(hw.id)}
+							class="h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:checked:bg-emerald-600 {disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}"
+							aria-label="Select {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} for chart{disabled ? ' (disabled by accelerator filter)' : ''}"
+							aria-disabled={disabled}
+							disabled={disabled}
+						/>
+						<!-- System name (clickable to toggle visibility) -->
 						<button
 							type="button"
 							onclick={() => !disabled && toggleSystem(hw.id)}
@@ -394,15 +309,13 @@
 							aria-pressed={visible}
 							aria-label="Toggle {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} visibility{disabled ? ' (disabled by accelerator filter)' : ''}"
 							aria-disabled={disabled}
-							{disabled}
+							disabled={disabled}
 						>
 							<span
 								class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
 								style="background-color: {hw.color}; opacity: {visible && !disabled ? 1 : 0.3};"
 							></span>
-							<span
-								class="flex flex-1 flex-col gap-0.5 text-left"
-							>
+							<span class="flex flex-1 flex-col gap-0.5 text-left">
 								<span
 									class="text-sm font-medium transition-opacity duration-200 {visible && !disabled
 										? 'text-slate-800 dark:text-slate-200'
@@ -421,286 +334,79 @@
 								{/if}
 							</span>
 						</button>
+						<!-- Cog: Expand/collapse system details -->
+						{#if hw.system}
+							<button
+								type="button"
+								onclick={() => !disabled && handleExpandClick(hw.id)}
+								class="shrink-0 rounded p-1.5 transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-200 dark:hover:bg-slate-600'}"
+								aria-expanded={expanded}
+								aria-label="{expanded ? 'Hide' : 'Show'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
+								aria-disabled={disabled}
+							>
+								<Icon
+									name="Settings"
+									class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {expanded ? 'rotate-90' : ''}"
+								/>
+							</button>
+						{/if}
 					</div>
 
-						<!-- Accordion Details Panel -->
+						<!-- Accordion Details Panel - Read-only System Specifications -->
 						{#if expanded && hw.system}
-							{@const editing = isEditing(hw.id)}
-							{@const activeHeight = getActiveHeight(hw.id, editing)}
 							<div
 								transition:slide={{ duration: 200, easing: cubicOut }}
-								class="relative overflow-hidden text-xs transition-[height] duration-250 ease-[cubic-bezier(0.33,1,0.68,1)]"
-								style="height: {typeof activeHeight === 'number' ? `${activeHeight}px` : 'auto'};"
+								class="px-3 pb-3"
 							>
-								<!-- Sliding Panel Container - slides horizontally on X-axis -->
-								<div
-									class="flex w-[200%] transition-transform duration-250 ease-[cubic-bezier(0.33,1,0.68,1)]"
-									style="transform: translateX({editing ? '-50%' : '0%'});"
-								>
-									<!-- Read View Panel -->
-									<div class="w-1/2 shrink-0">
-										<div
-											class="px-3 pb-3"
-											use:measureHeight={{ systemId: hw.id, panel: 'read' }}
-										>
-											<!-- System Header -->
-											<div class="mb-2">
-												<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
-													{hw.system.system_name}
-												</p>
-												<p class="text-slate-500 dark:text-slate-400 text-[10px]">
-													{hw.system.submitter_org_names} / {hw.system.division}
-												</p>
-											</div>
-
-											<!-- Config Details -->
-											<dl class="space-y-1.5 text-[11px]">
-												<!-- Framework -->
-												<div>
-													<dt class="font-medium text-slate-500 dark:text-slate-400">Framework</dt>
-													<dd class="text-slate-800 dark:text-slate-200">{hw.system.framework}</dd>
-												</div>
-
-												<!-- Accelerator -->
-												<div>
-													<dt class="font-medium text-slate-500 dark:text-slate-400">Accelerator</dt>
-													<dd class="text-slate-800 dark:text-slate-200">
-														{hw.system.accelerators_per_node}x {hw.system.accelerator_model_name}
-													</dd>
-													<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
-														{hw.system.accelerator_memory_capacity} {hw.system.accelerator_memory_type}
-													</dd>
-												</div>
-
-												<!-- Host -->
-												<div>
-													<dt class="font-medium text-slate-500 dark:text-slate-400">Host</dt>
-													<dd class="text-slate-800 dark:text-slate-200">
-														{hw.system.host_processors_per_node}x {hw.system.host_processor_model_name}
-													</dd>
-												</div>
-
-												<!-- Category & Status -->
-												<div>
-													<dt class="font-medium text-slate-500 dark:text-slate-400">Category</dt>
-													<dd class="text-slate-800 dark:text-slate-200">
-														{hw.system.system_category}
-														<span class="ml-1 text-slate-500 dark:text-slate-400">({hw.system.system_availability_status})</span>
-													</dd>
-												</div>
-											</dl>
-
-											<!-- Configure System Settings Button -->
-											<button
-												type="button"
-												onclick={() => toggleEditMode(hw.id)}
-												class="mt-3 w-full rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
-												style="background-color: {hw.color};"
-												aria-label="Configure system settings for {hw.system.system_name}"
-											>
-												Configure System Settings
-											</button>
-										</div>
-									</div>
-
-									<!-- Edit View Panel -->
-									<div class="w-1/2 shrink-0">
-										<div
-											class="px-3 pb-3"
-											use:measureHeight={{ systemId: hw.id, panel: 'edit' }}
-										>
-											<!-- Edit Header -->
-											<div class="mb-3 flex items-center justify-between">
-												<p class="font-semibold text-slate-800 dark:text-slate-200 text-[11px]">
-													System Configuration
-												</p>
-												<button
-													type="button"
-													onclick={() => toggleEditMode(hw.id)}
-													class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 transition-colors"
-													aria-label="Close configuration"
-												>
-													<Icon name="Close" class="h-4 w-4" />
-												</button>
-											</div>
-
-											<!-- Configuration Form -->
-											<form class="space-y-3" onsubmit={(e) => e.preventDefault()}>
-												<!-- System Name -->
-												<div class="flex flex-col gap-1">
-													<label for="system-name-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-														System Name
-													</label>
-													<input
-														id="system-name-{hw.id}"
-														type="text"
-														value={hw.system.system_name}
-														class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500"
-														aria-label="System name"
-													/>
-												</div>
-
-												<!-- Accelerator Config -->
-												<fieldset class="space-y-2 rounded border border-slate-200 p-2 dark:border-slate-700">
-													<legend class="px-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">Accelerator</legend>
-
-													<div class="flex gap-2">
-														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-count-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Count</label>
-															<input
-																id="accel-count-{hw.id}"
-																type="number"
-																min="1"
-																max="64"
-																value={hw.system.accelerators_per_node}
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Accelerators per node"
-															/>
-														</div>
-														<div class="flex flex-col gap-1 flex-2">
-															<label for="accel-model-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Model</label>
-															<input
-																id="accel-model-{hw.id}"
-																type="text"
-																value={hw.system.accelerator_model_name}
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Accelerator model"
-															/>
-														</div>
-													</div>
-
-													<div class="flex gap-2">
-														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-mem-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Memory</label>
-															<input
-																id="accel-mem-{hw.id}"
-																type="text"
-																value={hw.system.accelerator_memory_capacity}
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Accelerator memory"
-															/>
-														</div>
-														<div class="flex flex-col gap-1 flex-1">
-															<label for="accel-mem-type-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Type</label>
-															<select
-																id="accel-mem-type-{hw.id}"
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Memory type"
-															>
-																<option value="HBM3e" selected={hw.system.accelerator_memory_configuration === 'HBM3e'}>HBM3e</option>
-																<option value="HBM3" selected={hw.system.accelerator_memory_configuration === 'HBM3'}>HBM3</option>
-																<option value="HBM2e" selected={hw.system.accelerator_memory_configuration === 'HBM2e'}>HBM2e</option>
-																<option value="GDDR6X" selected={hw.system.accelerator_memory_configuration === 'GDDR6X'}>GDDR6X</option>
-															</select>
-														</div>
-													</div>
-												</fieldset>
-
-												<!-- Host Config -->
-												<fieldset class="space-y-2 rounded border border-slate-200 p-2 dark:border-slate-700">
-													<legend class="px-1 text-[10px] font-medium text-slate-500 dark:text-slate-400">Host</legend>
-
-													<div class="flex gap-2">
-														<div class="flex flex-col gap-1 flex-1">
-															<label for="host-count-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">CPUs</label>
-															<input
-																id="host-count-{hw.id}"
-																type="number"
-																min="1"
-																max="8"
-																value={hw.system.host_processors_per_node}
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Host processors per node"
-															/>
-														</div>
-														<div class="flex flex-col gap-1 flex-2">
-															<label for="host-model-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Processor</label>
-															<input
-																id="host-model-{hw.id}"
-																type="text"
-																value={hw.system.host_processor_model_name}
-																class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-																aria-label="Host processor model"
-															/>
-														</div>
-													</div>
-
-													<div class="flex flex-col gap-1">
-														<label for="host-mem-{hw.id}" class="text-[10px] text-slate-600 dark:text-slate-500">Memory Capacity</label>
-														<input
-															id="host-mem-{hw.id}"
-															type="text"
-															value={hw.system.host_memory_capacity ?? ''}
-															placeholder="e.g., 2 TB"
-															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1 text-[11px] text-slate-800 placeholder-slate-400 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200 dark:placeholder-slate-500"
-															aria-label="Host memory capacity"
-														/>
-													</div>
-												</fieldset>
-
-												<!-- Software Stack -->
-												<div class="flex flex-col gap-1">
-													<label for="framework-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">
-														Framework / Software
-													</label>
-													<input
-														id="framework-{hw.id}"
-														type="text"
-														value={hw.system.framework}
-														class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-														aria-label="Framework"
-													/>
-												</div>
-
-												<!-- Cooling & Status -->
-												<div class="flex gap-2">
-													<div class="flex flex-col gap-1 flex-1">
-														<label for="cooling-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Cooling</label>
-														<select
-															id="cooling-{hw.id}"
-															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-															aria-label="Cooling type"
-														>
-															<option value="Air-cooled">Air-cooled</option>
-															<option value="Liquid-cooled">Liquid-cooled</option>
-															<option value="Hybrid">Hybrid</option>
-														</select>
-													</div>
-													<div class="flex flex-col gap-1 flex-1">
-														<label for="status-{hw.id}" class="text-[10px] font-medium text-slate-500 dark:text-slate-400">Status</label>
-														<select
-															id="status-{hw.id}"
-															class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-[11px] text-slate-800 focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
-															aria-label="Availability status"
-														>
-															<option value="available" selected={hw.system.system_availability_status === 'available'}>Available</option>
-															<option value="preview" selected={hw.system.system_availability_status === 'preview'}>Preview</option>
-															<option value="discontinued" selected={hw.system.system_availability_status === 'discontinued'}>Discontinued</option>
-														</select>
-													</div>
-												</div>
-
-												<!-- Action Buttons -->
-												<div class="flex gap-2 pt-2">
-													<button
-														type="button"
-														onclick={() => toggleEditMode(hw.id)}
-														class="flex-1 rounded-md border border-slate-300 px-3 py-1.5 text-[11px] font-medium text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
-													>
-														Cancel
-													</button>
-													<button
-														type="submit"
-														class="flex-1 rounded-md px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:opacity-90"
-														style="background-color: {hw.color};"
-													>
-														Apply
-													</button>
-												</div>
-											</form>
-										</div>
-									</div>
+								<!-- System Specifications Header -->
+								<div class="mb-2">
+									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
+										{hw.system.system_name}
+									</p>
+									<p class="text-slate-500 dark:text-slate-400 text-[10px]">
+										{hw.system.submitter_org_names} / {hw.system.division}
+									</p>
+									<p class="mt-1 text-[10px] italic text-slate-400 dark:text-slate-500">
+										Specifications of the System Under Test from the submitted benchmark.
+									</p>
 								</div>
+
+								<!-- Hardware & Software Details -->
+								<dl class="space-y-1.5 text-[11px]">
+									<!-- Framework -->
+									<div>
+										<dt class="font-medium text-slate-500 dark:text-slate-400">Framework</dt>
+										<dd class="text-slate-800 dark:text-slate-200">{hw.system.framework}</dd>
+									</div>
+
+									<!-- Accelerator -->
+									<div>
+										<dt class="font-medium text-slate-500 dark:text-slate-400">Accelerator</dt>
+										<dd class="text-slate-800 dark:text-slate-200">
+											{hw.system.accelerators_per_node}x {hw.system.accelerator_model_name}
+										</dd>
+										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+											{hw.system.accelerator_memory_capacity} {hw.system.accelerator_memory_type}
+										</dd>
+									</div>
+
+									<!-- Host Processor -->
+									<div>
+										<dt class="font-medium text-slate-500 dark:text-slate-400">Host Processor</dt>
+										<dd class="text-slate-800 dark:text-slate-200">
+											{hw.system.host_processors_per_node}x {hw.system.host_processor_model_name}
+										</dd>
+									</div>
+
+									<!-- Category & Status -->
+									<div>
+										<dt class="font-medium text-slate-500 dark:text-slate-400">Category</dt>
+										<dd class="text-slate-800 dark:text-slate-200">
+											{hw.system.system_category}
+											<span class="ml-1 text-slate-500 dark:text-slate-400">({hw.system.system_availability_status})</span>
+										</dd>
+									</div>
+								</dl>
 							</div>
 						{/if}
 					</div>
