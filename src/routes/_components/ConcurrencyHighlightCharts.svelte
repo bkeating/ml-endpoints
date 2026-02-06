@@ -17,44 +17,58 @@
 	const chartConfigs = [
 		{
 			id: 'system-tps',
-			title: 'System Tokens/Second',
+			title: 'System Tok/Sec',
 			yAccessor: (run) => run.system_tps,
-			yLabel: 'Tokens/s'
+			yLabel: 'Tok/s'
 		},
 		{
 			id: 'ttft',
-			title: 'Time To First Token P99',
+			title: 'TTFT P99',
 			yAccessor: (run) => run.ttft,
 			yLabel: 'Seconds'
 		},
 		{
 			id: 'tps-per-user',
-			title: 'System Tokens/Second per User',
+			title: 'System Tok/Sec/User',
 			yAccessor: (run) => run.tps_per_user,
-			yLabel: 'Tokens/s/user'
+			yLabel: 'Tok/s/user'
 		},
 		{
 			id: 'throughput',
-			title: 'Throughput (Tokens/Second)',
+			title: 'Throughput (Tok/Sec)',
 			yAccessor: (run) => run.system_tps,
-			yLabel: 'Tokens/s'
+			yLabel: 'Tok/s'
 		},
 		{
 			id: 'latency',
-			title: 'Latency (Time To First Token P99)',
+			title: 'Latency (TTFT P99)',
 			yAccessor: (run) => run.ttft,
 			yLabel: 'Seconds'
 		},
 		{
 			id: 'interactivity',
-			title: 'Interactivity (Tokens/Second per User)',
+			title: 'Interactivity (Tok/Sec/User)',
 			yAccessor: (run) => run.tps_per_user,
-			yLabel: 'Tokens/s/user'
+			yLabel: 'Tok/s/user'
 		}
 	];
 
 	// Log scale tick marks for the slider
 	const tickMarks = [1, 5, 10, 50];
+
+	/**
+	 * Format a metric value for display in the chart header.
+	 * Uses the config's yAccessor against metricsAtConcurrency.
+	 * @param {Object} config - Chart configuration with yAccessor
+	 * @returns {string} - Formatted value or empty string if unavailable
+	 */
+	function getHeaderValue(config) {
+		if (!metricsAtConcurrency) return '';
+		const val = config.yAccessor(metricsAtConcurrency);
+		if (val == null) return '';
+		// TTFT values are small decimals (seconds), show 3 decimal places
+		return val < 1 ? val.toFixed(3) : val.toLocaleString('en-US', { maximumFractionDigits: 0 });
+	}
 
 	/**
 	 * Convert slider value to percentage position (log scale)
@@ -148,28 +162,60 @@
 	});
 
 	/**
-	 * Generate horizontal bar data for a specific chart configuration.
-	 * Each curve becomes a horizontal bar showing its concurrency range.
-	 * @param {Object} config - Chart configuration
-	 * @returns {Array} - Array of bar data for the chart
+	 * Generate step-line data for a specific chart configuration.
+	 * Each curve becomes a step-line showing metric values across concurrency levels.
+	 * Y values are normalized independently per system to a 0-1 range.
+	 * @param {Object} config - Chart configuration with yAccessor
+	 * @returns {Array<{id: string, name: string, color: string, points: Array<{x: number, y: number}>}>}
 	 */
-	function getBarData(config) {
+	function getStepLineData(config) {
 		return curves.map(curve => {
-			const validRuns = curve.runs.filter(run => run.concurrency >= 1 && run.concurrency <= 50);
+			const validRuns = curve.runs
+				.filter(run => run.concurrency >= 1 && run.concurrency <= 50)
+				.sort((a, b) => a.concurrency - b.concurrency);
 			if (validRuns.length === 0) return null;
 
-			const concurrencies = validRuns.map(r => r.concurrency);
-			const minConcurrency = Math.min(...concurrencies);
-			const maxConcurrency = Math.max(...concurrencies);
+			const yValues = validRuns.map(r => config.yAccessor(r));
+			const yMin = Math.min(...yValues);
+			const yMax = Math.max(...yValues);
+			const yRange = yMax - yMin || 1;
 
 			return {
 				id: curve.id,
 				name: curve.name,
 				color: curve.color,
-				minX: minConcurrency,
-				maxX: maxConcurrency
+				points: validRuns.map(run => ({
+					x: concurrencyToPercent(run.concurrency),
+					y: (config.yAccessor(run) - yMin) / yRange
+				}))
 			};
 		}).filter(Boolean);
+	}
+
+	/**
+	 * Build individual horizontal bar segments for a system within its Y-band.
+	 * Each segment spans from one concurrency point to the next at that point's Y level.
+	 * No vertical connectors -- just flat bars per concurrency interval.
+	 * @param {Array<{x: number, y: number}>} points - Normalized points (x: 0-100%, y: 0-1)
+	 * @param {number} bandTop - Top of this system's Y-band in SVG units
+	 * @param {number} bandHeight - Height of this system's Y-band in SVG units
+	 * @returns {Array<string>} - Array of SVG path d attributes (one per segment)
+	 */
+	function buildBarSegments(points, bandTop, bandHeight) {
+		if (points.length === 0) return [];
+		const padding = bandHeight * 0.1;
+		const drawHeight = bandHeight - padding * 2;
+
+		const toY = (/** @type {number} */ normY) => bandTop + padding + drawHeight * (1 - normY);
+
+		const segments = [];
+		for (let i = 0; i < points.length; i++) {
+			const x1 = points[i].x;
+			const x2 = i < points.length - 1 ? points[i + 1].x : 100;
+			const y = toY(points[i].y);
+			segments.push(`M ${x1} ${y} H ${x2}`);
+		}
+		return segments;
 	}
 
 	/**
@@ -277,14 +323,25 @@
 		<!-- Right column: 6 mini charts in 3x2 grid -->
 		<div class="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each chartConfigs as config (config.id)}
-				{@const barData = getBarData(config)}
-				{@const barHeight = barData.length > 0 ? Math.min(8, 80 / barData.length) : 8}
-				{@const barSpacing = barData.length > 0 ? (100 - barData.length * barHeight) / (barData.length + 1) : 10}
+				{@const lineData = getStepLineData(config)}
+				{@const systemCount = lineData.length || 1}
+				{@const bandHeight = 100 / systemCount}
+				{@const headerVal = getHeaderValue(config)}
 				<div class="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/50">
-					<h4 class="mb-2 text-xs font-medium text-slate-700 dark:text-slate-300">
-						{config.title}
+					<h4 class="mb-2 text-sm font-semibold text-pretty text-slate-700 dark:text-slate-300">
+						{#if headerVal}<span class="mr-1.5 text-slate-900 dark:text-white">{headerVal}</span>{/if}{config.title}
 					</h4>
-					<div class="relative aspect-4/3 w-full">
+					<div class="relative w-full" style="aspect-ratio: 4/3;">
+						<!-- System name labels as HTML overlays (avoids SVG text distortion) -->
+						{#each lineData as system, index (system.id)}
+							<span
+								class="absolute left-1 text-[10px] font-medium leading-none text-slate-500 dark:text-slate-400"
+								style="top: {(index / systemCount) * 100}%"
+							>
+								{system.name}
+							</span>
+						{/each}
+
 						<svg viewBox="0 0 100 100" preserveAspectRatio="none" class="h-full w-full">
 							<!-- Left muted overlay (before slider position) -->
 							<rect
@@ -296,24 +353,23 @@
 								class="dark:fill-white/10"
 							/>
 
-							<!-- Horizontal bars for each system -->
-							{#each barData as bar, index (bar.id)}
-								{@const xStart = concurrencyToPercent(bar.minX)}
-								{@const xEnd = concurrencyToPercent(bar.maxX)}
-								{@const yPos = barSpacing + index * (barHeight + barSpacing)}
-								<line
-									x1={xStart}
-									y1={yPos + barHeight / 2}
-									x2={xEnd}
-									y2={yPos + barHeight / 2}
-									stroke={bar.color}
-									stroke-width={barHeight}
-									stroke-linecap="round"
-									vector-effect="non-scaling-stroke"
-								/>
+							<!-- Horizontal bar segments for each system in its own Y-band -->
+							{#each lineData as system, index (system.id)}
+								{@const bandTop = index * bandHeight}
+								{@const segments = buildBarSegments(system.points, bandTop, bandHeight)}
+								{#each segments as segD, segIdx (segIdx)}
+									<path
+										d={segD}
+										fill="none"
+										stroke={system.color}
+										stroke-width="2.5"
+										stroke-linecap="round"
+										vector-effect="non-scaling-stroke"
+									/>
+								{/each}
 							{/each}
 
-							<!-- Vertical red dashed line at slider position -->
+							<!-- Vertical dashed line at slider position -->
 							<line
 								x1={sliderPercent}
 								y1="0"
@@ -327,7 +383,7 @@
 						</svg>
 
 						<!-- X-axis labels -->
-						<div class="absolute bottom-0 left-0 right-0 flex justify-between px-1 text-[10px] text-slate-400">
+						<div class="absolute right-0 bottom-0 left-0 flex justify-between px-1 text-[10px] text-slate-400">
 							{#each tickMarks as tick (tick)}
 								<span>{tick}</span>
 							{/each}
