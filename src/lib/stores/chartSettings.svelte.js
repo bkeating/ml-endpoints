@@ -54,8 +54,7 @@ let hoveredRunId = $state(null);
 /** @type {{ modelName: string, modelColor: string } | null} */
 let hoveredRunInfo = $state(null);
 
-/** @type {boolean} - Whether to show system comparison lines on hover */
-let showComparison = $state(false);
+// showComparison is derived: true when more than one system is visible
 
 /**
  * Get current chart settings
@@ -299,26 +298,12 @@ export function getHoveredRunInfo() {
 // ============================================================================
 
 /**
- * Get the current comparison mode state
+ * Get the current comparison mode state.
+ * Automatically true when more than one system is visible; otherwise false.
  * @returns {boolean}
  */
 export function getShowComparison() {
-	return showComparison;
-}
-
-/**
- * Set the comparison mode state
- * @param {boolean} value - Whether to show comparison lines
- */
-export function setShowComparison(value) {
-	showComparison = value;
-}
-
-/**
- * Toggle the comparison mode
- */
-export function toggleComparison() {
-	showComparison = !showComparison;
+	return getVisibleSystemIds().length > 1;
 }
 
 /**
@@ -332,5 +317,4 @@ export function resetSettings() {
 	selectedAccelerator = 'all';
 	hideNonOptimal = false;
 	hideLabels = false;
-	showComparison = false;
 }

@@ -19,9 +19,7 @@
 		setSelectedBenchmarkModelId,
 		getSelectedAccelerator,
 		setSelectedAccelerator,
-		isSystemDisabledByAccelerator,
-		getShowComparison,
-		toggleComparison
+		isSystemDisabledByAccelerator
 	} from '$lib/stores/chartSettings.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
@@ -80,7 +78,6 @@
 	// Model and accelerator selection is managed by the store for cross-component reactivity
 	let selectedModel = $derived(getSelectedBenchmarkModelId());
 	let selectedAccelerator = $derived(getSelectedAccelerator());
-	let comparisonEnabled = $derived(getShowComparison());
 
 	let selectedProcessor = $state('all');
 	let selectedOrganization = $state('all');
@@ -90,6 +87,9 @@
 
 	// Track which system is currently in edit/config mode (null = none)
 	let editingSystemId = $state(null);
+
+	// Track whether advanced filters are shown (hidden by default to save space)
+	let showAdvancedFilters = $state(false);
 
 	// Track panel heights for FLIP-style height animation
 	let panelHeights = $state({});
@@ -203,15 +203,32 @@
 		return editingSystemId === id;
 	}
 
+	/**
+	 * Parse system name to extract main name and parenthetical details
+	 * @param {string} systemName - Full system name e.g. "NVIDIA DGX B200 (8x B200-SXM-180GB, TensorRT)"
+	 * @returns {{ main: string, subline: string|null }} - Main name and optional subline
+	 */
+	function parseSystemName(systemName) {
+		const match = systemName.match(/^(.+?)\s*\((.+)\)\s*$/);
+		if (match) {
+			return { main: match[1].trim(), subline: match[2].trim() };
+		}
+		return { main: systemName, subline: null };
+	}
+
 	// Build hardware systems list directly from endpoints data
 	let hardwareSystems = $derived(
-		endpointsData.systems.map((system) => ({
-			id: system.id,
-			name: system.system_name,
-			color: system.color,
-			system,
-			disabledByFilter: isSystemDisabledByAccelerator(system.accelerator_model_name)
-		}))
+		endpointsData.systems.map((system) => {
+			const { main, subline } = parseSystemName(system.system_name);
+			return {
+				id: system.id,
+				name: main,
+				subline,
+				color: system.color,
+				system,
+				disabledByFilter: isSystemDisabledByAccelerator(system.accelerator_model_name)
+			};
+		})
 	);
 </script>
 
@@ -241,99 +258,102 @@
 			</select>
 		</div>
 
-		<!-- Accelerator Select -->
-		<div class="flex flex-col gap-1.5">
-			<label
-				for="accelerator-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-			>
-				Accelerator
-			</label>
-			<p class="text-xs text-slate-500 dark:text-slate-400">GPU or AI chip used for inference (e.g., H100)</p>
-			<select
-				id="accelerator-select"
-				value={selectedAccelerator}
-				onchange={(e) => setSelectedAccelerator(e.target.value)}
-				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
-				aria-label="Select accelerator"
-			>
-				{#each acceleratorOptions as option (option.id)}
-					<option value={option.id}>{option.label}</option>
-				{/each}
-			</select>
-		</div>
-
-		<!-- Processor Select -->
-		<div class="flex flex-col gap-1.5">
-			<label
-				for="processor-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-			>
-				Processor
-			</label>
-			<p class="text-xs text-slate-500 dark:text-slate-400">Host CPU model paired with the accelerator</p>
-			<select
-				id="processor-select"
-				bind:value={selectedProcessor}
-				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
-				aria-label="Select processor"
-			>
-				{#each processorOptions as option (option.id)}
-					<option value={option.id}>{option.label}</option>
-				{/each}
-			</select>
-		</div>
-
-		<!-- Organization Select -->
-		<div class="flex flex-col gap-1.5">
-			<label
-				for="organization-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
-			>
-				Organization
-			</label>
-			<p class="text-xs text-slate-500 dark:text-slate-400">Company or institution that submitted results</p>
-			<select
-				id="organization-select"
-				bind:value={selectedOrganization}
-				class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
-				aria-label="Select organization"
-			>
-				{#each organizationOptions as option (option.id)}
-					<option value={option.id}>{option.label}</option>
-				{/each}
-			</select>
-		</div>
-
-		<!-- System Comparison Toggle -->
-		<div class="flex items-center justify-between rounded-lg border border-slate-200 bg-white px-3 py-2.5 dark:border-slate-600 dark:bg-slate-800">
-			<div class="flex flex-col gap-0.5">
-				<span class="text-sm font-medium text-slate-800 dark:text-slate-200">Compare Systems</span>
-				<span class="text-[10px] text-slate-500 dark:text-slate-400">Show relative performance on hover</span>
-			</div>
-			<button
-				type="button"
-				role="switch"
-				aria-checked={comparisonEnabled}
-				aria-label="Toggle system comparison"
-				onclick={toggleComparison}
-				class="relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 {comparisonEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}"
-			>
-				<span
-					class="absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 {comparisonEnabled ? 'translate-x-5' : 'translate-x-0'}"
-				></span>
-			</button>
-		</div>
-
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
-		<h4
-			class="mb-2 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
-		>
-			Systems
-		</h4>
+			<!-- Systems Header with Settings Cog -->
+			<div class="mb-2 flex items-center justify-between">
+				<h4
+					class="text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
+				>
+					Systems
+				</h4>
+				<button
+					type="button"
+					onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
+					class="rounded p-1 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
+					aria-expanded={showAdvancedFilters}
+					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} advanced filters"
+				>
+					<Icon
+						name="Settings"
+						class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {showAdvancedFilters ? 'rotate-90' : ''}"
+					/>
+				</button>
+			</div>
+
+			<!-- Advanced Filters (slide in when cog is clicked) -->
+			{#if showAdvancedFilters}
+				<div
+					transition:slide={{ duration: 200, easing: cubicOut }}
+					class="mb-3 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-slate-800"
+				>
+					<!-- Accelerator Select -->
+					<div class="flex flex-col gap-1">
+						<label
+							for="accelerator-filter"
+							class="text-[10px] font-medium text-slate-500 uppercase dark:text-slate-400"
+						>
+							Accelerator
+						</label>
+						<p class="text-[10px] text-slate-400 dark:text-slate-500">GPU or AI chip (e.g., H100)</p>
+						<select
+							id="accelerator-filter"
+							value={selectedAccelerator}
+							onchange={(e) => setSelectedAccelerator(e.target.value)}
+							class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+							aria-label="Filter by accelerator"
+						>
+							{#each acceleratorOptions as option (option.id)}
+								<option value={option.id}>{option.label}</option>
+							{/each}
+						</select>
+					</div>
+
+					<!-- Processor Select -->
+					<div class="flex flex-col gap-1">
+						<label
+							for="processor-filter"
+							class="text-[10px] font-medium text-slate-500 uppercase dark:text-slate-400"
+						>
+							Processor
+						</label>
+						<p class="text-[10px] text-slate-400 dark:text-slate-500">Host CPU paired with accelerator</p>
+						<select
+							id="processor-filter"
+							bind:value={selectedProcessor}
+							class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+							aria-label="Filter by processor"
+						>
+							{#each processorOptions as option (option.id)}
+								<option value={option.id}>{option.label}</option>
+							{/each}
+						</select>
+					</div>
+
+					<!-- Organization Select -->
+					<div class="flex flex-col gap-1">
+						<label
+							for="organization-filter"
+							class="text-[10px] font-medium text-slate-500 uppercase dark:text-slate-400"
+						>
+							Organization
+						</label>
+						<p class="text-[10px] text-slate-400 dark:text-slate-500">Submitting company/institution</p>
+						<select
+							id="organization-filter"
+							bind:value={selectedOrganization}
+							class="w-full rounded border border-slate-300 bg-slate-50 px-2 py-1.5 text-xs text-slate-800 transition-colors focus:border-emerald-500 focus:outline-none dark:border-slate-600 dark:bg-slate-700 dark:text-slate-200"
+							aria-label="Filter by organization"
+						>
+							{#each organizationOptions as option (option.id)}
+								<option value={option.id}>{option.label}</option>
+							{/each}
+						</select>
+					</div>
+				</div>
+			{/if}
 			<div class="flex flex-col gap-0.5">
-			{#each hardwareSystems as hw (hw.id)}
+			{#each hardwareSystems.slice(0, 9) as hw (hw.id)}
 				{@const visible = isSystemVisible(hw.id)}
 				{@const disabled = hw.disabledByFilter}
 				{@const expanded = isExpanded(hw.id, visible) && !disabled}
@@ -349,7 +369,7 @@
 								onclick={() => !disabled && handleExpandClick(hw.id)}
 								class="ml-1 p-1 rounded transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-200 dark:hover:bg-slate-600'}"
 								aria-expanded={expanded}
-								aria-label="{expanded ? 'Collapse' : 'Expand'} {hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
+								aria-label="{expanded ? 'Collapse' : 'Expand'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
 								aria-disabled={disabled}
 							>
 								<Icon
@@ -367,20 +387,33 @@
 							onclick={() => !disabled && toggleSystem(hw.id)}
 							class="group flex flex-1 items-center gap-3 px-2 py-2 text-left {disabled ? 'cursor-not-allowed' : 'cursor-pointer'}"
 							aria-pressed={visible}
-							aria-label="Toggle {hw.name} visibility{disabled ? ' (disabled by accelerator filter)' : ''}"
+							aria-label="Toggle {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} visibility{disabled ? ' (disabled by accelerator filter)' : ''}"
 							aria-disabled={disabled}
 							{disabled}
 						>
 							<span
-								class="h-3 w-3 rounded-full transition-opacity duration-200"
+								class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
 								style="background-color: {hw.color}; opacity: {visible && !disabled ? 1 : 0.3};"
 							></span>
 							<span
-								class="flex-1 text-sm font-medium transition-opacity duration-200 {visible && !disabled
-									? 'text-slate-800 dark:text-slate-200'
-									: 'text-slate-500 dark:text-slate-500 line-through'}"
+								class="flex flex-1 flex-col gap-0.5 text-left"
 							>
-								{hw.name}
+								<span
+									class="text-sm font-medium transition-opacity duration-200 {visible && !disabled
+										? 'text-slate-800 dark:text-slate-200'
+										: 'text-slate-500 dark:text-slate-500 line-through'}"
+								>
+									{hw.name}
+								</span>
+								{#if hw.subline}
+									<span
+										class="text-[10px] font-normal transition-opacity duration-200 {visible && !disabled
+											? 'text-slate-500 dark:text-slate-400'
+											: 'text-slate-400 dark:text-slate-500'}"
+									>
+										{hw.subline}
+									</span>
+								{/if}
 							</span>
 						</button>
 					</div>
@@ -669,5 +702,17 @@
 				{/each}
 			</div>
 		</div>
+
+		<!-- Download (placeholder) -->
+		<button
+			type="button"
+			class="mt-auto flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+			aria-label="Download chart data"
+		>
+			<svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+				<path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+			</svg>
+			Download
+		</button>
 	</div>
 </aside>
