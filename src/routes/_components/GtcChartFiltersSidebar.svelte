@@ -319,7 +319,7 @@
 								<span
 									class="text-sm font-medium transition-opacity duration-200 {visible && !disabled
 										? 'text-slate-800 dark:text-slate-200'
-										: 'text-slate-500 dark:text-slate-500 line-through'}"
+										: 'text-slate-500 dark:text-slate-500'}"
 								>
 									{hw.name}
 								</span>
