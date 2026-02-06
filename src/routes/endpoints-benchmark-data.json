@@ -95,7 +95,7 @@
       "host_processors_per_node": 2,
       "framework": "TensorRT 10.6, CUDA 12.6",
       "division": "Closed",
-      "color": "#62826C"
+      "color": "#E8B460"
     },
     {
       "id": "778b0149-ccf2-4ca4-a28d-58e61d6cd3a2",
