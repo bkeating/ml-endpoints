@@ -205,5 +205,5 @@ export function resetPageSettings() {
 
 	// Mobile filters
 	mobileFiltersOpen = false;
-	hasFilters = false;
+	hasFilters = true;
 }

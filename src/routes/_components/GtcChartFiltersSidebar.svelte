@@ -92,6 +92,9 @@
 	// Track whether advanced filters are shown (hidden by default to save space)
 	let showAdvancedFilters = $state(false);
 
+	// Add stronger shadow when sidebar grows due to expansions
+	let isSidebarExpanded = $derived(showAdvancedFilters || expandedSystems.size > 0);
+
 	/**
 	 * Toggle the expanded state for a system's details
 	 * @param {string} id - System ID to toggle
@@ -161,7 +164,7 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-4 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:block"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 p-3 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:absolute lg:right-0 lg:top-0 lg:z-20 lg:block {isSidebarExpanded ? 'shadow-xl' : 'shadow-xs'} transition-all duration-300"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
@@ -169,7 +172,7 @@
 		<div class="flex flex-col gap-1.5">
 			<label
 				for="model-select"
-				class="dm-mono text-xs font-medium tracking-wide text-slate-500 uppercase dark:text-slate-400"
+				class="text-xs font-semibold tracking-wide text-slate-500 uppercase dark:text-slate-400"
 			>
 				Model
 			</label>
@@ -188,25 +191,25 @@
 
 		<!-- Systems Selection Section with Inline Accordion -->
 		<div>
-			<!-- Systems Header with Settings Cog -->
+			<!-- Systems Header with Filter Icon -->
 			<div class="mb-2 flex items-center justify-between">
 				<h4
-					class="text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
+					class="text-xs font-bold tracking-widest text-slate-500 uppercase dark:text-slate-400"
 				>
 					Systems
 				</h4>
 				<button
 					type="button"
 					onclick={() => (showAdvancedFilters = !showAdvancedFilters)}
-					class="flex items-center gap-1.5 rounded px-2 py-1 transition-colors hover:bg-slate-200 dark:hover:bg-slate-600"
+					class="flex items-center gap-1.5 rounded px-2 py-1 hover:bg-slate-100 dark:hover:bg-slate-600 cursor-pointer"
 					aria-expanded={showAdvancedFilters}
 					aria-label="{showAdvancedFilters ? 'Hide' : 'Show'} system filters"
 				>
 					<Icon
-						name="Settings"
-						class="h-4 w-4 text-slate-500 transition-transform duration-200 dark:text-slate-400 {showAdvancedFilters ? 'rotate-90' : ''}"
+						name="AdjustmentsCog"
+						class="h-4 w-4 text-slate-500 dark:text-slate-400"
 					/>
-					<span class="text-[10px] font-medium text-slate-500 uppercase tracking-widest dark:text-slate-400">Filter</span>
+					<span class="text-xs font-medium text-slate-500 tracking-widest dark:text-slate-400">Filter Systems</span>
 				</button>
 			</div>
 
@@ -287,10 +290,10 @@
 				{@const disabled = hw.disabledByFilter}
 				{@const expanded = isExpanded(hw.id, visible) && !disabled}
 				<div
-					class="rounded-lg transition-all duration-200 {expanded ? 'border border-slate-300 dark:border-slate-600' : ''} {disabled ? 'opacity-40' : ''}"
+					class="rounded-lg transition-all duration-200 {disabled ? 'opacity-40' : ''}"
 				>
 					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
-					<div class="flex w-full items-center gap-2 rounded-lg transition-all duration-200 {expanded ? '' : disabled ? '' : 'hover:bg-slate-100 dark:hover:bg-slate-700'}">
+					<div class="flex w-full items-center gap-2 rounded-lg transition-all duration-200">
 						<!-- Checkbox: Toggle system visibility on chart -->
 						<input
 							type="checkbox"
@@ -317,7 +320,7 @@
 							></span>
 							<span class="flex flex-1 flex-col gap-0.5 text-left">
 								<span
-									class="text-sm font-medium transition-opacity duration-200 {visible && !disabled
+									class=" font-medium transition-opacity duration-200 {visible && !disabled
 										? 'text-slate-800 dark:text-slate-200'
 										: 'text-slate-500 dark:text-slate-500'}"
 								>
@@ -325,8 +328,8 @@
 								</span>
 								{#if hw.subline}
 									<span
-										class="text-[10px] font-normal transition-opacity duration-200 {visible && !disabled
-											? 'text-slate-500 dark:text-slate-400'
+										class="text-xs font-normal transition-opacity duration-200 {visible && !disabled
+											? 'text-slate-600 dark:text-slate-400'
 											: 'text-slate-400 dark:text-slate-500'}"
 									>
 										{hw.subline}
@@ -339,7 +342,7 @@
 							<button
 								type="button"
 								onclick={() => !disabled && handleExpandClick(hw.id)}
-								class="shrink-0 rounded p-1.5 transition-colors {disabled ? 'cursor-not-allowed opacity-50' : 'hover:bg-slate-200 dark:hover:bg-slate-600'}"
+								class="shrink-0 rounded p-1.5 transition-colors {disabled ? 'cursor-not-allowed opacity-50' : ''}"
 								aria-expanded={expanded}
 								aria-label="{expanded ? 'Hide' : 'Show'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
 								aria-disabled={disabled}

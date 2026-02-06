@@ -90,7 +90,7 @@
 
 		observer.observe(sentinelEl);
 		return () => {
-			setHasFilters(false);
+			setHasFilters(true);
 			observer.disconnect();
 		};
 	});

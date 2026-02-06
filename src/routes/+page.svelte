@@ -413,9 +413,9 @@
 
 <!-- Side-by-side layout with filters sidebar and charts -->
 <div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9 bg-white dark:bg-slate-900 transition-colors duration-200">
-	<div class="flex flex-col gap-6 lg:flex-row">
+	<div class="relative flex flex-col gap-6 lg:flex-row">
 		<!-- Charts area -->
-		<div class="min-w-0 flex-1">
+		<div class="min-w-0 flex-1 lg:pr-[calc(20rem+1.5rem)]">
 			<!-- Small page hero -->
 			<header class="mb-12 flex flex-col md:mb-12 md:flex-row" aria-label="Page introduction">
 				<h1

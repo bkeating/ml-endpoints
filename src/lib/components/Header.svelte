@@ -58,11 +58,9 @@
 
 		<!-- Mobile Actions -->
 		<div class="flex items-center gap-1 md:hidden">
-			{#if hasFilters}
 				<button class="flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-200 {mobileFiltersOpen ? 'bg-yellow-500 text-white' : 'text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800'}" onclick={toggleMobileFilters} aria-label="Toggle chart filters" aria-expanded={mobileFiltersOpen}>
 					<Icon name="AdjustmentsCog" class="h-6 w-6" />
 				</button>
-			{/if}
 			<button class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800" onclick={toggleDrawer} aria-label="Open menu" aria-expanded={isDrawerOpen}>
 				<Icon name="Menu" class="h-6 w-6" />
 			</button>
