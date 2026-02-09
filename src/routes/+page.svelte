@@ -370,9 +370,6 @@
 	// MINI CHART VISIBILITY TOGGLES
 	// ============================================================================
 
-	/** Toggle visibility of axis labels on mini sparkline charts */
-	let showAxisLabels = $state(true);
-
 	/** Toggle visibility of TTFT data source on mini charts */
 	let showTtft = $state(true);
 
@@ -415,19 +412,22 @@
 <!-- Side-by-side layout with filters sidebar and charts -->
 <div class="mx-auto max-w-7xl px-3 pb-3 md:pt-9 bg-white dark:bg-slate-900 transition-colors duration-200">
 	<div class="relative flex flex-col gap-6 lg:flex-row">
+		<!-- Chart Filters Sidebar (hidden on mobile) -->
+		<GtcChartFiltersSidebar />
+
 		<!-- Charts area -->
-		<div class="min-w-0 flex-1 lg:pr-[calc(20rem+1.5rem)]">
+		<div class="min-w-0 flex-1">
 			<!-- Small page hero -->
-			<header class="mb-12 flex flex-col md:mb-12 md:flex-row" aria-label="Page introduction">
+			<header class="mb-12 ml-12 flex flex-col md:mb-12" aria-label="Page introduction">
 				<h1
 					class="instrument-serif-regular-italic mt-8 text-4xl font-bold text-balance text-slate-700 md:mt-0 md:text-5xl dark:text-white"
 				>
-					MLCommons <br />
+					MLPerf <br />
 					<span class="mr-1 mb-2 inline-block h-7 w-7 rounded-full bg-[#CCEBD4]"></span>
-					Benchmarks
+					Endpoints
 				</h1>
 				<p
-					class="font-instrument-sans text-md mt-2 ml-3 max-w-lg border-l-4 border-l-[#ccead463] pl-3 leading-relaxed text-pretty text-slate-600 md:ml-6 md:pl-6 md:text-balance dark:text-slate-400"
+					class="font-instrument-sans text-md mt-6 border-l-4 border-l-[#ccead463] pl-3 leading-relaxed text-pretty text-slate-600 md:pl-6 md:text-balance dark:text-slate-400"
 				>
 					MLPerf Endpoints turns complex AI benchmark data into clear, interactive visualizations
 					that reveal performance trade-offs at a glance. Compare systems, understand what you're
@@ -437,27 +437,26 @@
 
 			<!-- Chart 1: System Throughput vs Interactivity - Full width -->
 			<GtcChartSection chart={throughputVsInteractivityChart} lineType="step" />
+
+			<!-- Remaining 3 charts with 2-up layout on md+ -->
+			<div class="mt-6 flex flex-col gap-6">
+				<div class="grid gap-6 md:grid-cols-2">
+					<!-- Chart 2: Throughput vs Concurrency -->
+					<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
+					<!-- Chart 3: Capacity Utilization -->
+					<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
+				</div>
+				<!-- Chart 4: Per-User Performance -->
+				<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
+			</div>
 		</div>
-
-		<!-- Chart Filters Sidebar (hidden on mobile) -->
-		<GtcChartFiltersSidebar />
-	</div>
-
-	<!-- Remaining 3 charts evenly sized across max-w-7xl - below sidebar section -->
-	<div class="grid grid-cols-1 gap-6 md:grid-cols-3 mt-6">
-		<!-- Chart 2: Throughput vs Concurrency -->
-		<GtcChartSection chart={throughputVsConcurrencyChart} lineType="step" />
-		<!-- Chart 3: Capacity Utilization -->
-		<GtcChartSection chart={capacityUtilizationChart} lineType="step" />
-		<!-- Chart 4: Per-User Performance -->
-		<GtcChartSection chart={perUserPerformanceChart} lineType="step" />
 	</div>
 
   <ConcurrencyHighlightCharts curves={filteredParetoCurves.filter((curve) => isSystemDisplayed(curve))} />
 
 
 	<!-- Most Recent Submissions -->
-	<section class="mt-12 border-t border-slate-200 pt-8 dark:border-slate-700" aria-label="Most recent submissions">
+	<section class="mt-12 pt-8" aria-label="Most recent submissions">
 		<div class="flex flex-col gap-6">
 			<!-- Top: Heading and inline legend -->
 			<div class="flex items-center justify-between">
@@ -489,19 +488,6 @@
 							style="background-color: {chartColors.throughput}"
 						></div>
 						<span class="text-sm font-medium text-slate-700 dark:text-slate-300">Thru vs Int</span>
-					</button>
-					<!-- Axis labels toggle -->
-					<button
-						type="button"
-						class="ml-2 flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium cursor-pointer {showAxisLabels ? 'border-[#62826C] bg-[#CCEBD4] text-[#44644E] dark:border-[#736628] dark:bg-[#736628]/20 dark:text-[#c9b856]' : 'border-slate-300 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700'}"
-						onclick={() => showAxisLabels = !showAxisLabels}
-						aria-pressed={showAxisLabels}
-						aria-label="Toggle axis labels on charts"
-					>
-						<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10M12 3v18M3 7v10M21 7v10" />
-						</svg>
-						Axes
 					</button>
 					<!-- Carousel navigation -->
 					<div class="ml-2 flex items-center gap-1">
@@ -554,7 +540,6 @@
 										{showTtft}
 										{showThroughput}
 										{chartColors}
-										{showAxisLabels}
 									/>
 
 									<!-- Footer bar -->

@@ -164,7 +164,7 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-80 shrink-0 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50/90 py-3 backdrop-blur-sm dark:border-slate-700 dark:bg-slate-800/90 lg:absolute lg:right-0 lg:top-0 lg:z-20 lg:block {isSidebarExpanded ? 'shadow-xl' : 'shadow-xs'} transition-all duration-300"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-96 shrink-0 overflow-y-auto rounded-lg py-2 backdrop-blur-sm dark:border dark:border-slate-700 dark:bg-slate-800/90 lg:block {isSidebarExpanded ? 'dark:shadow-xl' : 'dark:shadow-xs'} transition-all duration-300"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
@@ -217,7 +217,7 @@
 			{#if showAdvancedFilters}
 				<div
 					transition:slide={{ duration: 200, easing: cubicOut }}
-					class="mb-3 mx-3 flex flex-col gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-slate-800"
+					class="mb-3 mx-3 flex flex-col gap-3 rounded-lg bg-white dark:bg-slate-800"
 				>
 					<!-- Accelerator Select -->
 					<div class="flex flex-col gap-1">
@@ -294,8 +294,8 @@
 				>
 					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
 					<div
-						class="flex w-full items-center gap-2 rounded-none px-3 py-1.5 transition-all duration-200 {visible && !disabled
-							? 'bg-[#CCEBD4]/50 dark:bg-[#736628]/50'
+						class="group flex w-full items-center gap-2 rounded-none px-3 py-1.5 transition-all duration-200 {visible && !disabled
+							? 'dark:bg-[#323945]'
 							: ''}"
 					>
 						<!-- Checkbox: Toggle system visibility on chart -->
@@ -346,7 +346,7 @@
 							<button
 								type="button"
 								onclick={() => !disabled && handleExpandClick(hw.id)}
-								class="shrink-0 rounded p-1.5 transition-colors {disabled ? 'cursor-not-allowed opacity-50' : ''}"
+								class="shrink-0 rounded p-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 {disabled ? 'cursor-not-allowed group-hover:opacity-50 group-focus-within:opacity-50 focus-visible:opacity-50' : ''}"
 								aria-expanded={expanded}
 								aria-label="{expanded ? 'Hide' : 'Show'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
 								aria-disabled={disabled}
@@ -365,18 +365,15 @@
 						{#if expanded && hw.system}
 							<div
 								transition:slide={{ duration: 200, easing: cubicOut }}
-								class="px-3 pt-3 pb-3 {visible && !disabled ? 'bg-[#CCEBD4]/10 dark:bg-[#736628]/10' : ''}"
+								class="px-1 pt-1 pb-1 pl-4 pr-3 ml-[40px] text-[12px] border-l-4 {visible && !disabled ? 'dark:bg-[#333945]' : ''}"
+								style:border-left-color={hw.color}
 							>
+
+              <button type="button" class="text-sm rounded-md px-2 py-1 text-white float-right" onclick={() => goto(`/report?submission=${hw.system.submission_id}`)} style:background-color={hw.color}>View Report</button>
 								<!-- System Specifications Header -->
 								<div class="mb-2">
-									<p class="font-semibold text-slate-800 dark:text-slate-200 leading-tight text-[11px]">
-										{hw.system.system_name}
-									</p>
 									<p class="text-slate-500 dark:text-slate-400 text-[10px]">
 										{hw.system.submitter_org_names} / {hw.system.division}
-									</p>
-									<p class="mt-1 text-[10px] italic text-slate-400 dark:text-slate-500">
-										Specifications of the System Under Test from the submitted benchmark.
 									</p>
 								</div>
 
@@ -424,6 +421,7 @@
 		</div>
 
 		<!-- Download (placeholder) -->
+		<!--
 		<button
 			type="button"
 			disabled={!hasSelectedSystems}
@@ -438,5 +436,6 @@
 			</svg>
 			Download
 		</button>
+		-->
 	</div>
 </aside>

@@ -413,108 +413,69 @@
 				{#if tooltipData}
 					{@const localX = xScale(tooltipData.point.x)}
 					{@const localY = yScale(tooltipData.point.y)}
-					<line
-						x1={localX}
-						y1="0"
-						x2={localX}
-						y2={innerHeight}
-						stroke={tooltipData.model.color}
-						stroke-width="1"
-						stroke-dasharray="4 3"
-						opacity="0.5"
-					/>
-					<line
-						x1="0"
-						y1={localY}
-						x2={innerWidth}
-						y2={localY}
-						stroke={tooltipData.model.color}
-						stroke-width="1"
-						stroke-dasharray="4 3"
-						opacity="0.5"
-					/>
+					<g class="pointer-events-none">
+						<line
+							x1={localX}
+							y1="0"
+							x2={localX}
+							y2={innerHeight}
+							stroke={tooltipData.model.color}
+							stroke-width="1"
+							stroke-dasharray="4 3"
+							opacity="0.5"
+						/>
+						<line
+							x1="0"
+							y1={localY}
+							x2={innerWidth}
+							y2={localY}
+							stroke={tooltipData.model.color}
+							stroke-width="1"
+							stroke-dasharray="4 3"
+							opacity="0.5"
+						/>
+					</g>
 				{/if}
 
 				<!-- Synced crosshair lines (from another chart's hover) -->
 				{#if syncedTooltipPoint}
 					{@const syncX = xScale(syncedTooltipPoint.point.x)}
 					{@const syncY = yScale(syncedTooltipPoint.point.y)}
-					<!-- Vertical crosshair -->
-					<line
-						x1={syncX}
-						y1="0"
-						x2={syncX}
-						y2={innerHeight}
-						stroke={syncedTooltipPoint.model.color}
-						stroke-width="1"
-						stroke-dasharray="4 3"
-						opacity="0.5"
-					/>
-					<!-- Horizontal crosshair -->
-					<line
-						x1="0"
-						y1={syncY}
-						x2={innerWidth}
-						y2={syncY}
-						stroke={syncedTooltipPoint.model.color}
-						stroke-width="1"
-						stroke-dasharray="4 3"
-						opacity="0.5"
-					/>
+					<g class="pointer-events-none">
+						<!-- Vertical crosshair -->
+						<line
+							x1={syncX}
+							y1="0"
+							x2={syncX}
+							y2={innerHeight}
+							stroke={syncedTooltipPoint.model.color}
+							stroke-width="1"
+							stroke-dasharray="4 3"
+							opacity="0.5"
+						/>
+						<!-- Horizontal crosshair -->
+						<line
+							x1="0"
+							y1={syncY}
+							x2={innerWidth}
+							y2={syncY}
+							stroke={syncedTooltipPoint.model.color}
+							stroke-width="1"
+							stroke-dasharray="4 3"
+							opacity="0.5"
+						/>
+					</g>
 				{/if}
 
 				<!-- Comparison lines between systems (when hovering with comparison mode on) -->
 				{#if tooltipData && showComparison && comparisonData.length > 0}
 					{@const hoveredX = xScale(tooltipData.point.x)}
 					{@const hoveredY = yScale(tooltipData.point.y)}
-					
-					<!-- Hovered point's Y-value label (right next to the hovered point) -->
-					<g transform="translate({hoveredX + 8}, {hoveredY})">
-						<rect
-							x="-2"
-							y="-10"
-							width="50"
-							height="20"
-							rx="3"
-							class="fill-white dark:fill-slate-800"
-							opacity="0.9"
-						/>
-						<text
-							class="fill-slate-700 dark:fill-slate-200"
-							font-size="11"
-							font-weight="600"
-							dy="4"
-						>
-							{formatValue(tooltipData.point.y, yScaleType)}
-						</text>
-					</g>
-					
-					{#each comparisonData as comparison (comparison.model.id)}
-						{@const compY = yScale(comparison.y)}
-						<!-- Vertical dotted line from hovered point to comparison point -->
-						<line
-							x1={hoveredX}
-							y1={hoveredY}
-							x2={hoveredX}
-							y2={compY}
-							stroke={comparison.model.color}
-							stroke-width="2"
-							stroke-dasharray="4,4"
-							opacity="0.8"
-						/>
-						<!-- Comparison point marker on the other system's curve -->
-						<circle
-							cx={hoveredX}
-							cy={compY}
-							r="5"
-							fill="white"
-							stroke={comparison.model.color}
-							stroke-width="2"
-						/>
-						<!-- Y-value label at comparison point (positioned at the actual comparison point) -->
-						<g transform="translate({hoveredX - 8}, {compY})">
+					<g class="pointer-events-none">
+						<!-- Hovered point's Y-value label (right next to the hovered point) -->
+						<g transform="translate({hoveredX + 8}, {hoveredY})">
 							<rect
-								x="-48"
+								x="-2"
 								y="-10"
 								width="50"
 								height="20"
@@ -527,35 +488,79 @@
 								font-size="11"
 								font-weight="600"
 								dy="4"
-								text-anchor="end"
 							>
-								{formatValue(comparison.y, yScaleType)}
+								{formatValue(tooltipData.point.y, yScaleType)}
 							</text>
 						</g>
-					{/each}
-					
-					<!-- Ratio badge near the hovered point (if only one comparison) -->
-					{#if comparisonData.length === 1}
-						{@const comp = comparisonData[0]}
-						<g transform="translate({hoveredX + 8}, {hoveredY - 25})">
-							<rect
-								x="-4"
-								y="-12"
-								width="42"
-								height="24"
-								rx="4"
-								class="fill-slate-800 dark:fill-slate-200"
+
+						{#each comparisonData as comparison (comparison.model.id)}
+							{@const compY = yScale(comparison.y)}
+							<!-- Vertical dotted line from hovered point to comparison point -->
+							<line
+								x1={hoveredX}
+								y1={hoveredY}
+								x2={hoveredX}
+								y2={compY}
+								stroke={comparison.model.color}
+								stroke-width="2"
+								stroke-dasharray="4,4"
+								opacity="0.8"
 							/>
-							<text
-								class="fill-white dark:fill-slate-800"
-								font-size="12"
-								font-weight="700"
-								dy="4"
-							>
-								{comp.multiplier.toFixed(1)}x
-							</text>
-						</g>
-					{/if}
+							<!-- Comparison point marker on the other system's curve -->
+							<circle
+								cx={hoveredX}
+								cy={compY}
+								r="5"
+								fill="white"
+								stroke={comparison.model.color}
+								stroke-width="2"
+							/>
+							<!-- Y-value label at comparison point (positioned at the actual comparison point) -->
+							<g transform="translate({hoveredX - 8}, {compY})">
+								<rect
+									x="-48"
+									y="-10"
+									width="50"
+									height="20"
+									rx="3"
+									class="fill-white dark:fill-slate-800"
+									opacity="0.9"
+								/>
+								<text
+									class="fill-slate-700 dark:fill-slate-200"
+									font-size="11"
+									font-weight="600"
+									dy="4"
+									text-anchor="end"
+								>
+									{formatValue(comparison.y, yScaleType)}
+								</text>
+							</g>
+						{/each}
+
+						<!-- Ratio badge near the hovered point (if only one comparison) -->
+						{#if comparisonData.length === 1}
+							{@const comp = comparisonData[0]}
+							<g transform="translate({hoveredX + 8}, {hoveredY - 25})">
+								<rect
+									x="-4"
+									y="-12"
+									width="42"
+									height="24"
+									rx="4"
+									class="fill-slate-800 dark:fill-slate-200"
+								/>
+								<text
+									class="fill-white dark:fill-slate-800"
+									font-size="12"
+									font-weight="700"
+									dy="4"
+								>
+									{comp.multiplier.toFixed(1)}x
+								</text>
+							</g>
+						{/if}
+					</g>
 				{/if}
 			</g>
 

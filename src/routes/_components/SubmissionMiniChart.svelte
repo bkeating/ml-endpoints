@@ -12,14 +12,13 @@
 
 	import { setHoveredRunId, getHoveredRunId } from '$lib/stores/chartSettings.svelte.js';
 
-	/** @type {{ runs: Array, submissionId: string, showTtft: boolean, showThroughput: boolean, chartColors: { ttft: string, throughput: string, sysTps?: string }, showAxisLabels: boolean }} */
+	/** @type {{ runs: Array, submissionId: string, showTtft: boolean, showThroughput: boolean, chartColors: { ttft: string, throughput: string, sysTps?: string } }} */
 	let {
 		runs = [],
 		submissionId = '',
 		showTtft = true,
 		showThroughput = true,
-		chartColors = { ttft: '#62826C', throughput: '#37548A', sysTps: '#535869' },
-		showAxisLabels = false
+		chartColors = { ttft: '#62826C', throughput: '#37548A', sysTps: '#535869' }
 	} = $props();
 
 	/** @type {SVGSVGElement | null} */
@@ -33,6 +32,19 @@
 
 	/** Global hovered run ID for cross-chart synchronization */
 	let globalHoveredRunId = $derived(getHoveredRunId());
+
+	/**
+	 * Capture SVG element reference without bind:this.
+	 * @param {SVGSVGElement} node
+	 */
+	function svgRef(node) {
+		svgEl = node;
+		return {
+			destroy() {
+				if (svgEl === node) svgEl = null;
+			}
+		};
+	}
 
 	// =========================================================================
 	// DATA TRANSFORMATION
@@ -172,7 +184,7 @@
 <div class="relative h-24 w-full shrink-0" role="img" aria-label="Performance sparkline chart">
 	<!-- Interactive SVG chart -->
 	<svg
-		bind:this={svgEl}
+		{@attach svgRef}
 		viewBox="0 0 100 100"
 		preserveAspectRatio="none"
 		class="h-full w-full"
@@ -384,38 +396,36 @@
 		{/if}
 	</svg>
 
-	<!-- Axis labels overlay (toggled globally) -->
-	{#if showAxisLabels}
-		{#if showTtft}
-			<div class="pointer-events-none absolute top-1 left-1">
-				<span
-					class="rounded bg-white/90 px-0.5 text-[8px] font-medium leading-none dark:bg-slate-800/90"
-					style="color: {chartColors.ttft};"
-				>
-					TTFT (ms)
-				</span>
-			</div>
-		{/if}
-		{#if showThroughput}
-			<div class="pointer-events-none absolute right-1 bottom-1">
-				<span
-					class="rounded bg-white/90 px-0.5 text-[8px] font-medium leading-none dark:bg-slate-800/90"
-					style="color: {chartColors.throughput};"
-				>
-					Tok/s/user
-				</span>
-			</div>
-		{/if}
-		{#if showTtft || showThroughput}
-			<div class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2">
-				<span
-					class="rounded bg-white/90 px-0.5 text-[7px] font-medium leading-none dark:bg-slate-800/90"
-					style="writing-mode: vertical-rl; transform: rotate(180deg); color: {chartColors.sysTps ?? '#535869'};"
-				>
-					Sys TPS
-				</span>
-			</div>
-		{/if}
+	<!-- Axis labels overlay -->
+	{#if showTtft}
+		<div class="pointer-events-none absolute top-1 left-1">
+			<span
+				class="rounded bg-white/90 px-0.5 text-[8px] font-medium leading-none dark:bg-slate-800/90"
+				style="color: {chartColors.ttft};"
+			>
+				TTFT (ms)
+			</span>
+		</div>
+	{/if}
+	{#if showThroughput}
+		<div class="pointer-events-none absolute right-1 bottom-1">
+			<span
+				class="rounded bg-white/90 px-0.5 text-[8px] font-medium leading-none dark:bg-slate-800/90"
+				style="color: {chartColors.throughput};"
+			>
+				Tok/s/user
+			</span>
+		</div>
+	{/if}
+	{#if showTtft || showThroughput}
+		<div class="pointer-events-none absolute top-1/2 left-1 -translate-y-1/2">
+			<span
+				class="rounded bg-white/90 px-0.5 text-[7px] font-medium leading-none dark:bg-slate-800/90"
+				style="writing-mode: vertical-rl; transform: rotate(180deg); color: {chartColors.sysTps ?? '#535869'};"
+			>
+				Sys TPS
+			</span>
+		</div>
 	{/if}
 
 	<!-- Value tooltip (positioned inside chart bounds to avoid overflow clipping) -->

@@ -35,17 +35,19 @@
 
 <!-- Default layout: title/subtitle above, full-width chart below -->
 <section class="mb-4 w-full">
-	<h2
-		class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-2xl dark:text-slate-200"
-	>
-		{chart.title}
-	</h2>
-	<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-balance pr-3">
-		{chart.subtitle}
-		{#if chart.subline}
-			<span class="block mt-1">{chart.subline}</span>
-		{/if}
-	</p>
+	<div class="md:ml-12">
+		<h2
+			class="font-instrument-sans mb-1 text-2xl font-semibold text-slate-800 md:text-2xl dark:text-slate-200"
+		>
+			{chart.title}
+		</h2>
+		<p class="mb-4 text-sm text-slate-400 dark:text-slate-500 leading-relaxed text-pretty pr-3">
+			{chart.subtitle}
+			{#if chart.subline}
+				<span class="block mt-1">{chart.subline}</span>
+			{/if}
+		</p>
+	</div>
 
 	<div class="w-full" bind:clientWidth={containerWidth}>
 		{#if containerWidth > 0}

@@ -19,37 +19,37 @@
 			id: 'system-tps',
 			title: 'System Tok/Sec',
 			yAccessor: (run) => run.system_tps,
-			yLabel: 'Tok/s'
+			yLabel: 'Tok/Sec'
 		},
 		{
 			id: 'ttft',
 			title: 'TTFT P99',
 			yAccessor: (run) => run.ttft,
-			yLabel: 'Seconds'
+			yLabel: 'TTFT P99'
 		},
 		{
 			id: 'tps-per-user',
 			title: 'System Tok/Sec/User',
 			yAccessor: (run) => run.tps_per_user,
-			yLabel: 'Tok/s/user'
+			yLabel: 'Tok/Sec/User'
 		},
 		{
 			id: 'throughput',
 			title: 'Throughput (Tok/Sec)',
 			yAccessor: (run) => run.system_tps,
-			yLabel: 'Tok/s'
+			yLabel: 'Tok/Sec'
 		},
 		{
 			id: 'latency',
 			title: 'Latency (TTFT P99)',
 			yAccessor: (run) => run.ttft,
-			yLabel: 'Seconds'
+			yLabel: 'TTFT P99'
 		},
 		{
 			id: 'interactivity',
 			title: 'Interactivity (Tok/Sec/User)',
 			yAccessor: (run) => run.tps_per_user,
-			yLabel: 'Tok/s/user'
+			yLabel: 'Tok/Sec/User'
 		}
 	];
 
@@ -173,9 +173,12 @@
 			const validRuns = curve.runs
 				.filter(run => run.concurrency >= 1 && run.concurrency <= 50)
 				.sort((a, b) => a.concurrency - b.concurrency);
-			if (validRuns.length === 0) return null;
+			const runsWithValues = validRuns
+				.map(run => ({ run, y: config.yAccessor(run) }))
+				.filter(({ y }) => Number.isFinite(y));
+			if (runsWithValues.length === 0) return null;
 
-			const yValues = validRuns.map(r => config.yAccessor(r));
+			const yValues = runsWithValues.map(({ y }) => y);
 			const yMin = Math.min(...yValues);
 			const yMax = Math.max(...yValues);
 			const yRange = yMax - yMin || 1;
@@ -184,9 +187,9 @@
 				id: curve.id,
 				name: curve.name,
 				color: curve.color,
-				points: validRuns.map(run => ({
+				points: runsWithValues.map(({ run, y }) => ({
 					x: concurrencyToPercent(run.concurrency),
-					y: (config.yAccessor(run) - yMin) / yRange
+					y: (y - yMin) / yRange
 				}))
 			};
 		}).filter(Boolean);
@@ -242,7 +245,7 @@
 
 <section class="mt-6" aria-label="Concurrency highlight charts">
 	<h2 class="mb-9 text-3xl font-semibold text-slate-700 dark:text-white">
-		Highlight Concurrency across all charts
+		Concurrency Analysis
 	</h2>
 
 	<div class="flex flex-col gap-6 lg:flex-row">
@@ -289,15 +292,27 @@
 					<ul class="space-y-1.5 text-sm text-slate-700 dark:text-slate-300">
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Throughput (Tokens/Second): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
+							<span>System Tok/Sec: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Latency (Time To First Token P99): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
+							<span>TTFT P99: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
 						</li>
 						<li class="flex items-start gap-2">
 							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
-							<span>Interactivity (Tokens/Second per User): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
+							<span>System Tok/Sec/User: <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
+						</li>
+						<li class="flex items-start gap-2">
+							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+							<span>Throughput (Tok/Sec): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span></span>
+						</li>
+						<li class="flex items-start gap-2">
+							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+							<span>Latency (TTFT P99): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span></span>
+						</li>
+						<li class="flex items-start gap-2">
+							<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+							<span>Interactivity (Tok/Sec/User): <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span></span>
 						</li>
 					</ul>
 				{:else}
@@ -309,9 +324,7 @@
 					<h4 class="mb-2 font-semibold text-slate-800 dark:text-white">Analysis:</h4>
 					<p class="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
 						{#if metricsAtConcurrency}
-							At <span class="font-semibold text-slate-900 dark:text-white">{Math.round(sliderValue)}</span> concurrent users, the system achieves <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span> tokens/second
-							with a time to first token of <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}s</span>.
-							Each user experiences <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span> tokens/second interactivity.
+							At <span class="font-semibold text-slate-900 dark:text-white">{Math.round(sliderValue)}</span> users: System Tok/Sec <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span>, TTFT P99 <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span>s, System Tok/Sec/User <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span>, Throughput (Tok/Sec) <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.system_tps?.toFixed(0) ?? '—'}</span>, Latency (TTFT P99) <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.ttft?.toFixed(3) ?? '—'}</span>s, Interactivity (Tok/Sec/User) <span class="font-semibold text-slate-900 dark:text-white">{metricsAtConcurrency.tps_per_user?.toFixed(0) ?? '—'}</span>.
 						{:else}
 							Select a concurrency level to see analysis.
 						{/if}
