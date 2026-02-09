@@ -97,11 +97,12 @@
 	 */
 	function getHardwareLogoUrl(submission) {
 		const orgName = submission.submitter_org_names?.toLowerCase() ?? '';
+		const isDarkTheme = getTheme() === 'dark';
 		if (orgName.includes('nvidia')) {
-			return '/logo-nvidia.svg';
+			return isDarkTheme ? '/logo-nvidia-dark.svg' : '/logo-nvidia.svg';
 		}
 		if (orgName.includes('amd')) {
-			return '/logo-amd.svg';
+			return isDarkTheme ? '/logo-amd-dark.svg' : '/logo-amd.svg';
 		}
 		if (orgName.includes('intel')) {
 			// Assuming there's an Intel logo, otherwise return null
@@ -248,7 +249,7 @@
 	let throughputVsInteractivityChart = $derived({
 		title: 'System Throughput vs Interactivity',
 		subtitle: 'Trade-off between total system capacity and per-user token delivery speed.',
-		subline: 'Each line is a single submission.',
+		subline: 'Each dot is a single submission.',
 		xLabel: 'Tokens/s/user',
 		yLabel: 'Tokens/s',
 		xScale: 'log',

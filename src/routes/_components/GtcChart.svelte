@@ -4,6 +4,9 @@
 	 * with configurable linear or logarithmic scales
 	 */
 	import { goto } from '$app/navigation';
+	import ArrowsMaximize from '$lib/components/icons/ArrowsMaximize.svelte';
+	import ZoomIn from '$lib/components/icons/ZoomIn.svelte';
+	import ZoomOut from '$lib/components/icons/ZoomOut.svelte';
 	import {
 		createMargins,
 		getInnerDimensions,
@@ -60,6 +63,8 @@
 		showComparison = false
 	} = $props();
 
+	const ZOOM_FACTOR = 1.35;
+
 	// Responsive margins
 	let isMobile = $derived(width < 500);
 	let margin = $derived(createMargins(isMobile));
@@ -80,7 +85,7 @@
 	);
 
 	// Use timeline range if enabled, otherwise use full domain
-	let xDomain = $derived(
+	let baseXDomain = $derived(
 		useTimelineRange && rangeStart !== null && rangeEnd !== null
 			? [rangeStart, rangeEnd]
 			: fullXDomain
@@ -99,11 +104,20 @@
 	);
 
 	// Calculate Y domain based on scale type
-	let yDomain = $derived(
+	let baseYDomain = $derived(
 		yScaleType === 'log'
 			? calculateLogDomain(filteredData.flatMap((model) => model.points), 'y')
 			: calculateDomain(filteredData.flatMap((model) => model.points), 'y')
 	);
+
+	let zoomXDomain = $state(null);
+	let zoomYDomain = $state(null);
+	let isPanning = $state(false);
+	let activePointerId = $state(null);
+	let panStart = $state(null);
+
+	let xDomain = $derived(zoomXDomain ?? baseXDomain);
+	let yDomain = $derived(zoomYDomain ?? baseYDomain);
 
 	// Create scales based on scale type
 	let xScale = $derived(
@@ -151,6 +165,192 @@
 		}
 
 		return candidates.slice(0, maxTicks);
+	}
+
+	/**
+	 * Clamp a linear domain to remain within the base domain.
+	 * @param {[number, number]} candidate
+	 * @param {[number, number]} base
+	 * @returns {[number, number]}
+	 */
+	function clampLinearDomain(candidate, base) {
+		const [baseMin, baseMax] = base;
+		let [min, max] = candidate;
+		const span = max - min;
+		const baseSpan = baseMax - baseMin;
+		if (span >= baseSpan) return [baseMin, baseMax];
+		if (min < baseMin) {
+			max += baseMin - min;
+			min = baseMin;
+		}
+		if (max > baseMax) {
+			min -= max - baseMax;
+			max = baseMax;
+		}
+		return [Math.max(baseMin, min), Math.min(baseMax, max)];
+	}
+
+	/**
+	 * Clamp a logarithmic domain to remain within the base domain.
+	 * @param {[number, number]} candidate
+	 * @param {[number, number]} base
+	 * @returns {[number, number]}
+	 */
+	function clampLogDomain(candidate, base) {
+		const [baseMinRaw, baseMaxRaw] = base;
+		const baseMin = Math.max(baseMinRaw, 1e-6);
+		const baseMax = Math.max(baseMaxRaw, baseMin * 1.0001);
+		let [minRaw, maxRaw] = candidate;
+		let min = Math.max(minRaw, 1e-6);
+		let max = Math.max(maxRaw, min * 1.0001);
+		const logBaseMin = Math.log10(baseMin);
+		const logBaseMax = Math.log10(baseMax);
+		let logMin = Math.log10(min);
+		let logMax = Math.log10(max);
+		let span = logMax - logMin;
+		const baseSpan = logBaseMax - logBaseMin;
+		if (span >= baseSpan) return [baseMin, baseMax];
+		if (logMin < logBaseMin) {
+			logMax += logBaseMin - logMin;
+			logMin = logBaseMin;
+		}
+		if (logMax > logBaseMax) {
+			logMin -= logMax - logBaseMax;
+			logMax = logBaseMax;
+		}
+		span = Math.max(logMax - logMin, 0.05);
+		logMax = logMin + span;
+		return [Math.pow(10, logMin), Math.pow(10, logMax)];
+	}
+
+	/**
+	 * Compute a zoomed domain around center.
+	 * @param {[number, number]} current
+	 * @param {[number, number]} base
+	 * @param {'linear' | 'log'} scaleType
+	 * @param {number} factor
+	 * @returns {[number, number]}
+	 */
+	function zoomDomain(current, base, scaleType, factor) {
+		if (scaleType === 'log') {
+			const [min, max] = current;
+			const logMin = Math.log10(Math.max(min, 1e-6));
+			const logMax = Math.log10(Math.max(max, 1e-6));
+			const center = (logMin + logMax) / 2;
+			const nextSpan = Math.max((logMax - logMin) / factor, 0.05);
+			const candidate = [Math.pow(10, center - nextSpan / 2), Math.pow(10, center + nextSpan / 2)];
+			return clampLogDomain(candidate, base);
+		}
+		const [min, max] = current;
+		const center = (min + max) / 2;
+		const nextSpan = Math.max((max - min) / factor, 1e-9);
+		return clampLinearDomain([center - nextSpan / 2, center + nextSpan / 2], base);
+	}
+
+	/**
+	 * Compute a panned domain from pixel movement.
+	 * @param {[number, number]} current
+	 * @param {[number, number]} base
+	 * @param {'linear' | 'log'} scaleType
+	 * @param {number} deltaPixels
+	 * @param {number} axisSizePixels
+	 * @param {number} directionSign
+	 * @returns {[number, number]}
+	 */
+	function panDomainByPixels(current, base, scaleType, deltaPixels, axisSizePixels, directionSign) {
+		if (axisSizePixels <= 0) return current;
+		const shiftRatio = (deltaPixels / axisSizePixels) * directionSign;
+
+		if (scaleType === 'log') {
+			const logMin = Math.log10(Math.max(current[0], 1e-6));
+			const logMax = Math.log10(Math.max(current[1], 1e-6));
+			const delta = (logMax - logMin) * shiftRatio;
+			const candidate = [Math.pow(10, logMin + delta), Math.pow(10, logMax + delta)];
+			return clampLogDomain(candidate, base);
+		}
+
+		const span = current[1] - current[0];
+		const delta = span * shiftRatio;
+		return clampLinearDomain([current[0] + delta, current[1] + delta], base);
+	}
+
+	function handleZoomIn() {
+		zoomXDomain = zoomDomain(xDomain, baseXDomain, xScaleType, ZOOM_FACTOR);
+		zoomYDomain = zoomDomain(yDomain, baseYDomain, yScaleType, ZOOM_FACTOR);
+	}
+
+	function handleZoomOut() {
+		zoomXDomain = zoomDomain(xDomain, baseXDomain, xScaleType, 1 / ZOOM_FACTOR);
+		zoomYDomain = zoomDomain(yDomain, baseYDomain, yScaleType, 1 / ZOOM_FACTOR);
+	}
+
+	function handleResetZoom() {
+		zoomXDomain = null;
+		zoomYDomain = null;
+	}
+
+	/**
+	 * Compare two numeric domains with a small tolerance.
+	 * @param {[number, number]} a
+	 * @param {[number, number]} b
+	 * @returns {boolean}
+	 */
+	function domainsEqual(a, b) {
+		const EPSILON = 1e-9;
+		return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON;
+	}
+
+	let isAtDefaultView = $derived(domainsEqual(xDomain, baseXDomain) && domainsEqual(yDomain, baseYDomain));
+
+	function handlePanStart(event) {
+		const target = event.target;
+		if (target instanceof Element && target.closest('circle[role="button"]')) return;
+		if (event.button !== 0) return;
+
+		isPanning = true;
+		activePointerId = event.pointerId;
+		panStart = {
+			x: event.clientX,
+			y: event.clientY,
+			xDomain: [...xDomain],
+			yDomain: [...yDomain]
+		};
+
+		tooltipData = null;
+		setHoveredRunId(null);
+		event.preventDefault();
+	}
+
+	function handlePanMove(event) {
+		if (!isPanning || event.pointerId !== activePointerId || !panStart) return;
+
+		const deltaX = event.clientX - panStart.x;
+		const deltaY = event.clientY - panStart.y;
+
+		// X drags invert for natural "grab and move" behavior.
+		zoomXDomain = panDomainByPixels(
+			panStart.xDomain,
+			baseXDomain,
+			xScaleType,
+			deltaX,
+			innerWidth,
+			-1
+		);
+		zoomYDomain = panDomainByPixels(
+			panStart.yDomain,
+			baseYDomain,
+			yScaleType,
+			deltaY,
+			innerHeight,
+			1
+		);
+	}
+
+	function handlePanEnd(event) {
+		if (!isPanning || event.pointerId !== activePointerId) return;
+		isPanning = false;
+		activePointerId = null;
+		panStart = null;
 	}
 
 	// Ticks - use custom generator for log scales to avoid overcrowding
@@ -320,8 +520,45 @@
 	const clipId = generateClipPathId();
 </script>
 
-<div class="gtc-chart relative">
-	<svg {width} {height} class="font-instrument-sans h-auto w-full overflow-visible">
+<div class="gtc-chart group relative">
+	<div class="invisible absolute top-2 right-2 z-20 flex items-center gap-1 rounded-md border border-slate-200/80 bg-white/90 p-1 opacity-0 shadow-sm backdrop-blur transition-all duration-150 pointer-events-none group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:visible group-focus-within:opacity-100 group-focus-within:pointer-events-auto dark:border-slate-700 dark:bg-slate-800/90">
+		<button
+			type="button"
+			class="rounded px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700"
+			onclick={handleZoomIn}
+			aria-label="Zoom in"
+		>
+			<ZoomIn class="h-4 w-4" />
+		</button>
+		<button
+			type="button"
+			class="rounded px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:text-slate-200 dark:hover:bg-slate-700 dark:disabled:hover:bg-transparent"
+			onclick={handleZoomOut}
+			aria-label="Zoom out"
+			disabled={isAtDefaultView}
+		>
+			<ZoomOut class="h-4 w-4" />
+		</button>
+		<button
+			type="button"
+			class="rounded px-2 py-1 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent dark:text-slate-200 dark:hover:bg-slate-700 dark:disabled:hover:bg-transparent"
+			onclick={handleResetZoom}
+			aria-label="Reset zoom"
+			disabled={isAtDefaultView}
+		>
+			<ArrowsMaximize class="h-4 w-4" />
+		</button>
+	</div>
+	<svg
+		{width}
+		{height}
+		class="font-instrument-sans h-auto w-full overflow-visible"
+		class:cursor-grab={!isPanning}
+		class:cursor-grabbing={isPanning}
+		role="application"
+		aria-label="Interactive chart, drag to pan"
+		onpointerdown={handlePanStart}
+	>
 		<defs>
 			<linearGradient id="chartBg-{clipId}" x1="0%" y1="0%" x2="0%" y2="100%">
 				<stop
@@ -674,7 +911,9 @@
 			</div>
 		</div>
 	{/if}
+
 </div>
+<svelte:window onpointermove={handlePanMove} onpointerup={handlePanEnd} onpointercancel={handlePanEnd} />
 
 <style lang="postcss">
 	@reference "@app-css";

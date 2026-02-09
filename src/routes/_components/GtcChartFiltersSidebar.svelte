@@ -22,6 +22,7 @@
 		isSystemDisabledByAccelerator,
 		getVisibleSystemIds
 	} from '$lib/stores/chartSettings.svelte.js';
+	import { getTheme } from '$lib/stores/theme.svelte.js';
 	import endpointsData from '../endpoints-benchmark-data.json';
 
 
@@ -183,26 +184,30 @@
 	 */
 	function getSystemLogo(system) {
 		const name = `${system.system_name} ${system.accelerator_model_name} ${system.host_processor_model_name}`.toLowerCase();
+		const isDarkTheme = getTheme() === 'dark';
 		if (name.includes('nvidia')) {
-			return { src: '/logo-nvidia.svg', alt: 'NVIDIA' };
+			return { src: isDarkTheme ? '/logo-nvidia-dark.svg' : '/logo-nvidia.svg', alt: 'NVIDIA' };
 		}
 		if (name.includes('microsoft')) {
-			return { src: '/logo-microsoft.svg', alt: 'Microsoft' };
+			return {
+				src: isDarkTheme ? '/logo-microsoft-dark.svg' : '/logo-microsoft.svg',
+				alt: 'Microsoft'
+			};
 		}
 		if (name.includes('google')) {
-			return { src: '/logo-google.svg', alt: 'Google' };
+			return { src: isDarkTheme ? '/logo-google-dark.svg' : '/logo-google.svg', alt: 'Google' };
 		}
 		if (name.includes('aws') || name.includes('amazon')) {
-			return { src: '/logo-aws.svg', alt: 'AWS' };
+			return { src: isDarkTheme ? '/logo-aws-dark.svg' : '/logo-aws.svg', alt: 'AWS' };
 		}
 		if (name.includes('cerebras')) {
-			return { src: '/logo-cerebras.svg', alt: 'Cerebras' };
+			return { src: isDarkTheme ? '/logo-cerebras-dark.svg' : '/logo-cerebras.svg', alt: 'Cerebras' };
 		}
 		if (name.includes('intel') || name.includes('xeon')) {
 			return { src: '/logo-intel.svg', alt: 'Intel' };
 		}
 		if (name.includes('amd') || name.includes('epyc')) {
-			return { src: '/logo-amd.svg', alt: 'AMD' };
+			return { src: isDarkTheme ? '/logo-amd-dark.svg' : '/logo-amd.svg', alt: 'AMD' };
 		}
 		return null;
 	}
@@ -356,7 +361,7 @@
 					<!-- Legend Row: Chevron (expand) | Checkbox (select) | Color + Name -->
 					<div
 						class="group flex w-full items-center gap-2 rounded-none px-3 py-1.5 transition-all duration-200 {visible && !disabled
-							? 'dark:bg-[#323945]'
+							? 'bg-[#F0F9F3] dark:bg-[#323945]'
 							: ''}"
 					>
 						<!-- Persistent chevron: expand/collapse details (right when collapsed, down when expanded) -->
@@ -439,7 +444,7 @@
 						{#if expanded && hw.system}
 							<div
 								transition:slide={{ duration: 200, easing: cubicOut }}
-								class="px-1 pt-1 pb-1 pl-4 pr-3 ml-[40px] text-[12px] border-l-4 {visible && !disabled ? 'dark:bg-[#333945]' : ''}"
+								class="px-1 pt-1 pb-1 pl-4 pr-3 mt-1 text-[12px] border-l-4 {visible && !disabled ? 'dark:bg-[#333945]' : ''}"
 								style:border-left-color={hw.color}
 							>
 
