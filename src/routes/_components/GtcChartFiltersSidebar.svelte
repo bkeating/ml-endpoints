@@ -147,16 +147,77 @@
 		return { main: systemName, subline: null };
 	}
 
+	/** Known vendor prefixes to strip from display (longest first for correct matching). */
+	const COMPANY_PREFIXES = [
+		'Microsoft',
+		'SambaNova',
+		'Qualcomm',
+		'Cerebras',
+		'NVIDIA',
+		'Google',
+		'Intel',
+		'AMD',
+		'AWS'
+	];
+
+	/**
+	 * Strip leading company/vendor name from hardware name for display (logo shows company).
+	 * @param {string} name - Main system name e.g. "NVIDIA DGX B200"
+	 * @returns {string} - Display name e.g. "DGX B200"
+	 */
+	function stripCompanyPrefix(name) {
+		const n = name.trim();
+		for (const prefix of COMPANY_PREFIXES) {
+			if (n.toLowerCase().startsWith(prefix.toLowerCase())) {
+				const rest = n.slice(prefix.length).trim();
+				return rest || n;
+			}
+		}
+		return n;
+	}
+
+	/**
+	 * Map a system to its vendor logo.
+	 * @param {import('../endpoints-benchmark-data.json').systems[number]} system
+	 * @returns {{ src: string, alt: string } | null}
+	 */
+	function getSystemLogo(system) {
+		const name = `${system.system_name} ${system.accelerator_model_name} ${system.host_processor_model_name}`.toLowerCase();
+		if (name.includes('nvidia')) {
+			return { src: '/logo-nvidia.svg', alt: 'NVIDIA' };
+		}
+		if (name.includes('microsoft')) {
+			return { src: '/logo-microsoft.svg', alt: 'Microsoft' };
+		}
+		if (name.includes('google')) {
+			return { src: '/logo-google.svg', alt: 'Google' };
+		}
+		if (name.includes('aws') || name.includes('amazon')) {
+			return { src: '/logo-aws.svg', alt: 'AWS' };
+		}
+		if (name.includes('cerebras')) {
+			return { src: '/logo-cerebras.svg', alt: 'Cerebras' };
+		}
+		if (name.includes('intel') || name.includes('xeon')) {
+			return { src: '/logo-intel.svg', alt: 'Intel' };
+		}
+		if (name.includes('amd') || name.includes('epyc')) {
+			return { src: '/logo-amd.svg', alt: 'AMD' };
+		}
+		return null;
+	}
+
 	// Build hardware systems list directly from endpoints data
 	let hardwareSystems = $derived(
 		endpointsData.systems.map((system) => {
 			const { main, subline } = parseSystemName(system.system_name);
 			return {
 				id: system.id,
-				name: main,
+				name: stripCompanyPrefix(main),
 				subline,
 				color: system.color,
 				system,
+				logo: getSystemLogo(system),
 				disabledByFilter: isSystemDisabledByAccelerator(system.accelerator_model_name)
 			};
 		})
@@ -217,7 +278,7 @@
 			{#if showAdvancedFilters}
 				<div
 					transition:slide={{ duration: 200, easing: cubicOut }}
-					class="mb-3 mx-3 flex flex-col gap-3 rounded-lg bg-white dark:bg-slate-800"
+					class="mb-3 mx-3 flex flex-col gap-3 rounded-lg"
 				>
 					<!-- Accelerator Select -->
 					<div class="flex flex-col gap-1">
@@ -292,12 +353,29 @@
 				<div
 					class="rounded-none transition-all duration-200 {disabled ? 'opacity-40' : ''}"
 				>
-					<!-- Legend Row: Checkbox (select) | Color + Name | Cog (details) -->
+					<!-- Legend Row: Chevron (expand) | Checkbox (select) | Color + Name -->
 					<div
 						class="group flex w-full items-center gap-2 rounded-none px-3 py-1.5 transition-all duration-200 {visible && !disabled
 							? 'dark:bg-[#323945]'
 							: ''}"
 					>
+						<!-- Persistent chevron: expand/collapse details (right when collapsed, down when expanded) -->
+						{#if hw.system}
+							<button
+								type="button"
+								onclick={() => !disabled && handleExpandClick(hw.id)}
+								class="flex shrink-0 items-center justify-center rounded p-0.5 transition-opacity {disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:opacity-80'} {visible && !disabled ? 'text-slate-700 dark:text-slate-200' : 'text-slate-500 dark:text-slate-400'}"
+								aria-expanded={expanded}
+								aria-label="{expanded ? 'Hide' : 'Show'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
+								aria-disabled={disabled}
+								disabled={disabled}
+							>
+								<Icon
+									name="ChevronRight"
+									class="h-4 w-4 transition-transform duration-200 {expanded ? 'rotate-90' : ''}"
+								/>
+							</button>
+						{/if}
 						<!-- Checkbox: Toggle system visibility on chart -->
 						<input
 							type="checkbox"
@@ -318,11 +396,7 @@
 							aria-disabled={disabled}
 							disabled={disabled}
 						>
-							<span
-								class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
-								style="background-color: {hw.color}; opacity: {visible && !disabled ? 1 : 0.3};"
-							></span>
-							<span class="flex flex-1 flex-col gap-0.5 text-left">
+							<span class="flex flex-1 flex-col gap-0.5 text-left min-w-0">
 								<span
 									class="font-medium transition-opacity duration-200 {visible && !disabled
 										? 'text-slate-900 dark:text-white'
@@ -340,25 +414,25 @@
 									</span>
 								{/if}
 							</span>
-						</button>
-						<!-- Cog: Expand/collapse system details -->
-						{#if hw.system}
-							<button
-								type="button"
-								onclick={() => !disabled && handleExpandClick(hw.id)}
-								class="shrink-0 rounded p-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 {disabled ? 'cursor-not-allowed group-hover:opacity-50 group-focus-within:opacity-50 focus-visible:opacity-50' : ''}"
-								aria-expanded={expanded}
-								aria-label="{expanded ? 'Hide' : 'Show'} {hw.subline ? `${hw.name} (${hw.subline})` : hw.name} details{disabled ? ' (disabled by accelerator filter)' : ''}"
-								aria-disabled={disabled}
+							<!-- Fixed-size logo slot, justified to end -->
+							<span
+								class="ml-auto flex h-6 w-14 shrink-0 items-center justify-end"
+								aria-hidden="true"
 							>
-								<Icon
-									name="Settings"
-									class="h-4 w-4 transition-transform duration-200 {visible && !disabled
-										? 'text-slate-700 dark:text-white'
-										: 'text-slate-500 dark:text-slate-400'} {expanded ? 'rotate-90' : ''}"
-								/>
-							</button>
-						{/if}
+								{#if hw.logo}
+									<img
+										src={hw.logo.src}
+										alt=""
+										class="max-h-6 max-w-14 w-auto h-auto object-contain object-center transition-opacity duration-200"
+										style="opacity: {visible && !disabled ? 1 : 0.4};"
+									/>
+								{/if}
+							</span>
+							<span
+								class="h-3 w-3 shrink-0 rounded-full transition-opacity duration-200"
+								style="background-color: {hw.color}; opacity: {visible && !disabled ? 1 : 0.3};"
+							></span>
+						</button>
 					</div>
 
 						<!-- Accordion Details Panel - Read-only System Specifications -->
