@@ -21,12 +21,12 @@
 	const toggleDrawer = () => (isDrawerOpen = !isDrawerOpen);
 	const closeDrawer = () => (isDrawerOpen = false);
 
-	const activeClass = 'border-b-2 border-[#CCEBD4] text-slate-900 dark:border-yellow-600 dark:text-white';
-	const mobileActiveClass = 'border-l-4 border-[#CCEBD4] bg-[#CCEBD4]/20 dark:border-yellow-600 dark:bg-yellow-600/20';
+	const activeClass = 'border-b-2 border-mlc-nav-active text-slate-900 dark:border-mlc-nav-active dark:text-white';
+	const mobileActiveClass = 'border-l-4 border-mlc-nav-active bg-mlc-nav-active-muted dark:border-yellow-600 dark:bg-yellow-600/20';
 </script>
 
 <!-- Header -->
-<header class="font-instrument-sans sticky top-0 z-40 h-[80px] border-b border-[#ECEEF5] bg-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900">
+<header class="font-instrument-sans sticky top-0 z-40 h-[80px] border-b border-mlc-header-divider bg-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900">
 	<div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3">
 		<!-- Logo -->
 		<a href={resolve('/')} class="">
@@ -47,7 +47,7 @@
 
 		<!-- Desktop Actions -->
 		<div class="hidden items-center gap-2 md:flex">
-			<div class="flex h-10 items-center justify-center rounded-full bg-[#CCEBD4] px-6 text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
+			<div class="flex h-10 items-center justify-center rounded-full bg-mlc-nav-active px-6 text-mlc-cta-text transition-colors duration-200">Get Involved</div>
 			<!-- <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-800 dark:text-slate-200 transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
 				<Icon name="Search" class="h-[18px] w-[18px]" />
 			</button> -->
@@ -104,6 +104,6 @@
 			<Icon name={isDark ? 'MoonFilled' : 'Moon'} class="h-5 w-5" />
 			<span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
 		</button>
-		<div class="mt-4 flex items-center justify-center rounded-full bg-[#CCEBD4] px-6 py-3 font-medium text-[#10141F] transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
+		<div class="mt-4 flex items-center justify-center rounded-full bg-mlc-nav-active px-6 py-3 font-medium text-mlc-cta-text transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
 	</nav>
 </div>

@@ -480,6 +480,77 @@
 		return formatYAxis(value);
 	}
 
+	/**
+	 * Format TTFT values with stable precision for citation.
+	 * @param {number} value
+	 * @returns {string}
+	 */
+	function formatTtft(value) {
+		if (!Number.isFinite(value)) return 'N/A';
+		return `${value < 1 ? value.toFixed(3) : formatYAxis(value)} s`;
+	}
+
+	/**
+	 * Format utilization values as percentages (supports fraction or percent inputs).
+	 * @param {number} value
+	 * @returns {string}
+	 */
+	function formatUtilization(value) {
+		if (!Number.isFinite(value)) return 'N/A';
+		const percent = value <= 1 ? value * 100 : value;
+		return `${percent.toFixed(1)}%`;
+	}
+
+	/**
+	 * Build supplemental tooltip metric rows from run metadata.
+	 * @param {{ meta?: any }} point
+	 * @returns {Array<{label: string, value: string}>}
+	 */
+	function getTooltipMetrics(point) {
+		const meta = point?.meta;
+		if (!meta) return [];
+
+		const metrics = [];
+		if (Number.isFinite(meta.concurrency)) {
+			metrics.push({ label: 'Concurrency', value: formatYAxis(meta.concurrency) });
+		}
+		if (Number.isFinite(meta.ttft)) {
+			metrics.push({ label: 'TTFT P99', value: formatTtft(meta.ttft) });
+		}
+		if (Number.isFinite(meta.system_tps)) {
+			metrics.push({ label: 'System Throughput', value: `${formatYAxis(meta.system_tps)} tok/s` });
+		}
+		if (Number.isFinite(meta.tps_per_user)) {
+			metrics.push({ label: 'Interactivity', value: `${formatYAxis(meta.tps_per_user)} tok/s/user` });
+		}
+		if (Number.isFinite(meta.utilization)) {
+			metrics.push({ label: 'Utilization', value: formatUtilization(meta.utilization) });
+		}
+		const runId = meta.run_id ?? meta.runId;
+		if (typeof runId === 'string' && runId.length > 0) {
+			metrics.push({ label: 'Run ID', value: runId });
+		}
+
+		return metrics;
+	}
+
+	/**
+	 * Build an accessible point label with key citable values.
+	 * @param {{x: number, y: number, meta?: any}} point
+	 * @param {{name: string}} model
+	 * @returns {string}
+	 */
+	function buildPointAriaLabel(point, model) {
+		const base = `${model.name}. ${xAxisLabel}: ${formatValue(point.x, xScaleType)}. ${yAxisLabel}: ${formatValue(point.y, yScaleType)}.`;
+		const metrics = getTooltipMetrics(point)
+			.filter((metric) => metric.label !== 'Run ID')
+			.slice(0, 4)
+			.map((metric) => `${metric.label}: ${metric.value}`)
+			.join('. ');
+
+		return metrics ? `${base} ${metrics}.` : base;
+	}
+
 	function handlePointHover(event, point, model) {
 		const svgRect = event.currentTarget.closest('svg')?.getBoundingClientRect();
 		if (!svgRect) return;
@@ -637,7 +708,7 @@
 							class:ring-highlight={isHighlighted}
 							role="button"
 							tabindex="0"
-							aria-label="View report for {model.name}: {point.x}, {point.y}"
+							aria-label={buildPointAriaLabel(point, model)}
 							onmouseenter={(e) => handlePointHover(e, point, model)}
 							onmouseleave={handlePointLeave}
 							onclick={() => handlePointClick(point, model)}
@@ -885,6 +956,15 @@
 				<div>
 					<strong>{yAxisLabel}:</strong> {formatValue(tooltipData.point.y, yScaleType)}
 				</div>
+				{#if getTooltipMetrics(tooltipData.point).length > 0}
+					<div class="mt-1 space-y-0.5 border-t border-slate-200 pt-1 dark:border-slate-600">
+						{#each getTooltipMetrics(tooltipData.point) as metric (metric.label)}
+							<div>
+								<strong>{metric.label}:</strong> {metric.value}
+							</div>
+						{/each}
+					</div>
+				{/if}
 				{#if tooltipData.point.meta?.model}
 					<div class="mt-1 pt-1 border-t border-slate-200 dark:border-slate-600">
 						<span class="text-slate-500">{tooltipData.point.meta.model.model_name}</span>
@@ -908,6 +988,15 @@
 				<div>
 					<strong>{yAxisLabel}:</strong> {formatValue(syncedTooltipPoint.point.y, yScaleType)}
 				</div>
+				{#if getTooltipMetrics(syncedTooltipPoint.point).length > 0}
+					<div class="mt-1 space-y-0.5 border-t border-slate-200 pt-1 dark:border-slate-600">
+						{#each getTooltipMetrics(syncedTooltipPoint.point) as metric (metric.label)}
+							<div>
+								<strong>{metric.label}:</strong> {metric.value}
+							</div>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		</div>
 	{/if}

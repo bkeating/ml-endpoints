@@ -263,6 +263,10 @@ html.dark {
 	--color-stone-950: oklch(14.7% 0.004 49.25);
 	--color-black: #000;
 	--color-white: #fff;
+	--color-mlc-header-divider: #eceef5;
+	--color-mlc-nav-active: #ccebd4;
+	--color-mlc-nav-active-muted: color-mix(in oklab, var(--color-mlc-nav-active) 20%, transparent);
+	--color-mlc-cta-text: #10141f;
 	--spacing: 0.25rem;
 	--breakpoint-sm: 40rem;
 	--breakpoint-md: 48rem;
