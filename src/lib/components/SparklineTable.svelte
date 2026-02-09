@@ -51,7 +51,7 @@
 	const getHoverColorClass = (hexColor) => {
 		const colorMap = {
 			'#f97316': 'hover:bg-orange-500 hover:border-orange-500',
-			'#22c55e': 'hover:bg-green-500 hover:border-green-500',
+			'#22c55e': 'hover:bg-emerald-500 hover:border-emerald-500',
 			'#3b82f6': 'hover:bg-blue-500 hover:border-blue-500',
 			'#a855f7': 'hover:bg-purple-500 hover:border-purple-500',
 			'#ec4899': 'hover:bg-pink-500 hover:border-pink-500',

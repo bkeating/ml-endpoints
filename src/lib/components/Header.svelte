@@ -1,109 +1,141 @@
 <script>
 	import { page } from '$app/state';
-	import { resolve } from '$app/paths'
-  ;
+	import { resolve } from '$app/paths';
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
-
-  import { navItems, isNavItemActive } from '$lib/data/navigation.js';
+	import { navItems, isNavItemActive } from '$lib/data/navigation.js';
 	import { getMobileFiltersOpen, toggleMobileFilters, getHasFilters } from '$lib/stores/pageSettings.svelte.js';
-
-  import Icon from '$lib/components/Icon.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let isDrawerOpen = $state(false);
 	let mobileFiltersOpen = $derived(getMobileFiltersOpen());
 	let hasFilters = $derived(getHasFilters());
-	let theme = $derived(getTheme());
-	let isDark = $derived(theme === 'dark');
-	let computedNavItems = $derived(
-		navItems.map((item) => ({ ...item, isActive: isNavItemActive(item, page.url.pathname) }))
+	let isDark = $derived(getTheme() === 'dark');
+	let themeIcon = $derived(isDark ? 'MoonFilled' : 'Moon');
+	let themeLabel = $derived(isDark ? 'Dark Mode' : 'Light Mode');
+
+	let navItemsWithActive = $derived(
+		navItems.map((item) => ({
+			...item,
+			isActive: isNavItemActive(item, page.url.pathname)
+		}))
 	);
 
-	const toggleDrawer = () => (isDrawerOpen = !isDrawerOpen);
-	const closeDrawer = () => (isDrawerOpen = false);
+	const desktopNavClass = (isActive) => [
+		'flex h-full items-center px-2 py-1 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white',
+		isActive && 'border-b-2 border-emerald-500 text-slate-900 dark:text-white'
+	];
 
-	const activeClass = 'border-b-2 border-mlc-nav-active text-slate-900 dark:border-mlc-nav-active dark:text-white';
-	const mobileActiveClass = 'border-l-4 border-mlc-nav-active bg-mlc-nav-active-muted dark:border-yellow-600 dark:bg-yellow-600/20';
+	const mobileNavClass = (isActive) => [
+		'rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200',
+		isActive && 'border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'
+	];
+
+	function toggleDrawer() {
+		isDrawerOpen = !isDrawerOpen;
+	}
+
+	function closeDrawer() {
+		isDrawerOpen = false;
+	}
 </script>
 
-<!-- Header -->
-<header class="font-instrument-sans sticky top-0 z-40 h-[80px] border-b border-mlc-header-divider bg-white transition-colors duration-200 dark:border-slate-700 dark:bg-slate-900">
+{#snippet navEntry(item, mobile = false)}
+	{#if item.disabled}
+		<span class={mobile ? 'cursor-not-allowed rounded-lg px-4 py-3 text-slate-400' : 'cursor-not-allowed px-2 py-1 text-slate-400'}>
+			{item.label}
+		</span>
+	{:else if mobile}
+		<a href={resolve(item.href)} onclick={closeDrawer} class={mobileNavClass(item.isActive)}>
+			{item.label}
+		</a>
+	{:else}
+		<a href={resolve(item.href)} class={desktopNavClass(item.isActive)}>
+			{item.label}
+		</a>
+	{/if}
+{/snippet}
+
+<header class="sticky top-0 z-40 h-20 border-b border-slate-200 bg-white font-instrument-sans dark:border-slate-700 dark:bg-slate-900">
 	<div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3">
-		<!-- Logo -->
-		<a href={resolve('/')} class="">
+		<a href={resolve('/')}>
 			<img src={isDark ? '/ML-Commons-Logo-Dark.svg' : '/ML-Commons-Logo.svg'} alt="ML Commons" class="h-10" />
 		</a>
 
-		<!-- Desktop Nav -->
 		<nav class="hidden h-full items-center gap-6 md:flex" aria-label="Main navigation">
-			{#each computedNavItems as item (item.label)}
-				<svelte:element
-					this={item.disabled ? 'span' : 'a'}
-					href={item.disabled ? undefined : resolve(item.href)}
-					class="px-2 py-1 {item.disabled ? 'cursor-not-allowed opacity-60' : 'hover:text-slate-600 dark:hover:text-white'} {item.isActive ? `flex h-full items-center justify-center ${activeClass}` : 'text-slate-900 dark:text-slate-300'}"
-					aria-disabled={item.disabled || undefined}
-				>{item.label}</svelte:element>
+			{#each navItemsWithActive as item (item.label)}
+				{@render navEntry(item)}
 			{/each}
 		</nav>
 
-		<!-- Desktop Actions -->
 		<div class="hidden items-center gap-2 md:flex">
-			<div class="flex h-10 items-center justify-center rounded-full bg-mlc-nav-active px-6 text-mlc-cta-text transition-colors duration-200">Get Involved</div>
-			<!-- <button class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-slate-800 dark:text-slate-200 transition-colors duration-200 dark:bg-slate-700" aria-label="Search">
-				<Icon name="Search" class="h-[18px] w-[18px]" />
-			</button> -->
-			<button onclick={toggleTheme} class="text-slate-900 transition-colors duration-200 hover:text-slate-600 dark:text-white dark:hover:text-slate-300 cursor-pointer" aria-label="Toggle dark mode">
-				<Icon name={isDark ? 'MoonFilled' : 'Moon'} class="h-6 w-6" />
+			<div class="flex h-10 items-center rounded-full bg-emerald-100 px-6 text-emerald-900">Get Involved</div>
+			<button onclick={toggleTheme} class="cursor-pointer text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white" aria-label="Toggle dark mode">
+				<Icon name={themeIcon} class="size-6" />
 			</button>
 		</div>
 
-		<!-- Mobile Actions -->
 		<div class="flex items-center gap-1 md:hidden">
-				<button class="flex h-10 w-10 items-center justify-center rounded-lg transition-colors duration-200 {mobileFiltersOpen ? 'bg-yellow-500 text-white' : 'text-slate-900 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800'}" onclick={toggleMobileFilters} aria-label="Toggle chart filters" aria-expanded={mobileFiltersOpen}>
-					<Icon name="AdjustmentsCog" class="h-6 w-6" />
+			{#if hasFilters}
+				<button
+					class="flex size-10 items-center justify-center rounded-lg
+						{mobileFiltersOpen
+							? 'bg-amber-500 text-white'
+							: 'text-slate-700 hover:bg-slate-100 dark:text-white'}"
+					onclick={toggleMobileFilters}
+					aria-label="Toggle chart filters"
+					aria-expanded={mobileFiltersOpen}
+				>
+					<Icon name="AdjustmentsCog" class="size-6" />
 				</button>
-			<button class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-white dark:hover:text-slate-800" onclick={toggleDrawer} aria-label="Open menu" aria-expanded={isDrawerOpen}>
-				<Icon name="Menu" class="h-6 w-6" />
+			{/if}
+			<button class="flex size-10 items-center justify-center rounded-lg text-slate-700 hover:bg-slate-100 dark:text-white" onclick={toggleDrawer} aria-label="Open menu" aria-expanded={isDrawerOpen}>
+				<Icon name="Menu" class="size-6" />
 			</button>
 		</div>
 	</div>
 </header>
 
-<!-- Drawer Backdrop -->
 {#if isDrawerOpen}
 	<button class="fixed inset-0 z-40 bg-black/50 md:hidden" onclick={closeDrawer} aria-label="Close menu"></button>
 {/if}
 
-<!-- Mobile Drawer -->
-<div class="fixed top-0 right-0 z-50 h-full w-72 transform bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden dark:bg-slate-900 {isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}">
-	<!-- Drawer Header -->
+<div
+	class="fixed top-0 right-0 z-50 h-full w-72 bg-white shadow-2xl transition-transform duration-300 ease-out md:hidden dark:bg-slate-900
+		{isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}"
+>
 	<div class="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-700">
 		<span class="text-lg font-semibold text-slate-900 dark:text-white">Menu</span>
-		<button onclick={closeDrawer} class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-800" aria-label="Close menu">
-			<Icon name="Close" class="h-6 w-6" />
+		<button onclick={closeDrawer} class="flex size-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-400" aria-label="Close menu">
+			<Icon name="Close" class="size-6" />
 		</button>
 	</div>
 
-	<!-- Drawer Nav -->
 	<nav class="flex flex-col p-4" aria-label="Mobile navigation">
-		{#each computedNavItems as item (item.label)}
-			{#if item.disabled}
-				<span class="cursor-not-allowed rounded-lg px-4 py-3 opacity-60 text-slate-900 dark:text-slate-200 {item.isActive ? mobileActiveClass : ''}" aria-disabled="true">{item.label}</span>
-			{:else}
-				<a href={resolve(item.href)} onclick={closeDrawer} class="rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800 {item.isActive ? mobileActiveClass : ''}">{item.label}</a>
-			{/if}
+		{#each navItemsWithActive as item (item.label)}
+			{@render navEntry(item, true)}
 		{/each}
 
 		<hr class="my-4 border-slate-200 dark:border-slate-700" />
 
-		<!-- Drawer Actions -->
-		<button type="button" class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800" aria-label="Search">
-			<Icon name="Search" class="h-5 w-5" />
+		<button
+			type="button"
+			class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200"
+			aria-label="Search"
+		>
+			<Icon name="Search" class="size-5" />
 			<span>Search</span>
 		</button>
-		<button type="button" onclick={toggleTheme} class="flex items-center gap-3 rounded-lg px-4 py-3 text-slate-900 transition-colors duration-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:text-slate-800 cursor-pointer" aria-label="Toggle theme">
-			<Icon name={isDark ? 'MoonFilled' : 'Moon'} class="h-5 w-5" />
-			<span>{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+
+		<button
+			type="button"
+			onclick={toggleTheme}
+			class="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-slate-700 hover:bg-slate-100 dark:text-slate-200"
+			aria-label="Toggle theme"
+		>
+			<Icon name={themeIcon} class="size-5" />
+			<span>{themeLabel}</span>
 		</button>
-		<div class="mt-4 flex items-center justify-center rounded-full bg-mlc-nav-active px-6 py-3 font-medium text-mlc-cta-text transition-colors duration-200 dark:bg-yellow-600 dark:text-white">Get Involved</div>
+
+		<div class="mt-4 flex items-center justify-center rounded-full bg-emerald-100 px-6 py-3 font-medium text-emerald-900">Get Involved</div>
 	</nav>
 </div>

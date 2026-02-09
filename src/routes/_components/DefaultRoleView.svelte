@@ -369,7 +369,7 @@
 				</div>
 				<div class="">
 					<div
-						class="mt-4 flex max-w-[230px] flex-col gap-1 rounded-xl bg-green-500/50 p-4 text-white shadow-lg"
+						class="mt-4 flex max-w-[230px] flex-col gap-1 rounded-xl bg-emerald-500/50 p-4 text-white shadow-lg"
 					>
 						<span class="font-medium text-white/5080">Overall Safety Rating:</span>
 						<span class="text-2xl font-bold text-white">Very Good</span>
