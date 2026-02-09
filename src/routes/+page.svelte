@@ -419,7 +419,7 @@
 		<!-- Charts area -->
 		<div class="min-w-0 flex-1">
 			<!-- Small page hero -->
-			<header class="mb-12 ml-12 flex flex-col md:mb-12" aria-label="Page introduction">
+			<header class="mb-9 ml-12 flex flex-col md:mb-12" aria-label="Page introduction">
 				<h1
 					class="instrument-serif-regular-italic mt-8 text-4xl font-bold text-balance text-slate-700 md:mt-0 md:text-5xl dark:text-white"
 				>

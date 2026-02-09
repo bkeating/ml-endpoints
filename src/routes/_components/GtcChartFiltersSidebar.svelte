@@ -230,7 +230,7 @@
 </script>
 
 <aside
-	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-96 shrink-0 overflow-y-auto rounded-lg py-2 backdrop-blur-sm dark:border dark:border-slate-700 dark:bg-slate-800/90 lg:block {isSidebarExpanded ? 'dark:shadow-xl' : 'dark:shadow-xs'} transition-all duration-300"
+	class="sticky top-24 hidden h-fit max-h-[calc(100vh-7rem)] w-96 shrink-0 overflow-y-auto rounded-lg border border-slate-200/70 py-2 backdrop-blur-sm dark:border dark:border-slate-700 dark:bg-slate-800/90 lg:block {isSidebarExpanded ? 'dark:shadow-xl' : 'dark:shadow-xs'} transition-all duration-300"
 	aria-label="Chart filters sidebar"
 >
 	<div class="flex flex-col gap-5">
@@ -444,20 +444,20 @@
 						{#if expanded && hw.system}
 							<div
 								transition:slide={{ duration: 200, easing: cubicOut }}
-								class="px-1 pt-1 pb-1 pl-4 pr-3 mt-1 text-[12px] border-l-4 {visible && !disabled ? 'dark:bg-[#333945]' : ''}"
+								class="px-1 pt-1 pb-1 pl-4 pr-3 ml-5 mt-1 text-[13px] border-l-4"
 								style:border-left-color={hw.color}
 							>
 
               <button type="button" class="text-sm rounded-md px-2 py-1 text-white float-right" onclick={() => goto(`/report?submission=${hw.system.submission_id}`)} style:background-color={hw.color}>View Report</button>
 								<!-- System Specifications Header -->
 								<div class="mb-2">
-									<p class="text-slate-500 dark:text-slate-400 text-[10px]">
+									<p class="text-slate-500 dark:text-slate-400 text-[13px]">
 										{hw.system.submitter_org_names} / {hw.system.division}
 									</p>
 								</div>
 
 								<!-- Hardware & Software Details -->
-								<dl class="space-y-1.5 text-[11px]">
+								<dl class="space-y-1.5 text-[13px]">
 									<!-- Framework -->
 									<div>
 										<dt class="font-medium text-slate-500 dark:text-slate-400">Framework</dt>
@@ -470,7 +470,7 @@
 										<dd class="text-slate-800 dark:text-slate-200">
 											{hw.system.accelerators_per_node}x {hw.system.accelerator_model_name}
 										</dd>
-										<dd class="text-slate-500 dark:text-slate-400 text-[10px]">
+										<dd class="text-slate-500 dark:text-slate-400">
 											{hw.system.accelerator_memory_capacity} {hw.system.accelerator_memory_type}
 										</dd>
 									</div>

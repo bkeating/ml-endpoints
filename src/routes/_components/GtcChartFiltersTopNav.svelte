@@ -85,7 +85,7 @@
 			return { src: isDarkTheme ? '/logo-cerebras-dark.svg' : '/logo-cerebras.svg', alt: 'Cerebras' };
 		}
 		if (name.includes('intel') || name.includes('xeon')) {
-			return { src: '/logo-intel.svg', alt: 'Intel' };
+			return { src: isDarkTheme ? '/logo-intel-dark.svg' : '/logo-intel.svg', alt: 'Intel' };
 		}
 		if (name.includes('amd') || name.includes('epyc')) {
 			return { src: isDarkTheme ? '/logo-amd-dark.svg' : '/logo-amd.svg', alt: 'AMD' };

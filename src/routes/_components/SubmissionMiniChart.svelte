@@ -89,9 +89,16 @@
 			runId: p.runId
 		}));
 
+		// Build a step path: horizontal segments connected by vertical joins.
 		const path = points
-			.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
-			.join(' ');
+			.slice(1)
+			.reduce(
+				(acc, current, index) => {
+					const previous = points[index];
+					return `${acc} L ${current.x.toFixed(2)} ${previous.y.toFixed(2)} L ${current.x.toFixed(2)} ${current.y.toFixed(2)}`;
+				},
+				`M ${points[0].x.toFixed(2)} ${points[0].y.toFixed(2)}`
+			);
 
 		return { path, points };
 	}

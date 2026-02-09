@@ -289,6 +289,13 @@
 		zoomYDomain = null;
 	}
 
+	function handleChartDoubleClick(event) {
+		const target = event.target;
+		if (target instanceof Element && target.closest('circle[role="button"]')) return;
+		handleZoomIn();
+		event.preventDefault();
+	}
+
 	/**
 	 * Compare two numeric domains with a small tolerance.
 	 * @param {[number, number]} a
@@ -629,6 +636,7 @@
 		role="application"
 		aria-label="Interactive chart, drag to pan"
 		onpointerdown={handlePanStart}
+		ondblclick={handleChartDoubleClick}
 	>
 		<defs>
 			<linearGradient id="chartBg-{clipId}" x1="0%" y1="0%" x2="0%" y2="100%">
