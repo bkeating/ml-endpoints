@@ -18,8 +18,7 @@
 		calculateDomain,
 		calculateLogDomain,
 		generateClipPathId
-	} from '../pareto-charts/_components/chartUtils.js';
-	import { getStart, getEnd } from '$lib/stores/timelineRange.svelte.js';
+	} from '$lib/utils/chartUtils.js';
 	import { setHoveredRunId, getHoveredRunId, getHoveredRunInfo } from '$lib/stores/chartSettings.svelte.js';
 
 	/**
@@ -73,8 +72,8 @@
 	);
 
 	// Get X domain from timeline range store or calculate from data
-	let rangeStart = $derived(useTimelineRange ? getStart() : null);
-	let rangeEnd = $derived(useTimelineRange ? getEnd() : null);
+	let rangeStart = $state(null);
+	let rangeEnd = $state(null);
 
 	// Calculate full domain from all models based on scale type
 	let allPoints = $derived(data.flatMap((model) => model.points));

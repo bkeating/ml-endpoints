@@ -12,7 +12,7 @@
 export const navItems = [
 	{ label: 'Home', href: '/', match: 'exact' },
 	// { label: 'Test Manager', href: '/test-manager', match: 'startsWith', disabled: true },
-	{ label: 'Benchmark Reports', href: '/report', match: 'startsWith', disabled: true },
+	{ label: 'Benchmark Reports', href: '/report', match: 'startsWith' },
 	// { label: 'Admin Tools', href: '/admin-tools', match: 'startsWith', disabled: true }
 ];
 
