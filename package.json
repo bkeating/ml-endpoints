@@ -10,37 +10,30 @@
     "prepare": "bun run --bun svelte-kit sync || echo ''",
     "format": "bun run --bun prettier --write .",
     "lint": "bun run --bun prettier --check . && bun run --bun eslint .",
-    "test:e2e": "bun run --bun playwright test",
-    "test:unit": "bun run --bun vitest",
-    "test": "bun run test:e2e"
+    "test": "bun run --bun vitest"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.4.0",
 		"@eslint/js": "^9.39.1",
-		"@playwright/test": "^1.57.0",
 		"svelte-adapter-bun": "^0.5.2",
 		"@sveltejs/kit": "^2.49.1",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"@tailwindcss/vite": "^4.1.17",
 		"@types/node": "^22",
-		"@vitest/browser-playwright": "^4.0.15",
 		"eslint": "^9.39.1",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.13.1",
 		"globals": "^16.5.0",
-		"playwright": "^1.57.0",
 		"prettier": "^3.7.4",
 		"prettier-plugin-svelte": "^3.4.0",
 		"prettier-plugin-tailwindcss": "^0.7.2",
 		"svelte": "^5.45.6",
 		"tailwindcss": "^4.1.17",
 		"vite": "^7.2.6",
-		"vitest": "^4.0.15",
-		"vitest-browser-svelte": "^2.0.1"
+		"vitest": "^4.0.15"
 	},
 	"dependencies": {
 		"d3": "^7.9.0",
-		"nanoid": "^5.1.6",
 		"valibot": "^1.1.0"
 	}
 }

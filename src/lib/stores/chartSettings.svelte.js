@@ -8,7 +8,7 @@ import { paretoSeries } from '$lib/data/paretoData.js';
 import { allGpuConfigs } from '$lib/data/placeholders.js';
 
 // Import endpoints data for system IDs
-import endpointsData from '../../routes/endpoints-benchmark-data.json';
+import endpointsData from '$lib/data/endpoints-benchmark-data.json';
 
 /**
  * @typedef {Object} ChartSettings

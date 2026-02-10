@@ -537,7 +537,7 @@ h6 {
 	position: absolute;
 	inset: 0;
 	z-index: 1;
-	background-image: url('/bg-pattern-squares.svg');
+	background-image: url('/logos/bg-pattern-squares.svg');
 	background-size: auto;
 	background-repeat: repeat;
 	background-position: 0 0;

@@ -239,13 +239,13 @@
       "model_id": 1,
       "model_name": "Llama 2 70B",
       "model_internal": "llama2-70b-99",
-      "logo_url": "/logo-llama.svg"
+      "logo_url": "/logos/logo-llama.svg"
     },
     {
       "model_id": 2,
       "model_name": "GPT-J 6B",
       "model_internal": "gptj-6b-99.9",
-      "logo_url": "/logo-gpt.webp"
+      "logo_url": "/logos/logo-gpt.webp"
     }
   ],
   "submissions": [

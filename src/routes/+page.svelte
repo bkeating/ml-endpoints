@@ -20,7 +20,7 @@
 	import { getTheme } from '$lib/stores/theme.svelte.js';
 
 	// Import normalized benchmark data from local JSON
-	import endpointsData from './endpoints-benchmark-data.json';
+	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
 
 	// ============================================================================
 	// DATA TRANSFORMATION
@@ -99,10 +99,10 @@
 		const orgName = submission.submitter_org_names?.toLowerCase() ?? '';
 		const isDarkTheme = getTheme() === 'dark';
 		if (orgName.includes('nvidia')) {
-			return isDarkTheme ? '/logo-nvidia-dark.svg' : '/logo-nvidia.svg';
+			return isDarkTheme ? '/logos/logo-nvidia-dark.svg' : '/logos/logo-nvidia.svg';
 		}
 		if (orgName.includes('amd')) {
-			return isDarkTheme ? '/logo-amd-dark.svg' : '/logo-amd.svg';
+			return isDarkTheme ? '/logos/logo-amd-dark.svg' : '/logos/logo-amd.svg';
 		}
 		if (orgName.includes('intel')) {
 			// Assuming there's an Intel logo, otherwise return null

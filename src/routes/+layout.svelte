@@ -47,7 +47,7 @@
 				class="pointer-events-none absolute inset-0 z-0 opacity-70 dark:opacity-[0.02]"
 				aria-hidden="true"
 				style="
-					background-image: url('/bg-pattern-squares.svg');
+					background-image: url('/brand/bg-pattern-squares.svg');
 					background-position: 50% 0%;
 					background-repeat: repeat;
 				"

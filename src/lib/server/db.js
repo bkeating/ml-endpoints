@@ -237,7 +237,7 @@ function getNestedValue(obj, path) {
  */
 function generateId(resource) {
 	const collection = data[resource];
-	if (!Array.isArray(collection)) return crypto.randomUUID();
+	if (!Array.isArray(collection)) return Bun.randomUUIDv7();
 
 	const prefix = resource.slice(0, 3);
 	const maxNum = collection.reduce((max, item) => {

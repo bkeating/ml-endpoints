@@ -13,7 +13,7 @@
 	 * - run: Run ID for specific data point
 	 */
 	import { page } from '$app/stores';
-	import endpointsData from '../endpoints-benchmark-data.json';
+	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
 	import ReportMiniChart from './_components/ReportMiniChart.svelte';
 	import ReportRunsTable from './_components/ReportRunsTable.svelte';
 	import ThroughputRTChart from './_components/ThroughputRTChart.svelte';

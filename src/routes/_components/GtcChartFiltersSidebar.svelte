@@ -23,7 +23,7 @@
 		getVisibleSystemIds
 	} from '$lib/stores/chartSettings.svelte.js';
 	import { getTheme } from '$lib/stores/theme.svelte.js';
-	import endpointsData from '../endpoints-benchmark-data.json';
+	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
 
 
 	// ============================================================================
@@ -179,35 +179,35 @@
 
 	/**
 	 * Map a system to its vendor logo.
-	 * @param {import('../endpoints-benchmark-data.json').systems[number]} system
+	 * @param {import('$lib/data/endpoints-benchmark-data.json').systems[number]} system
 	 * @returns {{ src: string, alt: string } | null}
 	 */
 	function getSystemLogo(system) {
 		const name = `${system.system_name} ${system.accelerator_model_name} ${system.host_processor_model_name}`.toLowerCase();
 		const isDarkTheme = getTheme() === 'dark';
 		if (name.includes('nvidia')) {
-			return { src: isDarkTheme ? '/logo-nvidia-dark.svg' : '/logo-nvidia.svg', alt: 'NVIDIA' };
+			return { src: isDarkTheme ? '/logos/logo-nvidia-dark.svg' : '/logos/logo-nvidia.svg', alt: 'NVIDIA' };
 		}
 		if (name.includes('microsoft')) {
 			return {
-				src: isDarkTheme ? '/logo-microsoft-dark.svg' : '/logo-microsoft.svg',
+				src: isDarkTheme ? '/logos/logo-microsoft-dark.svg' : '/logos/logo-microsoft.svg',
 				alt: 'Microsoft'
 			};
 		}
 		if (name.includes('google')) {
-			return { src: isDarkTheme ? '/logo-google-dark.svg' : '/logo-google.svg', alt: 'Google' };
+			return { src: isDarkTheme ? '/logos/logo-google-dark.svg' : '/logos/logo-google.svg', alt: 'Google' };
 		}
 		if (name.includes('aws') || name.includes('amazon')) {
-			return { src: isDarkTheme ? '/logo-aws-dark.svg' : '/logo-aws.svg', alt: 'AWS' };
+			return { src: isDarkTheme ? '/logos/logo-aws-dark.svg' : '/logos/logo-aws.svg', alt: 'AWS' };
 		}
 		if (name.includes('cerebras')) {
-			return { src: isDarkTheme ? '/logo-cerebras-dark.svg' : '/logo-cerebras.svg', alt: 'Cerebras' };
+			return { src: isDarkTheme ? '/logos/logo-cerebras-dark.svg' : '/logos/logo-cerebras.svg', alt: 'Cerebras' };
 		}
 		if (name.includes('intel') || name.includes('xeon')) {
-			return { src: '/logo-intel.svg', alt: 'Intel' };
+			return { src: '/logos/logo-intel.svg', alt: 'Intel' };
 		}
 		if (name.includes('amd') || name.includes('epyc')) {
-			return { src: isDarkTheme ? '/logo-amd-dark.svg' : '/logo-amd.svg', alt: 'AMD' };
+			return { src: isDarkTheme ? '/logos/logo-amd-dark.svg' : '/logos/logo-amd.svg', alt: 'AMD' };
 		}
 		return null;
 	}

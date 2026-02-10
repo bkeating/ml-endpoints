@@ -9,7 +9,7 @@
 		<div class="grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
 			<!-- Logo & Newsletter Section -->
 			<div class="lg:col-span-2">
-				<img src="/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="mb-6 h-10 invert dark:invert-0" />
+				<img src="/brand/ML-Commons-Logo-Dark.svg" alt="ML Commons" class="mb-6 h-10 invert dark:invert-0" />
 				<p class="mb-6 max-w-md text-sm leading-relaxed text-slate-700 dark:text-slate-400">
 					MLCommons is an open engineering consortium with a mission to make machine learning better
 					for everyone. We provide industry-standard benchmarks, datasets, and best practices.

@@ -1,0 +1,34 @@
+# Dependencies (reinstalled in builder)
+node_modules
+
+# Build output (rebuilt in image)
+build
+.svelte-kit
+.output
+.vercel
+.netlify
+.wrangler
+
+# Git and tooling
+.git
+.gitignore
+.cursor
+.vscode
+*.md
+AGENTS.md
+
+# Tests and CI (not needed in image)
+e2e
+test-results
+.github
+
+# Env (never bake secrets into image)
+.env
+.env.*
+!.env.example
+
+# OS and misc
+.DS_Store
+Thumbs.db
+*.log
+docs

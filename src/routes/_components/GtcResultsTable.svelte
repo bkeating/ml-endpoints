@@ -12,7 +12,7 @@
 	import { goto } from '$app/navigation';
 	import { SvelteMap } from 'svelte/reactivity';
 	import { isSystemVisible } from '$lib/stores/chartSettings.svelte.js';
-	import endpointsData from '../endpoints-benchmark-data.json';
+	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
 
 	// Tooltip state for reports timeline
 	let tooltipData = $state(null);

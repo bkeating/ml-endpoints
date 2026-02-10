@@ -5,6 +5,7 @@
 	import { navItems, isNavItemActive } from '$lib/data/navigation.js';
 	import { getMobileFiltersOpen, toggleMobileFilters, getHasFilters } from '$lib/stores/pageSettings.svelte.js';
 	import Icon from '$lib/components/Icon.svelte';
+	import Logo from '$lib/components/Logo.svelte';
 
 	let isDrawerOpen = $state(false);
 	let mobileFiltersOpen = $derived(getMobileFiltersOpen());
@@ -30,13 +31,8 @@
 		isActive && 'border-l-4 border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10'
 	];
 
-	function toggleDrawer() {
-		isDrawerOpen = !isDrawerOpen;
-	}
-
-	function closeDrawer() {
-		isDrawerOpen = false;
-	}
+	const toggleDrawer = () => isDrawerOpen = !isDrawerOpen;
+	const closeDrawer = () => isDrawerOpen = false;
 </script>
 
 {#snippet navEntry(item, mobile = false)}
@@ -58,7 +54,7 @@
 <header class="sticky top-0 z-40 h-20 border-b border-slate-200 bg-white font-instrument-sans dark:border-slate-700 dark:bg-slate-900">
 	<div class="mx-auto flex h-full w-full max-w-7xl items-center justify-between px-3">
 		<a href={resolve('/')}>
-			<img src={isDark ? '/ML-Commons-Logo-Dark.svg' : '/ML-Commons-Logo.svg'} alt="ML Commons" class="h-10" />
+			<Logo dark={isDark} class="h-10" />
 		</a>
 
 		<nav class="hidden h-full items-center gap-6 md:flex" aria-label="Main navigation">
