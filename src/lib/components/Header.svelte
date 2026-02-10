@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import { resolve } from '$app/paths';
 	import { getTheme, toggleTheme } from '$lib/stores/theme.svelte.js';
-	import { navItems, isNavItemActive } from '$lib/data/navigation.js';
+	import { navItems, isNavItemActive } from '$lib/data/index.js';
 	import { getMobileFiltersOpen, toggleMobileFilters, getHasFilters } from '$lib/stores/pageSettings.svelte.js';
 	import Icon from '$lib/components/Icon.svelte';
 	import Logo from '$lib/components/Logo.svelte';

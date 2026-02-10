@@ -20,7 +20,7 @@
 	import { getTheme } from '$lib/stores/theme.svelte.js';
 
 	// Import normalized benchmark data from local JSON
-	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
+	import { endpointsData } from '$lib/data/index.js';
 
 	// ============================================================================
 	// DATA TRANSFORMATION

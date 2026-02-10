@@ -10,7 +10,7 @@
 	import './app.css';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-	import { navItems } from '$lib/data/navigation.js';
+	import { navItems } from '$lib/data/index.js';
 	import { untrack } from 'svelte';
 	import { getTheme, initTheme } from '$lib/stores/theme.svelte.js';
 	import { page } from '$app/state';

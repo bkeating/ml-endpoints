@@ -23,7 +23,7 @@
 		getVisibleSystemIds
 	} from '$lib/stores/chartSettings.svelte.js';
 	import { getTheme } from '$lib/stores/theme.svelte.js';
-	import endpointsData from '$lib/data/endpoints-benchmark-data.json';
+	import { endpointsData } from '$lib/data/index.js';
 
 
 	// ============================================================================

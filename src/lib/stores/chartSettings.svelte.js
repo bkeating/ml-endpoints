@@ -1,44 +1,22 @@
 /**
  * Chart settings state management using Svelte 5 runes
- * Handles model visibility toggles and display options
+ * Handles system visibility toggles and display options
  */
 
-import { getModelIds } from '$lib/data/benchmarkData.js';
-import { paretoSeries } from '$lib/data/paretoData.js';
-import { allGpuConfigs } from '$lib/data/placeholders.js';
-
-// Import endpoints data for system IDs
-import endpointsData from '$lib/data/endpoints-benchmark-data.json';
+import { endpointsData } from '$lib/data/index.js';
 
 /**
  * @typedef {Object} ChartSettings
- * @property {Record<string, boolean>} modelVisibility - Map of model ID to visibility
- * @property {Record<string, boolean>} paretoVisibility - Map of pareto series ID to visibility
  * @property {Record<string, boolean>} systemVisibility - Map of system UUID to visibility
  * @property {boolean} hideNonOptimal - Whether to hide non-optimal data points
  * @property {boolean} hideLabels - Whether to hide data point labels
  */
-
-// Initialize visibility map with only first model visible for each model set
-// Combine IDs from both benchmarkData (hyphenated) and placeholders (underscored)
-const benchmarkVisibility = Object.fromEntries(getModelIds().map((id, index) => [id, index === 0]));
-const gtcVisibility = Object.fromEntries(allGpuConfigs.map((id, index) => [id, index === 0]));
-const initialVisibility = { ...benchmarkVisibility, ...gtcVisibility };
-
-// Initialize pareto series visibility with all series visible
-const initialParetoVisibility = Object.fromEntries(paretoSeries.map((s) => [s.id, true]));
 
 // Initialize system visibility from endpoints data (systems 1 and 3 visible by default)
 const defaultVisibleIndices = [0, 2]; // NVIDIA DGX B200, AMD MI300X
 const initialSystemVisibility = Object.fromEntries(
 	endpointsData.systems.map((system, index) => [system.id, defaultVisibleIndices.includes(index)])
 );
-
-/** @type {Record<string, boolean>} */
-let modelVisibility = $state({ ...initialVisibility });
-
-/** @type {Record<string, boolean>} */
-let paretoVisibility = $state({ ...initialParetoVisibility });
 
 /** @type {Record<string, boolean>} */
 let systemVisibility = $state({ ...initialSystemVisibility });
@@ -63,66 +41,10 @@ let hoveredRunInfo = $state(null);
  */
 export function getSettings() {
 	return {
-		modelVisibility,
-		paretoVisibility,
 		systemVisibility,
 		hideNonOptimal,
 		hideLabels
 	};
-}
-
-/**
- * Check if a specific model is visible
- * @param {string} modelId
- * @returns {boolean}
- */
-export function isModelVisible(modelId) {
-	return modelVisibility[modelId] ?? false;
-}
-
-/**
- * Toggle visibility for a specific model
- * @param {string} modelId
- */
-export function toggleModel(modelId) {
-	modelVisibility[modelId] = !modelVisibility[modelId];
-}
-
-/**
- * Get all visible model IDs
- * @returns {string[]}
- */
-export function getVisibleModelIds() {
-	return Object.entries(modelVisibility)
-		.filter(([, visible]) => visible)
-		.map(([id]) => id);
-}
-
-/**
- * Check if a specific pareto series is visible
- * @param {string} seriesId
- * @returns {boolean}
- */
-export function isParetoSeriesVisible(seriesId) {
-	return paretoVisibility[seriesId] ?? true;
-}
-
-/**
- * Toggle visibility for a specific pareto series
- * @param {string} seriesId
- */
-export function toggleParetoSeries(seriesId) {
-	paretoVisibility[seriesId] = !paretoVisibility[seriesId];
-}
-
-/**
- * Get all visible pareto series IDs
- * @returns {string[]}
- */
-export function getVisibleParetoSeriesIds() {
-	return Object.entries(paretoVisibility)
-		.filter(([, visible]) => visible)
-		.map(([id]) => id);
 }
 
 // ============================================================================
@@ -311,8 +233,6 @@ export function getShowComparison() {
  * Reset all settings to defaults
  */
 export function resetSettings() {
-	modelVisibility = { ...initialVisibility };
-	paretoVisibility = { ...initialParetoVisibility };
 	systemVisibility = { ...initialSystemVisibility };
 	selectedBenchmarkModelId = endpointsData.models[0]?.model_id ?? 'all';
 	selectedAccelerator = 'all';
